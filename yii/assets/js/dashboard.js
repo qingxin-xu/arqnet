@@ -1,0 +1,214 @@
+var myForm = myForm || {};
+/* THe current date, with no time component (i.e., midnight) */
+function getCurrentDate()
+{
+	var nowTemp = new Date();
+	var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+	return now;
+}
+
+function changeDateRange()
+{
+	var service = '/changeDateRange';
+	updateMsg($('.validateTips'),'Changing Date Range');
+	$('#myThinker').dialog('open');
+	
+	var formData = new FormData($('#dateRangePicker')[0]);
+
+	$.ajax({
+		url:service,
+		type:'POST',
+		dataType:'json',
+		data:formData,
+		processData:false,
+		contentType:false,
+		success:function(d) {
+			
+			if (d.success && d.success>0)
+			{						
+				//updateMsg($('.validateTips'),'Journal Entry Created');
+				$('#myThinker').dialog('close');
+				responseCount = d.responseCount;
+				initializeMainSlider(currentRangeValue,d.responses);
+				currentEndDate = $('input[name=end_date]').val();
+				$('.customRange').hide();
+			} else
+			{
+				var msg = "Error changing date range - please try again";
+				if (d.error) msg = d.error;
+				updateMsg($('.validateTips'),msg);
+			}
+		},
+		
+		error:function(err)
+		{
+			console.log('error',err);
+			updateMsg($('.validateTips'),'Error changing date range');
+			setTimeout(function() {$('#myThinker').dialog('close');},2000);
+			$('#dateRangePicker')[0].reset();
+		}
+	});		
+}
+
+function quickEntry()
+{
+	
+	$('textarea[name=stripped_content]').html($('textarea[name=post_content]').val().replace(/\<br\>/g,' '));
+	var service = '/createOrUpdateJournal';
+	updateMsg($('.validateTips'),'Creating Journal Entry');
+	$('#myThinker').dialog('open');
+	
+	$('input[name=publish_date').datepicker('setValue',new Date());
+	$('input[name=publish_time').timepicker('setTime',new Date());
+	
+	var formData = new FormData($('#quickEntry')[0]);
+
+	$.ajax({
+		url:service,
+		type:'POST',
+		dataType:'json',
+		data:formData,
+		processData:false,
+		contentType:false,
+		success:function(d) {
+			
+			if (d.success && d.success>0)
+			{						
+				updateMsg($('.validateTips'),'Journal Entry Created');
+				$('#quickEntry')[0].reset();
+				setTimeout(function() {$('#myThinker').dialog('close');},2000);
+			} else
+			{
+				var msg = "Error creating entry - please try again";
+				if (d.error) msg = d.error;
+				updateMsg($('.validateTips'),msg);
+			}
+		},
+		
+		error:function(err)
+		{
+
+			console.log('error',err);
+			updateMsg($('.validateTips'),'Error Creating Journal');
+			setTimeout(function() {$('#myThinker').dialog('close');},2000);
+			//_handleError();
+			$('#quickEntry')[0].reset();
+		}
+	});
+}
+;(function($, window, undefined)
+{
+	"use strict";
+		
+	$(document).ready(function()
+	{
+		var now = getCurrentDate();
+		$('input[name=publish_date').datepicker({});
+		$('input[name=start_date]').datepicker({
+			onRender:function(date) {
+				return date.valueOf() > now.valueOf() ? 'disabled' : '';
+			}
+		});
+		
+		$('input[name=end_date]').datepicker({
+			onRender:function(date) {
+				return date.valueOf() > now.valueOf() ? 'disabled' : '';
+			}
+		});
+		
+		jQuery.validator.addMethod('checkDuration',function(val,el) {
+			var startDate = $('input[name=start_date]')||[],
+				endDate = $('input[name=end_date]')||[],
+				sObj,
+				eObj,
+				diff,
+				dayMS = 24*60*60*1000;
+			
+			if (startDate.length<=0 || endDate.length<=0) return false;
+			sObj = new Date(startDate.val()).getTime();
+			eObj = new Date(endDate.val()).getTime();
+			//if (eObj<sObj) return false;
+			//if (eObj==sObj) return false;
+			diff = eObj - sObj;
+			if (diff/dayMS > 90) return false;
+			return true;
+		},'Error');
+		
+		jQuery.validator.addMethod('checkEnd',function(val,el) {
+			var startDate = $('input[name=start_date]')||[],
+				endDate = $('input[name=end_date]')||[],
+				sObj,
+				eObj,
+				diff,
+				dayMS = 24*60*60*1000;
+			
+			if (startDate.length<=0 || endDate.length<=0) return false;
+			sObj = new Date(startDate.val()).getTime();
+			eObj = new Date(endDate.val()).getTime();
+			if (eObj<sObj) return false;
+			if (eObj==sObj) return false;
+
+			return true;
+		},'Error');
+		
+		jQuery.validator.addMethod('checkFuture',function(val,el) {
+			var now = getCurrentDate(),
+			startDate = $('input[name=start_date]')||[],
+			endDate = $('input[name=end_date]')||[],
+			sObj,
+			eObj,
+			diff,
+			dayMS = 24*60*60*1000;
+			eObj = new Date(endDate.val());
+			eObj = new Date(eObj.getFullYear(),eObj.getMonth(),eObj.getDate(),0,0,0,0);
+			console.log('eObj',eObj,now);
+			if (eObj > now.getTime()) return false;
+			return true;
+		},'Error');
+		
+		myForm.$container = $("#dateRangePicker");
+		
+		// Login Form & Validation
+		myForm.$container.validate({
+			rules: {
+				start_date: {
+					required: true
+				},
+				
+				end_date: {
+					required: true,
+					checkDuration:true,
+					checkEnd:true,
+					checkFuture:true
+				},
+			},
+			
+			messages:{
+				end_date:{
+					checkDuration:'The date range cannot be more than ~ 3 months',
+					checkEnd:'The end date must be after the start date',
+					checkFuture:'The end date can be no later than the current date'
+				}
+			},
+			
+			submitHandler:function(ev)
+			{	
+				changeDateRange();
+			}
+		});
+		
+		$('#quickEntry').validate({
+			rules:{
+				post_content:{
+					required:true
+				}
+			},
+			submitHandler:function(ev)
+			{
+				quickEntry();
+			}
+		});
+		
+	});
+	
+})(jQuery, window);

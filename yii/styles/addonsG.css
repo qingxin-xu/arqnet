@@ -1,0 +1,307 @@
+.addG-darkBG{
+	background-color: #262626;
+}
+
+.addG-lefttab2{
+	width: 19%;
+	float: left;
+}
+
+.addG-righttab2{
+	margin-top: 14px;
+	width: 21%;
+	float: left;
+}
+
+.addG-lefttab1{
+	margin-top: 14px;
+	width: 24%;
+	float: left;
+	text-align: right;
+	padding-right: 28px;
+}
+
+.addG-righttab1{
+	margin-top: 14px;
+	width: 21%;
+	float: left;
+	text-align: left;
+	padding-left: 28px;
+}
+.slider {
+	height: 0.1em;
+}
+.slider .ui-slider-handle {
+	margin-top: -2.5px;
+	width: 9px;
+	height: 9px;
+	border: 1px solid #ffffff;
+	background-color: #8060BB;
+}
+.ui-label{
+	display: none;
+}
+.slidewrapper{
+	background-color: #353535;
+}
+.addG-slider{
+	margin-top: 24px;
+	width: 84%;
+	float: left;
+}
+.addG-bottomslider{
+height: 2em;
+margin-bottom: 10px;
+background-color: #353535;
+}
+
+.addG-bottomslider > .ui-slider-handle{
+height: 2em;
+margin-bottom: 10px;
+background-color: #fff;
+margin: 0;
+width: 100px;
+border-radius: 0;
+}
+
+#overview-tab > div.addG-aroundslider {
+	background: #262626;
+margin-bottom: 7px;
+height: 50px;
+float: left;
+width: 52%;
+border: 1px solid white;
+}
+
+div.addG-squarething > div{
+margin-top: 43%;
+margin-left: 43%;
+width: 5px;
+height: 5px;
+border-radius: 3.5px;
+border: 1px solid #ffffff;
+background-color: #FFFFFF;
+}
+
+#overview-tab > div.addG-aroundslider > div.addG-squarething {
+	margin-top: 12px;
+	height: 52%;
+	float: left;
+	width: 6%;
+	border: 1px solid white;
+}
+.addG-date{
+	display: block;
+position: absolute;
+margin: -23px 44%;
+}
+.addG-fleft{
+	position: relative;
+	width: 50%;
+	float:left;
+}
+.addG-justleft{
+	float: left;
+}
+
+.addG-midspan{
+	position: absolute;
+	left: 60%;
+	color: black;
+}
+#moodSlidersCont{
+	text-align: center;
+}
+#moodSliders{
+	margin-right: 42px;
+	height: 238px;
+	text-align: left;
+	border: 3px solid white;
+	padding: 20px 10px 10px 20px;
+}
+.addG-greyBG{
+	background-color: #181818;
+}
+#trackers-tab{
+	height: 300px;
+	width: 70%;
+	padding-left: 2.5%;
+}
+
+.addG-panelhalfheight{
+	height: 190px;
+	background-color: #181818;
+}
+
+.addG-title{
+	padding-right: 20px;
+	font-weight: bold;
+}
+
+
+
+.tile-block .addG-tile-header {
+color: #ffffff;
+font-size: 17px;
+padding-left: 20px;
+padding-top: 10px;
+padding-bottom: 20px;
+}
+
+.addG-textarea{
+	width: 100%;background: #262626;
+height: 75px;
+font-size: 24px;
+color: white;
+text-align: center;
+}
+
+.addG-cbtext{
+padding-right: 50px;
+}
+
+.addG-tileblock{
+	/* height: 166px; */
+background-color: #353535;
+}
+
+.question-row{
+	padding-top: 50px;
+}
+
+.question-row > input[type="checkbox"] {
+margin-left: 20px;
+margin-right: 49px;
+}
+
+.question-row > span {
+	font-size: 21px;
+	margin-top: 17px;
+margin-bottom: 8.5px;
+	font-family: "Noto Sans", sans-serif, "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-weight: 500;
+line-height: 1.1;
+color: #373e4a;
+}
+
+.panel-heading > .addG-panel-title {
+padding: 0 0;
+height: 100px;
+}
+
+.panel-heading > .panel-title > .modG{
+	float: left;
+	margin-left: 50px;
+
+}
+
+.panel-heading > .panel-title > div.addG-justleft {
+width: 80px;
+height: 100%;
+padding: 0 0 0 0;
+margin: 0 0 0 0;
+text-align: center;
+border-right: 1px solid;
+border-color: #ebebeb;
+}
+
+.panel-heading > .panel-title h2{
+	margin:30px	auto;
+}
+
+.addG-panel-bottom{
+	height: 38px;
+	background-color: #ffffff;
+border-color: #ebebeb;
+border-bottom: 1px solid transparent;
+border-top-right-radius: 3px;
+border-top-left-radius: 3px;
+}
+
+.addG-panel-bottom ul.pager{
+	border-top: 1px solid #ebebeb;
+	font-size: 20px;
+	margin: 0 0;
+}
+
+.addG-panel-bottom i{
+	font-size: 20px;
+}
+.addG-panel-bottom a{
+	margin-top: -1px;
+	height: 39px;
+	border: none;
+}
+
+.addG-panel-title2{
+	font-weight: bold;
+	text-align: center;
+width: 100%;
+height: 85px;
+padding-top: 20px;
+font-size: 25px;
+background: #dbdbdb;
+}
+
+.addG-innerdiv {
+background: #FDFDFD;
+color: black;
+border: 2px solid #dbdbdb;
+padding: 10px;
+margin-bottom: 20px;
+}
+
+.addG-title2{
+	height: 70px;
+}
+.addG-title2 h1{
+	float: left;
+}
+.addG-title2 button{
+	margin-top: 20px;
+margin-right: 20px;
+}
+
+.addG-progresswrap{
+	position: relative;
+	height: 50px;
+}
+.addG-tresh{
+position: absolute;
+left: 70%;
+top: 34%;
+height: 85%;
+width: 8px;
+background-color: rgb(255, 153, 0);
+}
+.addG-progress{
+	border: 2px solid #262626;
+	height: 25px;
+}
+
+.arq-left-margin {
+
+	margin-left: 20px;
+}
+
+
+.arq-form {
+
+padding: 20px;
+
+}
+
+.addG-tileblock a{
+color: #8060bb;
+}
+
+.addG-tileblock textarea {
+	padding: 15px;
+}
+
+.addG-tileblock button {
+margin-right: 10px;
+}
+
+.addG-tile-header {background:#252525;}
+

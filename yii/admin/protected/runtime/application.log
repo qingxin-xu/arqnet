@@ -1,0 +1,114 @@
+2014/08/16 12:56:44 [error] [exception.CException] exception 'CException' with message 'CAssetManager.basePath "/Users/nrodrigo/git/arnet-iq/www/yii/admin/assets" is invalid. Please make sure the directory exists and is writable by the Web server process.' in /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CAssetManager.php:73
+Stack trace:
+#0 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CAssetManager.php(58): CAssetManager->setBasePath('/Users/nrodrigo...')
+#1 /Users/nrodrigo/git/arnet-iq/www/yii/admin/protected/components/messages/CXmlMessageSource.php(73): CAssetManager->getBasePath()
+#2 /Users/nrodrigo/git/arnet-iq/www/yii/admin/index.php(102): CXmlMessageSource->publishJavaScriptMessages()
+#3 {main} REQUEST_URI=/admin/
+2014/08/16 12:56:52 [error] [exception.CException] exception 'CException' with message 'CAssetManager.basePath "/Users/nrodrigo/git/arnet-iq/www/yii/admin/assets" is invalid. Please make sure the directory exists and is writable by the Web server process.' in /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CAssetManager.php:73
+Stack trace:
+#0 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CAssetManager.php(58): CAssetManager->setBasePath('/Users/nrodrigo...')
+#1 /Users/nrodrigo/git/arnet-iq/www/yii/admin/protected/components/messages/CXmlMessageSource.php(73): CAssetManager->getBasePath()
+#2 /Users/nrodrigo/git/arnet-iq/www/yii/admin/index.php(102): CXmlMessageSource->publishJavaScriptMessages()
+#3 {main} REQUEST_URI=/admin/
+2014/08/16 12:56:54 [error] [exception.CException] exception 'CException' with message 'CAssetManager.basePath "/Users/nrodrigo/git/arnet-iq/www/yii/admin/assets" is invalid. Please make sure the directory exists and is writable by the Web server process.' in /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CAssetManager.php:73
+Stack trace:
+#0 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CAssetManager.php(58): CAssetManager->setBasePath('/Users/nrodrigo...')
+#1 /Users/nrodrigo/git/arnet-iq/www/yii/admin/protected/components/messages/CXmlMessageSource.php(73): CAssetManager->getBasePath()
+#2 /Users/nrodrigo/git/arnet-iq/www/yii/admin/index.php(102): CXmlMessageSource->publishJavaScriptMessages()
+#3 {main} REQUEST_URI=/admin/
+2014/08/16 13:34:37 [error] [php] PDO::__construct(): [2002] No such file or directory (trying to connect via unix:///var/mysql/mysql.sock) (/Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/db/CDbConnection.php:310)
+Stack trace:
+#0 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/db/CDbConnection.php(242): CDbConnection->open()
+#1 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/base/CComponent.php(152): CDbConnection->setActive()
+#2 /Users/nrodrigo/git/arnet-iq/www/yii/admin/protected/components/UserIdentity.php(63): CDbConnection->__set()
+#3 /Users/nrodrigo/git/arnet-iq/www/yii/admin/protected/models/LoginForm.php(82): UserIdentity->authenticate()
+#4 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/validators/CInlineValidator.php(39): LoginForm->authenticate()
+#5 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/validators/CValidator.php(184): CInlineValidator->validateAttribute()
+#6 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/base/CModel.php(150): CInlineValidator->validate()
+#7 /Users/nrodrigo/git/arnet-iq/www/yii/admin/protected/controllers/SiteController.php(178): LoginForm->validate()
+#8 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/actions/CInlineAction.php(50): SiteController->actionLogin()
+#9 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CController.php(300): CInlineAction->run()
+#10 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/filters/CFilterChain.php(133): SiteController->runAction()
+#11 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/filters/CFilter.php(41): CFilterChain->run()
+#12 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CController.php(1049): CAccessControlFilter->filter()
+#13 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/filters/CInlineFilter.php(59): SiteController->filterAccessControl()
+#14 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/filters/CFilterChain.php(130): CInlineFilter->filter()
+#15 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CController.php(283): CFilterChain->run()
+#16 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CController.php(257): SiteController->runActionWithFilters()
+#17 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CWebApplication.php(324): SiteController->run()
+#18 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/web/CWebApplication.php(121): CWebApplication->runController()
+#19 /Users/nrodrigo/git/arnet-iq/www/yii/admin/yii/base/CApplication.php(135): CWebApplication->processRequest()
+#20 /Users/nrodrigo/git/arnet-iq/www/yii/admin/index.php(105): CWebApplication->run()
+REQUEST_URI=/admin/
+2014/08/16 13:42:12 [error] [exception.CException] exception 'CException' with message 'Application runtime path "" is not valid. Please make sure it is a directory writable by the Web server process.' in /var/www/arqdev/arnet-iq/www/yii/admin/protected/components/ChiveHttpSession.php:12
+Stack trace:
+#0 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CComponent.php(152): ChiveHttpSession->setSavePath('protected/runti...')
+#1 /var/www/arqdev/arnet-iq/www/yii/admin/yii/YiiBase.php(208): CComponent->__set('savePath', 'protected/runti...')
+#2 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CModule.php(362): YiiBase::createComponent(Array)
+#3 /var/www/arqdev/arnet-iq/www/yii/admin/yii/web/CWebApplication.php(181): CModule->getComponent('session')
+#4 /var/www/arqdev/arnet-iq/www/yii/admin/index.php(39): CWebApplication->getSession()
+#5 {main} REQUEST_URI=/admin/
+2014/08/16 13:48:02 [error] [exception.CException] exception 'CException' with message 'Application runtime path "" is not valid. Please make sure it is a directory writable by the Web server process.' in /var/www/arqdev/arnet-iq/www/yii/admin/protected/components/ChiveHttpSession.php:12
+Stack trace:
+#0 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CComponent.php(152): ChiveHttpSession->setSavePath('protected/runti...')
+#1 /var/www/arqdev/arnet-iq/www/yii/admin/yii/YiiBase.php(208): CComponent->__set('savePath', 'protected/runti...')
+#2 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CModule.php(362): YiiBase::createComponent(Array)
+#3 /var/www/arqdev/arnet-iq/www/yii/admin/yii/web/CWebApplication.php(181): CModule->getComponent('session')
+#4 /var/www/arqdev/arnet-iq/www/yii/admin/index.php(39): CWebApplication->getSession()
+#5 {main} REQUEST_URI=/admin/
+2014/08/16 13:52:07 [error] [exception.CException] exception 'CException' with message 'Application runtime path "" is not valid. Please make sure it is a directory writable by the Web server process.' in /var/www/arqdev/arnet-iq/www/yii/admin/protected/components/ChiveHttpSession.php:12
+Stack trace:
+#0 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CComponent.php(152): ChiveHttpSession->setSavePath('protected/runti...')
+#1 /var/www/arqdev/arnet-iq/www/yii/admin/yii/YiiBase.php(208): CComponent->__set('savePath', 'protected/runti...')
+#2 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CModule.php(362): YiiBase::createComponent(Array)
+#3 /var/www/arqdev/arnet-iq/www/yii/admin/yii/web/CWebApplication.php(181): CModule->getComponent('session')
+#4 /var/www/arqdev/arnet-iq/www/yii/admin/index.php(39): CWebApplication->getSession()
+#5 {main} REQUEST_URI=/admin/
+2014/08/16 13:53:22 [error] [exception.CException] exception 'CException' with message 'Application runtime path "" is not valid. Please make sure it is a directory writable by the Web server process.' in /var/www/arqdev/arnet-iq/www/yii/admin/protected/components/ChiveHttpSession.php:12
+Stack trace:
+#0 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CComponent.php(152): ChiveHttpSession->setSavePath('protected/runti...')
+#1 /var/www/arqdev/arnet-iq/www/yii/admin/yii/YiiBase.php(208): CComponent->__set('savePath', 'protected/runti...')
+#2 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CModule.php(362): YiiBase::createComponent(Array)
+#3 /var/www/arqdev/arnet-iq/www/yii/admin/yii/web/CWebApplication.php(181): CModule->getComponent('session')
+#4 /var/www/arqdev/arnet-iq/www/yii/admin/index.php(39): CWebApplication->getSession()
+#5 {main} REQUEST_URI=/admin/
+2014/08/16 13:53:25 [error] [exception.CException] exception 'CException' with message 'Application runtime path "" is not valid. Please make sure it is a directory writable by the Web server process.' in /var/www/arqdev/arnet-iq/www/yii/admin/protected/components/ChiveHttpSession.php:12
+Stack trace:
+#0 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CComponent.php(152): ChiveHttpSession->setSavePath('protected/runti...')
+#1 /var/www/arqdev/arnet-iq/www/yii/admin/yii/YiiBase.php(208): CComponent->__set('savePath', 'protected/runti...')
+#2 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CModule.php(362): YiiBase::createComponent(Array)
+#3 /var/www/arqdev/arnet-iq/www/yii/admin/yii/web/CWebApplication.php(181): CModule->getComponent('session')
+#4 /var/www/arqdev/arnet-iq/www/yii/admin/index.php(39): CWebApplication->getSession()
+#5 {main} REQUEST_URI=/admin/
+2014/08/16 13:53:37 [error] [exception.CException] exception 'CException' with message 'Application runtime path "" is not valid. Please make sure it is a directory writable by the Web server process.' in /var/www/arqdev/arnet-iq/www/yii/admin/protected/components/ChiveHttpSession.php:12
+Stack trace:
+#0 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CComponent.php(152): ChiveHttpSession->setSavePath('protected/runti...')
+#1 /var/www/arqdev/arnet-iq/www/yii/admin/yii/YiiBase.php(208): CComponent->__set('savePath', 'protected/runti...')
+#2 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CModule.php(362): YiiBase::createComponent(Array)
+#3 /var/www/arqdev/arnet-iq/www/yii/admin/yii/web/CWebApplication.php(181): CModule->getComponent('session')
+#4 /var/www/arqdev/arnet-iq/www/yii/admin/index.php(39): CWebApplication->getSession()
+#5 {main} REQUEST_URI=/admin/
+2014/08/16 13:53:39 [error] [exception.CException] exception 'CException' with message 'Application runtime path "" is not valid. Please make sure it is a directory writable by the Web server process.' in /var/www/arqdev/arnet-iq/www/yii/admin/protected/components/ChiveHttpSession.php:12
+Stack trace:
+#0 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CComponent.php(152): ChiveHttpSession->setSavePath('protected/runti...')
+#1 /var/www/arqdev/arnet-iq/www/yii/admin/yii/YiiBase.php(208): CComponent->__set('savePath', 'protected/runti...')
+#2 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CModule.php(362): YiiBase::createComponent(Array)
+#3 /var/www/arqdev/arnet-iq/www/yii/admin/yii/web/CWebApplication.php(181): CModule->getComponent('session')
+#4 /var/www/arqdev/arnet-iq/www/yii/admin/index.php(39): CWebApplication->getSession()
+#5 {main} REQUEST_URI=/admin/
+2014/08/16 13:53:40 [error] [exception.CException] exception 'CException' with message 'Application runtime path "" is not valid. Please make sure it is a directory writable by the Web server process.' in /var/www/arqdev/arnet-iq/www/yii/admin/protected/components/ChiveHttpSession.php:12
+Stack trace:
+#0 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CComponent.php(152): ChiveHttpSession->setSavePath('protected/runti...')
+#1 /var/www/arqdev/arnet-iq/www/yii/admin/yii/YiiBase.php(208): CComponent->__set('savePath', 'protected/runti...')
+#2 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CModule.php(362): YiiBase::createComponent(Array)
+#3 /var/www/arqdev/arnet-iq/www/yii/admin/yii/web/CWebApplication.php(181): CModule->getComponent('session')
+#4 /var/www/arqdev/arnet-iq/www/yii/admin/index.php(39): CWebApplication->getSession()
+#5 {main} REQUEST_URI=/admin/
+2014/08/18 11:01:53 [error] [exception.CException] exception 'CException' with message 'Application runtime path "" is not valid. Please make sure it is a directory writable by the Web server process.' in /var/www/arqdev/arnet-iq/www/yii/admin/protected/components/ChiveHttpSession.php:12
+Stack trace:
+#0 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CComponent.php(152): ChiveHttpSession->setSavePath('protected/runti...')
+#1 /var/www/arqdev/arnet-iq/www/yii/admin/yii/YiiBase.php(208): CComponent->__set('savePath', 'protected/runti...')
+#2 /var/www/arqdev/arnet-iq/www/yii/admin/yii/base/CModule.php(362): YiiBase::createComponent(Array)
+#3 /var/www/arqdev/arnet-iq/www/yii/admin/yii/web/CWebApplication.php(181): CModule->getComponent('session')
+#4 /var/www/arqdev/arnet-iq/www/yii/admin/index.php(39): CWebApplication->getSession()
+#5 {main} REQUEST_URI=/admin/
