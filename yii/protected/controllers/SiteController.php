@@ -161,26 +161,26 @@ class SiteController extends Controller
 		$this->render('login',array('model'=>$model));
 	}
 	
-	public function beforeAction($action=null)
-		{
-			$action_requiring_auth = array(
-				'dashboard',
-				'profile',
-				'journal',
-				'settings',
-				'calendar',
-				'arq',
-				'recentJournals',
-				'myJournals',
-			);
-			
-			if (in_array(Yii::app()->controller->action->id, $action_requiring_auth) and Yii::app()->user->isGuest) {
-				$this->redirect('login');
-				Yii::app()->end();
-			}
-			
-			return true;
+	public function beforeAction()
+	{
+		$action_requiring_auth = array(
+			'dashboard',
+			'profile',
+			'journal',
+			'settings',
+			'calendar',
+			'arq',
+			'recentJournals',
+			'myJournals',
+		);
+		
+		if (in_array(Yii::app()->controller->action->id, $action_requiring_auth) and Yii::app()->user->isGuest) {
+			$this->redirect('login');
+			Yii::app()->end();
 		}
+		
+		return true;
+	}
 
 	public function actionRegister()
 	{
@@ -191,7 +191,6 @@ class SiteController extends Controller
 
 	public function actionDashboard()
 	{
-	
 		$this->layout = 'arqLayout2';
 		$this->setPageTitle('Dashboard');
 		
@@ -209,7 +208,18 @@ class SiteController extends Controller
 		$today = date('Y-m-d');
 		$day = 24*3600;
 		$yesterday = date('Y-m-d',strtotime($today) - $day);
+		$end_date = date('Y-m-d',strtotime($today) - 30*$day);
+		
+		$activities = $this->calendarActivities($end_date,$today,$user_id);
 		$responses = $this->getDashboardResponses(30,null,$user_id);
+		
+		$quantifiable = array('_no_input_','boolean','scale_1_to_10','quantity','weight','height','minutes','distance');
+		$condition = '';
+		foreach ($quantifiable as $qty) {
+			$condition = $condition." parameter = '".$qty."' or";
+		}
+		
+		$condition = preg_replace('/or$/', '', $condition);
 		$this->render('dashboard',
 			array(
 				'range_labels'=>$range_labels,
@@ -224,7 +234,11 @@ class SiteController extends Controller
 				'end_date'=>date('Y-m-d'),
 				'post_status'=>NoteStatus::model()->findByAttributes(array('name'=>'Published')),
 				'post_visibility'=>NoteVisibility::model()->findByAttributes(array('name'=>'Public')),
-				'recentActivity'=>$this->recentActivities($today,$yesterday)
+				'recentActivity'=>$this->recentActivities($today,$yesterday),
+				'activities'=>$activities,
+				'subcategories'=>EventSubcategory::model()->with(array(
+						'eventDefinitions'=>array('condition'=>$condition)
+				))->findall( array('order'=>'name ASC') ) 
 			)
 		);
 	}
@@ -360,6 +374,94 @@ class SiteController extends Controller
 		));
 	}
 	
+	/*
+	 * Service to return cappable events based on the 
+	 * input capping event
+	 * 
+	 * this probably just feeds a drop down list
+	 */
+	public function actionCappableEvents()
+	{
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		header('Content-type: application/json');
+		$user_id = Yii::app()->user->id;
+		if (!$user_id) {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'msg'=>'cannot verify user'
+			));
+			Yii::app()->end();
+		}
+		
+		$cap_date = Yii::app()->request->getPost('cap_date', '');
+		if ($cap_date) {
+			$cap_date = DateTime::createFromFormat('Y-m-d\TH:i:s.uZ',$cap_date);
+			$cap_date = $cap_date->format('Y-m-d');
+		} else {
+			echo CJSON::encode(array(
+					'success'=>-2,
+					'msg'=>'Ending date not specified'
+			));
+			Yii::app()->end();			
+		}
+		
+		$defn_label = Yii::app()->request->getPost('label', '');
+
+		if (!$defn_label) {
+			echo CJSON::encode(array(
+					'success'=>-3,
+					'msg'=>'No event was specified'
+			));
+			Yii::app()->end();			
+		}
+		
+		/* The capping subcategory */
+		$esc = EventSubcategory::model()->with(array(
+				'eventDefinitions'=>array('condition'=>"label='".$defn_label."'")))->find(  ) ;
+		
+		if (!$esc) {
+			echo CJSON::encode(array(
+					'success'=>-4,
+					'msg'=>'Could not locate any matching ending events'
+			));
+			Yii::app()->end();			
+		}
+		
+		/* The cappable subcategory(ies) */
+		$cappable_sc = EventSubcategory::model()->with()
+		->find('t.capping_subcategory_id=:_id',array(':_id'=>$esc->event_subcategory_id));
+		
+		/*
+		 * Event values that have not been capped
+		 * that are before the cap date
+		 * and that are of the type cappable_sc
+		 */
+		
+		$event_values = EventValue::model()->with(array(
+				'calendarEvent'=>array('condition'=>"start_date<=date('".$cap_date."')"),
+				'eventDefinition'=>array('condition'=>"event_subcategory_id=".$cappable_sc->event_subcategory_id)
+		))->findall('capped_event_value_id is :_null',array(':_null'=>null));
+	
+		$options = array();
+		foreach ($event_values as $ev) {
+			array_push($options,array(
+				'event_value_id'=>$ev->event_value_id,
+				'event_date'=>$ev->calendarEvent->start_date
+			));
+		} 
+		echo CJSON::encode(array(
+				'success'=>1,
+				'cap_date'=>$cap_date,
+				'defn'=>$defn_label,
+				'esc'=>$esc,
+				'cappable'=>$cappable_sc,
+				'event_values'=>$options,
+				'values'=>array()//$avgResponses,
+		));
+		Yii::app()->end();
+	}
 	/*
 	 * Service to grab user calendar activities for a specified time frame
 	 */
@@ -1089,6 +1191,9 @@ class SiteController extends Controller
 		Yii::app()->end();
 	}
 	
+	/*
+	 * Create a calendar event
+	 */
 	public function actionCreateCalendarEvent() {
 		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
 			throw new CHttpException('403', 'Forbidden access.');
@@ -1126,21 +1231,55 @@ class SiteController extends Controller
 		$cal->date_created = new CDbExpression('NOW()');
 		$cal->save();
 		$cal_id = $cal->calendar_event_id;
-		$defns = Yii::app()->request->getPost('definitions', array());
-		foreach ($defns as $defn)
-		{
-			$event = new EventValue();
-			$event->calendar_event_id = $cal_id;
-			$event->value = $defn{'value'};
-			$event->event_definition_id = $defn{'definition_id'};
-			$event->save();
-			MyStuff::Log('EVENT');
-			MyStuff::Log($event);
-			
-		}
-		MyStuff::Log("MY CAL ".$cal->calendar_event_id);
-		MyStuff::Log($cal);
 		
+		/*
+		 * This will tell us if we are ending and event that was started, such
+		 * as vacation starting, job starting, etc.
+		 */
+		$capping_event = Yii::app()->request->getPost('capping_event', '');
+		
+		$defns = Yii::app()->request->getPost('definitions', array());
+		/*
+		 * No capping event => create event value and calendar event
+		 */
+		if (!$capping_event) {
+			foreach ($defns as $defn)
+			{
+				$event = new EventValue();
+				$event->calendar_event_id = $cal_id;
+				$event->value = $defn{'value'};
+				$event->event_definition_id = $defn{'definition_id'};
+				$event->save();
+				MyStuff::Log('EVENT');
+				MyStuff::Log($event);
+					
+			}			
+		} else {
+			/*
+			 * Capping event => get the capping event, create its calendar event and value
+			 * and update the capped event
+			 */
+			foreach ($defns as $defn) {
+				if (array_key_exists('capped_value',$defn)) {
+					$capped_event = EventValue::model()->with('calendarEvent')->findbyPk($defn{'capped_value'});
+					if (!$capped_event) {
+						echo CJSON::encode(array(
+								'success'=>-5,
+								'msg'=>'No starting events to end were found'
+						));
+						Yii::app()->end();						
+					}
+					$capping_event = new EventValue();
+					$capping_event->calendar_event_id=$cal_id;
+					$capping_event->value ="That began on ".$this->formatCappingDate($capped_event->calendarEvent->start_date);
+					$capping_event->event_definition_id = $defn{'definition_id'};
+					$capping_event->save();
+					$capped_event->capped_event_value_id=$capping_event->event_value_id;
+					$capped_event->save();
+				}
+			}
+		}
+
 		echo CJSON::encode(array(
 				'success'=>1,
 				'calendar_event_id'=>$cal->calendar_event_id
@@ -1153,6 +1292,9 @@ class SiteController extends Controller
 		
 	}
 	
+	/*
+	 * Perhaps deprecate
+	 */
 	public function actionAttachCalendarToDate() {
 		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
 			throw new CHttpException('403', 'Forbidden access.');
@@ -2090,6 +2232,17 @@ class SiteController extends Controller
 		$this->render('test');
 	}
 	
+	private function formatCappingDate($myDate)
+	{
+		if (!$myDate) 
+		{
+			$formattedDate = Date('D M d Y');
+			return $formattedDate;
+		}
+		$formattedDate = date('D M d Y',strtotime($myDate));
+		return $formattedDate;	
+	}
+	
 	private function recentActivities($from_date,$to_date)
 	{
 		if (!$from_date) {$from_date = date('Y-m-d');}
@@ -2158,8 +2311,8 @@ class SiteController extends Controller
 		$index = 0;
 		foreach ($_dates as $date)
 		{
-			$avgResponses[$increments*($index)] = $avg[$date];
-			$avgResponses[$increments*($index)]{'date'}=$date;
+			$avgResponses[/*$increments**/($index)] = $avg[$date];
+			$avgResponses[/*$increments**/($index)]{'date'}=$date;
 			$index++;
 		}
 		$responses = array('avg'=>$avgResponses,'responseCount'=>$sliderCount);

@@ -114,7 +114,7 @@ class EventCategory extends CActiveRecord
 		return $list;
 	}
 	
-	public static function _getCategories($cat)
+	public function _getCategories($cat)
 	{
 		$categories = array();
 		foreach ($cat as $c)
@@ -123,16 +123,18 @@ class EventCategory extends CActiveRecord
 			foreach ($c->eventSubcategories as $esc)
 			{
 				$categories[$c->name][$esc->name] = array();
+				$categories[$c->name][$esc->name]['capping_event']=$esc->cap_event;
+				$categories[$c->name][$esc->name]['labels'] = array();
 				foreach ($esc->eventDefinitions as $ed)
 				{
-					$categories[$c->name][$esc->name][$ed->label] = array(
+					$categories[$c->name][$esc->name]['labels'][$ed->label] = array(
 							'type'=>$ed->parameter,
 							'label'=>$ed->label,
 							'unit'=>array(),
 							'name'=>$ed->event_definition_id
 					);
 					foreach ($ed->eventUnits as $eu) {
-						array_push($categories[$c->name][$esc->name][$ed->label]['unit'],array(
+						array_push($categories[$c->name][$esc->name]['labels'][$ed->label]['unit'],array(
 						'event_unit_id'=>$eu->event_unit_id,
 						'name'=>$eu->name
 						));

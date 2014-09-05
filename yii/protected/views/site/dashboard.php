@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="assets/js/jquery-ui/css/vader/jquery-ui.min.css">
+<link rel="stylesheet" href="assets/css/dashboard.css">
 <style type='text/css'>
 #slider1 .ui-label {cursor:pointer;}
 </style>
@@ -44,6 +45,7 @@ var topics_donut_chart,
 	defaultRange = <?php echo $default_range; ?>,
 	ranges = [<?php echo implode(',',$date_ranges);?>],
 	range_labels = [<?php echo implode(',',$range_labels);?>],
+	trackerActivities =  <?php echo json_encode($activities);?>,
 	currentValue=0;
 
 /**
@@ -65,7 +67,7 @@ function initializeMainSlider(range,dateRangeAverages)
 		nData = responseCount;//_dates.length;//myResponses.length;
 		
 	if (!$.inArray(ranges,myRange)) return;
-
+	
 	if (dateRangeAverages) __avg = dateRangeAverages;
 	//Use default range for initalization of slider, unless we don't have enough data
 	//for that range
@@ -74,7 +76,7 @@ function initializeMainSlider(range,dateRangeAverages)
 		increments = parseInt(1000/nData);
 		for (var i = 0;i<myRange;i++)
 		{
-			_avg[increments*i] = __avg[increments*(i+start)];
+			_avg[/*increments**/i] = __avg[/*increments**/(i+start)];
 			sliderValues.push(increments*i);
 		}
 		minValue = 0;
@@ -85,7 +87,7 @@ function initializeMainSlider(range,dateRangeAverages)
 		increments = parseInt(1000/nData);
 		for (var i = 0;i<nData;i++)
 		{
-			_avg[increments*i] = __avg[increments*(i+start)];
+			_avg[/*increments**/i] = __avg[/*increments**/(i+start)];
 			sliderValues.push(increments*i);
 		}
 		//sliderValues.push(1000);
@@ -93,12 +95,26 @@ function initializeMainSlider(range,dateRangeAverages)
 		maxValue = sliderValues[sliderValues.length-1];
 	}
 	
+	Tracker.draw(nData>=myRange?myRange:nData);
+	var values = Tracker.generateSliderValues(nData>=myRange?myRange:nData);
 	maxStep = increments;
 
-	$('#slider1').slider('option',{paddingMin:50,paddingMax:100,step:increments,min:minValue,max:maxValue,values:sliderValues});
-
+	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width();
+	console.log('PADDING MAX',$('#trackers-tab').width(),$('#trackerChart').width(),paddingMax);
+	//$('#slider1').slider('option',{paddingMin:50,paddingMax:100,step:increments,min:minValue,max:maxValue,values:sliderValues});
+	$('#slider1').slider('option',{
+		paddingMin:42+Tracker.trackerPlot.getPlotOffset().left-8,
+		paddingMax:paddingMax,//$('#trackers-tab').width()-$('#trackerChart').width()+20,
+		step:values.length>1?values[1]-values[0]:null,
+		min:values[0],
+		max:values[values.length-1],
+		values:values/*,
+		hooks: {drawOverlay: [Tracker.drawOverlayLine]}*/
+	});
 	$('#slider1').slider({
-		slide: function( event, ui ) {$('#slider1 .ui-label').html('');}
+		slide: function( event, ui ) {
+			$('#slider1 .ui-label').html('');
+		}
 	});
 
 	/*$('#slider1 .ui-slider-handle')*/$('#slider1 .ui-label').click(function() {
@@ -193,7 +209,7 @@ function generateTopicBarGraph(sorted_set,placeAt,maxWords) {
 	};
 	
 	$('#'+placeAt).empty();
-	$('#'+placeAt).plot(data,options);
+	topWordsPlot = $.plot($('#'+placeAt),data,options);
 }
 
 function createDonutChartData(response)
@@ -250,7 +266,6 @@ function setDateDisplay(response)
 		$('.addG-date').html(str);
 	}
 	*/
-	
 	$('#slider1 .ui-label').html(str);
 	$('#slider1 .ui-slider-handle').attr('href','/calendar');
 	
@@ -439,7 +454,7 @@ function incrementRange()
 
 	newEndDate.setTime(newEndDate.getTime() + currentRangeValue*day);
 	newStartDate.setTime(newEndDate.getTime() - currentRangeValue*day);
-	console.log(newStartDate,newEndDate,now,currentRangeValue,currentEndDate);
+	
 	if (newEndDate.getTime() >= now.getTime()) {
 		/*
 		updateMsg($('.validateTips'),'You are at the end of permissible date ranges');
@@ -457,7 +472,7 @@ function onMainSliderChange(ui)
 	currentValue=null;
 	if (!ui) return;
 	if (ui.value == null) return;
-	var value = ui.value;
+	var value = Tracker.getSliderValue(ui.value);
 	
 	//if (!responses || !responses[value]) return;
 	if (!_avg || !_avg[value]) return;
@@ -469,6 +484,8 @@ function onMainSliderChange(ui)
 	drawDonutChart(topics_donut_chart,response);
 	setTopWordsView(response);
 	setTopPeopleView(response);
+	Tracker.drawOverlayLine(ui);
+	Tracker.showTooltips(ui);
 }
 function updateMsg( description,t ) {
 	description
@@ -501,7 +518,7 @@ jQuery(document).ready(function($)
 		//Listen for tab changes and redraw charts that might need to be redrawn/resized
 		$('ul.nav-tabs li a').on('click',function() {
 			var el = $(this);
-			var value = currentValue||$('#slider1').slider('value');
+			var value = currentValue||Tracker.getSliderValue($('#slider1').slider('value'));
 			setTimeout(function() {
 				if (el.attr('href').match(/topics/) && topics_donut_chart) topics_donut_chart.redraw();
 				else if (el.attr('href').match(/mood/) && moods)
@@ -522,6 +539,8 @@ jQuery(document).ready(function($)
 				{
 					//if (responses && responses[value]) setTopPeopleView(responses[value]);
 					if (_avg && _avg[value]) setTopPeopleView(_avg[value]);
+				} else if (el.attr('href').match(/trackers/)) {
+
 				}
 				
 				
@@ -615,8 +634,10 @@ jQuery(document).ready(function($)
 		mood_tab.parent().show();
 	
 		mood_tab.parent().attr('style', '');
+
+		//$('.TrackSubCategories').find('input');
 	}
-	//Bar chart tab trackers
+	/*Bar chart tab trackers
 	$(".bar-tracker").sparkline([5,7,7,8,6], {
 		type: 'bar',
 		barColor: '#8060BB',
@@ -624,8 +645,9 @@ jQuery(document).ready(function($)
 		barWidth: 62,
 		barSpacing: 12
 	});	
-	
-	//datatable
+	*/
+	/*
+		datatable
 	jQuery(window).load(function(){
 		var width = $('.slidewrapper').width()
 		$('.addG-bottomslider').width(width-100);
@@ -667,7 +689,7 @@ jQuery(document).ready(function($)
 		});
 		
 	});
-	
+	*/
 
 });
 
@@ -817,79 +839,25 @@ function getRandomInt(min, max)
 							<div id="topics-tab" class="morrischart" style="height: 300px;"></div>
 						</div>
 						<div class="tab-pane" id="trackers">							
-							<div id="trackers-tab" class="addG-justleft" style="height: 300px">
-								<div id="chart10" style="height: 300px"></div>
+							<div id="trackers-tab" class="addG-justleft" style="height: 300px;width:100%;">
+								<div id='Tooltip' class='plotTooltip'></div>
+								<div id='Tooltip0' class='plotTooltip'></div>
+								<div id='Tooltip1' class='plotTooltip'></div>
+								<div id='Tooltip2' class='plotTooltip'></div>
+								<div id='Tooltip3' class='plotTooltip'></div>
+								<div id='Tooltip4' class='plotTooltip'></div>
+								<div id="trackerChart" class="addG-fleft"style="height: 300px;width:525px;"></div>
+								<div id='trackerCategories' class="addG-fleft chartLegend" style='display:inline-block;height:300px;width:25%;'>
+									<div class='TrackSubCategories'>
+										<?php 
+											foreach ($subcategories as $sc) {
+												echo "<div><input type='checkbox' name='".$sc->event_subcategory_id."'  /><label>".$sc->name."</label></div>";
+											}
+										?>
+									</div>
+								</div>
 							</div>
-							<div class="addG-justleft" style="width:30%">
-								<table class="table table-bordered table-striped datatable dataTable" id="table-2" aria-describedby="table-2_info">
-									<tbody>
-										<tr>
-										<td>
-											<div class="checkbox checkbox-replace">
-												<input type="checkbox" id="chk-1">
-											</div>
-										</td>
-										<td>Had Sex</td>
-										</tr>
-										<tr>
-										<td>
-											<div class="checkbox checkbox-replace">
-												<input type="checkbox" id="chk-1">
-											</div>
-										</td>
-										<td>Had Sex</td>
-										</tr>
-										<tr>
-										<td>
-											<div class="checkbox checkbox-replace">
-												<input type="checkbox" id="chk-1">
-											</div>
-										</td>
-										<td>Had Sex</td>
-										</tr>
-										<tr>
-										<td>
-											<div class="checkbox checkbox-replace">
-												<input type="checkbox" id="chk-1">
-											</div>
-										</td>
-										<td>Had Sex</td>
-										</tr>
-										<tr>
-										<td>
-											<div class="checkbox checkbox-replace">
-												<input type="checkbox" id="chk-1">
-											</div>
-										</td>
-										<td>Had Sex</td>
-										</tr>
-										<tr>
-										<td>
-											<div class="checkbox checkbox-replace">
-												<input type="checkbox" id="chk-1">
-											</div>
-										</td>
-										<td>Had Sex</td>
-										</tr>
-										<tr>
-										<td>
-											<div class="checkbox checkbox-replace">
-												<input type="checkbox" id="chk-1">
-											</div>
-										</td>
-										<td>Had Sex</td>
-										</tr>
-										<tr>
-										<td>
-											<div class="checkbox checkbox-replace">
-												<input type="checkbox" id="chk-1">
-											</div>
-										</td>
-										<td>Had Sex</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
+
 						</div>
 						
 						<div class="tab-pane " id="topwords">
@@ -1248,6 +1216,7 @@ function getRandomInt(min, max)
 	<script src="assets/js/wysihtml5/bootstrap-wysihtml5.js"></script>
 	
 	<script type='text/javascript' src='assets/js/spiderGraph.js'></script>
+	<script type='text/javascript' src='assets/js/dashboard/tracker.js'></script>
 	
 <div id="myThinker" title="...">
   <p class="validateTips">Submitting Journal Entry</p> 

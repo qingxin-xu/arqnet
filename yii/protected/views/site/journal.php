@@ -144,7 +144,7 @@ jQuery(document).ready(function($){
 -->			
 					<p>Publish Date</p>
 					<div class="input-group">
-						<input name='publish_date' type="text" class="form-control datepicker" value="<?php if ($edit_journal) {echo date('D, d M Y',strtotime($edit_journal->publish_date) );} else {echo date('D, d M Y');}?>" data-format="D, dd MM yyyy">
+						<input name='publish_date' type="text" class="form-control datepicker" value="<?php if ($edit_journal) {echo date('D, d M Y',strtotime($edit_journal->publish_date) );} else {echo date('D, d M Y');}?>" >
 						
 						<div class="input-group-addon">
 							<a href="#"><i class="entypo-calendar"></i></a>

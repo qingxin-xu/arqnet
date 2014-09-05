@@ -8,6 +8,7 @@
 <script type='text/javascript' src='assets/js/magicsuggest/magicsuggest.js'></script>
 <script type="text/javascript">
 var eventData = <?php if ($eventData) echo json_encode($eventData).';'; else echo 'null;'; ?>
+
 var eventHash = {};
 var milestones = <?php if ($milestones) echo json_encode($milestones).';'; else echo 'null;'; ?>
 var categories = <?php if ($categories) echo json_encode($categories).';'; else echo 'null;'; ?>
@@ -226,11 +227,12 @@ jQuery(document).ready(function($){
 
 <div class="calendar-env">
 	<?php 
+	/*
 	$myD = date_create();
 	$month = $myD->format('m')+1;
 	$newDate = date('Y-m-d',strtotime( $myD->setDate($myD->format('Y'),$month,1)->format('Y-m-d') ));
 	echo $newDate;
-	/*
+	
   $myd = "2014-08-06T05:00:00.000Z";//'Fri Aug 01 2014 07:00:00 GMT-0500 (CDT)';
   //$_myd = DateTime::createFromFormat('D M d Y H:i:s T',$myd);//->format('Y-m-d');
   $myd = DateTime::createFromFormat('Y-m-d\TH:i:s.uZ',$myd);

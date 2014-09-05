@@ -58,8 +58,8 @@ function quickEntry()
 	updateMsg($('.validateTips'),'Creating Journal Entry');
 	$('#myThinker').dialog('open');
 	
-	$('input[name=publish_date').datepicker('setValue',new Date());
-	$('input[name=publish_time').timepicker('setTime',new Date());
+	$('input[name=publish_date]').datepicker('setValue',new Date());
+	$('input[name=publish_time]').timepicker('setTime',new Date());
 	
 	var formData = new FormData($('#quickEntry')[0]);
 
@@ -103,7 +103,7 @@ function quickEntry()
 	$(document).ready(function()
 	{
 		var now = getCurrentDate();
-		$('input[name=publish_date').datepicker({});
+		$('input[name=publish_date]').datepicker({});
 		$('input[name=start_date]').datepicker({
 			onRender:function(date) {
 				return date.valueOf() > now.valueOf() ? 'disabled' : '';
@@ -212,3 +212,4 @@ function quickEntry()
 	});
 	
 })(jQuery, window);
+

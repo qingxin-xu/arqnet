@@ -203,7 +203,7 @@ class AeResponse extends CActiveRecord
 		return $json_responses;		
 	}
 	
-	public static function getResponseDate($duration,$from_date,$user_id)
+	public function getResponseDate($duration,$from_date,$user_id)
 	{
 		if (!$duration) $duration = 30;
 		if (!$from_date) $from_date = date('Y-m-d');

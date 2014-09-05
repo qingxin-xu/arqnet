@@ -641,6 +641,7 @@ Licensed under the MIT license.
         plot.draw = draw;
         plot.getPlaceholder = function() { return placeholder; };
         plot.getCanvas = function() { return surface.element; };
+        plot.getCanvasContext = function() {return surface.context;};
         plot.getPlotOffset = function() { return plotOffset; };
         plot.width = function () { return plotWidth; };
         plot.height = function () { return plotHeight; };

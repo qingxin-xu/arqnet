@@ -9,6 +9,7 @@ var myJournal = myJournal || {};
 	
 	$(document).ready(function()
 	{
+		$('input[name=publish_date]').datepicker({});
 		myJournal.$container = $("#journalForm");
 		
 		// Login Form & Validation
