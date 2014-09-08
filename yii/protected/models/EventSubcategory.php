@@ -7,6 +7,7 @@
  * @property integer $event_subcategory_id
  * @property integer $event_category_id
  * @property string $name
+ * @property integer $cap_event
  *
  * The followings are the available model relations:
  * @property EventDefinition[] $eventDefinitions
@@ -34,7 +35,7 @@ class EventSubcategory extends CActiveRecord
 			array('name', 'length', 'max'=>45),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('event_subcategory_id, event_category_id, name', 'safe', 'on'=>'search'),
+			array('event_subcategory_id, event_category_id, name, cap_event', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -61,6 +62,7 @@ class EventSubcategory extends CActiveRecord
 			'event_subcategory_id' => 'Event Subcategory',
 			'event_category_id' => 'Event Category',
 			'name' => 'Name',
+			'cap_event'=>'Cap Event'
 		);
 	}
 
@@ -85,7 +87,7 @@ class EventSubcategory extends CActiveRecord
 		$criteria->compare('event_subcategory_id',$this->event_subcategory_id);
 		$criteria->compare('event_category_id',$this->event_category_id);
 		$criteria->compare('name',$this->name,true);
-
+		$criteria->compare('cap_event',$this->cap_event);
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));

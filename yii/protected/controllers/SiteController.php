@@ -197,6 +197,8 @@ class SiteController extends Controller
 		// The unique dates with ae_responses from today to 30 days ago
 		$user_id = Yii::app()->user->id;
 		$_dates = AeResponse::getResponseDate(30,null,$user_id);
+		$myCurrent = date('Y-m-d');
+
 		
 		$responseCount = count($_dates);
 		$date_ranges = array();
@@ -213,6 +215,12 @@ class SiteController extends Controller
 		$activities = $this->calendarActivities($end_date,$today,$user_id);
 		$responses = $this->getDashboardResponses(30,null,$user_id);
 		
+		$event_units = EventUnit::model()->findall();
+		$units = array();
+		foreach ($event_units as $eu) {
+			array_push($units,$eu->name);	
+		}
+		
 		$quantifiable = array('_no_input_','boolean','scale_1_to_10','quantity','weight','height','minutes','distance');
 		$condition = '';
 		foreach ($quantifiable as $qty) {
@@ -220,6 +228,7 @@ class SiteController extends Controller
 		}
 		
 		$condition = preg_replace('/or$/', '', $condition);
+				
 		$this->render('dashboard',
 			array(
 				'range_labels'=>$range_labels,
@@ -236,9 +245,12 @@ class SiteController extends Controller
 				'post_visibility'=>NoteVisibility::model()->findByAttributes(array('name'=>'Public')),
 				'recentActivity'=>$this->recentActivities($today,$yesterday),
 				'activities'=>$activities,
+				'trackerData'=>$this->trackerData($end_date,$today,$user_id),
+				'event_units'=>$units,
 				'subcategories'=>EventSubcategory::model()->with(array(
 						'eventDefinitions'=>array('condition'=>$condition)
-				))->findall( array('order'=>'name ASC') ) 
+				))->findall( array('order'=>'name ASC') ),
+				'_dates'=>$_dates
 			)
 		);
 	}
@@ -269,12 +281,14 @@ class SiteController extends Controller
 		
 		$diff = abs(strtotime($end_date) - strtotime($start_date));
 		$diff = $diff/(24*60*60);
+		MyStuff::Log('CHANGE DATE RANGE '.$diff.' '.$end_date);
 		$responses = $this->getDashboardResponses($diff,$end_date,$user_id);
 		
 		echo CJSON::encode(array(
 				'success'=>1,
-				'responses'=>$responses{'avg'},//$avgResponses,
-				'responseCount'=>count($responses{'avg'})//count($avgResponses),
+				'responses'=>$responses{'avg'},
+				'responseCount'=>count($responses{'avg'}),
+				'trackerData'=>$this->trackerData($start_date,$end_date,$user_id),
 		));
 		Yii::app()->end();
 	}
@@ -1339,6 +1353,7 @@ class SiteController extends Controller
 		$publication_date = Yii::app()->request->getPost('publish_date', '');
 		$publication_time = Yii::app()->request->getPost('publish_time', '');
 		$content = preg_replace('/\+/', '%2B', $content); 
+		$content = str_replace('&',' ',$content);
 		$post_data = array('content'=>$content);
 		$raw_response = MyStuff::curl_request(Yii::app()->params['analysis_engine_url'], $post_data);
 		if ($aer_test_response!='') {
@@ -2256,6 +2271,118 @@ class SiteController extends Controller
 		return array('journals'=>$journals);
 	}
 	
+	private function trackerData($start_date,$end_date,$user_id)
+	{
+		MyStuff::Log('TRACKER DATA DATES '.$start_date.' '.$end_date);
+		$dates = array();
+		$myCurrent = $start_date;
+		while( strcmp($myCurrent,$end_date) <= 0) {
+			$dates{$myCurrent} = 1;
+			$myCurrent = date('Y-m-d',strtotime('+1 day',strtotime($myCurrent) ) );
+		}
+	
+		$bar = array('_no_input_','boolean');
+		$line = array('scale_1_to_10','quantity','weight','height','minutes','distance');
+		
+		$quantifiable = array('_no_input_','boolean','scale_1_to_10','quantity','weight','height','minutes','distance');
+		
+		$condition = '';
+		foreach ($quantifiable as $qty) {
+			$condition = $condition." parameter = '".$qty."' or";
+		}
+		
+		$condition = preg_replace('/or$/', '', $condition);
+		
+		$tracker = array('cappable_events'=>array(),'non_cappable_events'=>array());
+		/* All calendar events within the specified date range */
+		$calendarEvents = CalendarEvent::model()->findAll('t.user_id=:_user_id and date(t.start_date)<=date(:end_date) and date(t.start_date)>=date(:start_date)',array(':_user_id'=>$user_id,':start_date'=>$start_date,':end_date'=>$end_date));
+		foreach ($calendarEvents as $ce) {
+			MyStuff::Log("CE IS ".$ce->calendar_event_id.' '.$ce->start_date);
+			/* The corresponding event values for each calendar event */
+			$eventValues = $eventValues = EventValue::model()->with('calendarEvent')->findAll('t.calendar_event_id=:_id',array(':_id'=>$ce->calendar_event_id));
+						
+			foreach ($eventValues as $ev) {
+				/* Event definitions that correspond to the event values and that are quantifiable */
+				$eventDefn = EventDefinition::model()->with('eventSubcategory')->find("t.event_definition_id=:_id and ( ".$condition.")",array(':_id'=>$ev->event_definition_id));
+				if ($eventDefn) {
+					$subcategory = EventSubcategory::model()->findByPk($eventDefn->event_subcategory_id);
+					if (!$subcategory->cap_event) {
+						/* 
+						 * Where to hash results:
+						 * if it is an event that cannot be finished, it is non-cappable
+						 * if it is an event that can end, like a vacation or job, it is cappable
+						 */
+						$hash = &$tracker{'non_cappable_events'};
+						if ($subcategory->capping_subcategory_id) {
+							$hash = &$tracker{'cappable_events'};
+						}
+						
+						$cap_date = '';
+						if (!array_key_exists($subcategory->name,$hash)) {
+							$hash{$subcategory->name} = array();
+							
+							if ($subcategory->capping_subcategory_id)
+							{
+								if ($ev->capped_event_value_id) {
+									$capping_event_value= EventValue::model()->findByAttributes(array('event_value_id'=>$ev->capped_event_value_id));
+									if ($capping_event_value) {
+										$capping_calendar_event = CalendarEvent::model()->findByPk($capping_event_value->calendar_event_id);
+										if ($capping_calendar_event) {
+											$cap_date = date('Y-m-d',  strtotime($capping_calendar_event->start_date) );
+										}
+									}
+								}
+							}
+						}
+						
+						$event_date = date('Y-m-d',strtotime($ce->start_date));
+						if (in_array($eventDefn->parameter,$bar)) {
+							$hash{$subcategory->name}{$event_date} = 1;
+						} else {
+							$hash{$subcategory->name}{$event_date} = str_replace($eventDefn->label. ' ','',$ev->value);
+						}
+						
+						/*
+						 * Fill out the tracker hashes with remaining dates
+						 */
+						
+						foreach ($dates as $key => $d) {
+							if (!array_key_exists($key,$hash{$subcategory->name})) {
+								if ($cap_date)
+								{
+									if (strcmp($key,$event_date)>=0 && strcmp($key,$cap_date)<=0)
+									{
+										$hash{$subcategory->name}{$key}=1;
+									}
+									//MyStuff::Log('CAP '.$subcategory->name.' '.$key.' '.$cap_date);
+								}
+								else {$hash{$subcategory->name}{$key} = 0;}
+							}
+						}
+						
+						/*
+						 * Remove 0 entries from cappable events
+						
+						if (array_key_exists($subcategory->name,$tracker{'cappable_events'}))
+						{
+							$hash = &$tracker{'cappable_events'}{$subcategory->name};
+							//MyStuff::Log('REFERENCE3');MyStuff::Log($_hash);
+								
+							$toRemove = array();
+							foreach ($hash as $key => $value) {
+								if ($value == 0) array_push($toRemove,$key);
+							}
+								
+							foreach ($toRemove as $_date) {unset($hash{$_date});}						
+						}
+						 */
+					}
+				}
+			}
+		}
+		return $tracker;
+	}
+	
 	private function calendarActivities($start_date,$end_date,$user_id)
 	{
 
@@ -2292,9 +2419,17 @@ class SiteController extends Controller
 	private function getDashboardResponses($duration,$from_date,$user_id)
 	{
 		if (!$user_id) return null;
+		if (!$from_date) $from_date = date('Y-m-d');
 		if ($duration) $duration = 30;
 		
-		$_dates = AeResponse::getResponseDate($duration,$from_date,$user_id);
+		//$_dates = AeResponse::getResponseDate($duration,$from_date,$user_id);
+		$_dates = array();
+		//while( strcmp($myCurrent,$end_date) <= 0) {
+		$myCurrent = $from_date;//date('Y-m-d');
+		for ($i = 1;$i<=$duration;$i++) {
+			array_push($_dates,$myCurrent);
+			$myCurrent = date('Y-m-d',strtotime('-1 day',strtotime($myCurrent) ) );
+		}
 		$avg = $this->mean_score_per_day($duration,$from_date);
 		$avgResponses = array();
 		$sliderCount = count($_dates);

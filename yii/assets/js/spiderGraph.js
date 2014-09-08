@@ -6,13 +6,16 @@
  var R2old = 0;
  var R3old = 0;
 
- function drawradar(moodValues){
+ function drawradar(moodValues,canvasObj){
+	 
+	 	if (!canvasObj) canvasObj = $('canvas');
+	 	console.log('canvasObj',canvasObj);
          var R0 = moodValues['happy']?2*5*moodValues['happy']:0;
          var R1 = moodValues['anxious']?2.5*moodValues['anxious']:0;//2*5*moodValues['angry'];
          var R2 = moodValues['sad']?2*5*moodValues['sad']:0;
          var R3 = moodValues['angry']?2*5*moodValues['angry']:0;//2*5*moodValues['anxious'];
-         console.log('mood values',moodValues,R0old,R1old,R2old,R3old);
-         radar(R0old,R1old,R2old,R3old,R0,R1,R2,R3);
+         
+         radar(R0old,R1old,R2old,R3old,R0,R1,R2,R3,canvasObj);
 
          R0old = R0;
          R1old = R1;
@@ -20,9 +23,9 @@
          R3old = R3;
  }
 
- function radar(r0,r1,r2,r3,R0,R1,R2,R3){
+ function radar(r0,r1,r2,r3,R0,R1,R2,R3,canvasObj){
 	 
-         var canvas = $('canvas')[0];
+         var canvas = canvasObj&&canvasObj[0]?canvasObj[0]:$('canvas')[0];
          var ctx = canvas.getContext('2d');
 		/*
          var x0 = canvas.width /2;
@@ -31,7 +34,7 @@
          var xmax = canvas.width;
          var ymax = canvas.height;
          */
-         var obj = $('canvas'),
+         var obj = canvasObj?canvasObj:$('canvas'),//$('canvas'),
          	x0 = parseInt(obj.css('width'))/2,
          	xmax = parseInt(obj.css('width')),
          	y0 = parseInt(obj.css('height'))/2,

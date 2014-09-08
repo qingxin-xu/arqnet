@@ -29,6 +29,7 @@ function changeDateRange()
 				//updateMsg($('.validateTips'),'Journal Entry Created');
 				$('#myThinker').dialog('close');
 				responseCount = d.responseCount;
+				trackerData = 'trackerData' in d?d['trackerData']:trackerData;
 				initializeMainSlider(currentRangeValue,d.responses);
 				currentEndDate = $('input[name=end_date]').val();
 				$('.customRange').hide();

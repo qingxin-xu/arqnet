@@ -46,7 +46,12 @@ var topics_donut_chart,
 	ranges = [<?php echo implode(',',$date_ranges);?>],
 	range_labels = [<?php echo implode(',',$range_labels);?>],
 	trackerActivities =  <?php echo json_encode($activities);?>,
-	currentValue=0;
+	trackerData = <?php echo json_encode($trackerData);?>,
+	eventUnits = <?php echo json_encode($event_units); ?>,
+	_dates = <?php echo json_encode($_dates);?>,
+	currentValue=0,
+	trackerOffset = 0,
+	trackerSelection = {};
 
 /**
  * Set the slider range, values, redraw tabs
@@ -56,7 +61,8 @@ function initializeMainSlider(range,dateRangeAverages)
 	//if (!myResponses || myResponses.length<=0) return;
 	if (!dateRangeAverages && (!__avg || __avg.length<=0)) return;
 	if (!range && !defaultRange) return;
-	
+
+	//$('#trackerChart').css('width',0.75*$('.tab-pane.active').width()+'px');
 	_avg = {};
 	var minValue = 0,
 		myRange = range?range:defaultRange,
@@ -94,13 +100,21 @@ function initializeMainSlider(range,dateRangeAverages)
 		minValue = 0;
 		maxValue = sliderValues[sliderValues.length-1];
 	}
+
+	/*
+	var selection = {};
+	for (var i  in trackerData) {
+		selection[i] = [];
+		for (var j in trackerData[i]) selection[i].push(j);
+	}
+	*/
 	
-	Tracker.draw(nData>=myRange?myRange:nData);
+	Tracker._draw(trackerSelection);
 	var values = Tracker.generateSliderValues(nData>=myRange?myRange:nData);
 	maxStep = increments;
 
 	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width();
-	console.log('PADDING MAX',$('#trackers-tab').width(),$('#trackerChart').width(),paddingMax);
+	//console.log('PADDING MAX',$('#trackers-tab').width(),$('#trackerChart').width(),paddingMax);
 	//$('#slider1').slider('option',{paddingMin:50,paddingMax:100,step:increments,min:minValue,max:maxValue,values:sliderValues});
 	$('#slider1').slider('option',{
 		paddingMin:42+Tracker.trackerPlot.getPlotOffset().left-8,
@@ -333,6 +347,7 @@ function setMoodDisplay(response)
 		}
 	}
 	drawradar(moodValues);
+	drawradar(moodValues,$('#tracker-mood-tab'));
 }
 
 function setTopWordsView(response)
@@ -467,13 +482,169 @@ function incrementRange()
 	changeDateRange();
 }
 
+function setTrackerOptions()
+{
+	if (!trackerData) return;
+	var menu = $('.TrackSubCategories');
+
+	if (!menu || menu.length<=0) return;
+	
+	var options = [];
+	$.each(Object.keys(trackerData),function(index,value) {
+		for (var i in trackerData[value]) {options.push(i)}
+	});
+	options.sort(function(a,b) {
+		if (a<b) return -1;
+		else if (a == b) return 0;
+		else return 1;
+	});
+	console.log('OPTIONS',options);
+	for (var i = 0;i<options.length;i++)
+	{
+		menu.append("<div class='roundedOne'><input type='checkbox' name='"+options[i]+"'  /><label>"+options[i]+"</label></div>");
+	}
+
+	for (var i  in trackerData) {
+		trackerSelection[i] = {}
+		//for (var j in trackerData[i]) selection[i].push(j);
+	}
+	menu.find('input').each(function(index,item) {
+		var index = 0;
+		$(this).change(function() {
+			if ($(this)[0].checked) {
+				for (var i in trackerData) {
+					for (var j in trackerData[i]) {
+						if (j == $(this)[0].name) {
+							trackerSelection[i][j] = 1;
+							break;
+						}
+					}
+				}
+			}
+			else {
+				for (var i in trackerData) {
+					for (var j in trackerData[i]) {
+						if (j == $(this)[0].name) {
+							delete trackerSelection[i][j];
+							break;
+						}
+					}
+				}
+			}
+			var nChecked = 0;
+			for (var i in trackerSelection) {
+				for (var j in trackerSelection[i])
+				{
+					trackerSelection[i][j] = Tracker.plotColors[nChecked];
+					nChecked++;
+				}
+			}
+			if (nChecked >=Tracker.maxPlots)
+			{
+				menu.find('input:unchecked').attr('disabled',true);
+			} else {
+				menu.find('input:unchecked').attr('disabled',false);
+			}
+			//Tracker._draw(trackerSelection);
+			initializeMainSlider();
+		});
+	});
+}
+
+function slideTrackerRight() {
+	moodW = 0.33*$('.tab-pane.active').width();
+	var left = -$('#trackerChart').css('left');
+	//$('#trackerChart').css('left',0+'px');
+	
+	$('#trackerChart').animate({left:0});
+	//$('#trackerMoodtabLeft').css('left',0+'px');
+	$('#trackerMoodtabLeft').animate({
+		left:0,
+		opacity:1
+	});
+	//$('#trackerCategories').css('left',0+'px');
+	$('#trackerCategories').animate({
+		left:0,
+		opacity:0
+	});
+	//Tracker._draw(trackerSelection);
+	//initializeMainSlider();
+	var values = Tracker.generateSliderValues(responseCount>=currentRangeValue?currentRangeValue:responseCount);
+	
+
+	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width() - moodW;
+	//console.log('PADDING MAX',$('#trackers-tab').width(),$('#trackerChart').width(),paddingMax);
+	//$('#slider1').slider('option',{paddingMin:50,paddingMax:100,step:increments,min:minValue,max:maxValue,values:sliderValues});
+	$('#slider1').slider('option',{
+		paddingMin:moodW+42 + Tracker.trackerPlot.getPlotOffset().left-8,
+		paddingMax:paddingMax,//$('#trackers-tab').width()-$('#trackerChart').width()+20,
+		step:values.length>1?values[1]-values[0]:null,
+		min:values[0],
+		max:values[values.length-1],
+		values:values/*,
+		hooks: {drawOverlay: [Tracker.drawOverlayLine]}*/
+	});
+	$('#slider1').slider({
+		slide: function( event, ui ) {
+			$('#slider1 .ui-label').html('');
+		}
+	});
+	trackerOffset = moodW;
+	onMainSliderChange({value:currentValue||0});
+}
+
+function slideTrackerLeft() {
+	//Tracker tab set up
+	var left = 0.66*$('.tab-pane.active').width(),
+		offset = 5,
+		moodW = 0.33*$('.tab-pane.active').width();
+	$('#trackerChart').css('width',left+'px');
+	//$('#trackerChart').css('left',-moodW+'px');
+	$('#trackerChart').animate({left:-moodW+'px'});
+	$('#trackerMoodtabLeft').css('width',moodW+'px');
+	$('#trackerMoodtabLeft').animate({
+		left:0 - 5 - moodW+'px',
+		opacity:0
+	});
+	
+	//$('#trackerMoodtabLeft').css('left',0 - 5 - moodW+'px');
+	
+	//$('#trackerCategories').css('left',-moodW+'px');
+	$('#trackerCategories').animate({
+		left:-moodW+'px',
+		opacity:1
+	});
+	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width();
+
+	var values = Tracker.generateSliderValues(responseCount>=currentRangeValue?currentRangeValue:responseCount);
+	
+	//console.log('PADDING MAX',$('#trackers-tab').width(),$('#trackerChart').width(),paddingMax);
+	//$('#slider1').slider('option',{paddingMin:50,paddingMax:100,step:increments,min:minValue,max:maxValue,values:sliderValues});
+	$('#slider1').slider('option',{
+		paddingMin:42+Tracker.trackerPlot.getPlotOffset().left-8,
+		paddingMax:paddingMax,//$('#trackers-tab').width()-$('#trackerChart').width()+20,
+		step:values.length>1?values[1]-values[0]:null,
+		min:values[0],
+		max:values[values.length-1],
+		values:values/*,
+		hooks: {drawOverlay: [Tracker.drawOverlayLine]}*/
+	});
+	$('#slider1').slider({
+		slide: function( event, ui ) {
+			$('#slider1 .ui-label').html('');
+		}
+	});
+	trackerOffset = 0;
+	onMainSliderChange({value:currentValue||0});
+}
+
 function onMainSliderChange(ui)
 {
 	currentValue=null;
 	if (!ui) return;
 	if (ui.value == null) return;
 	var value = Tracker.getSliderValue(ui.value);
-	
+	ui = $.extend(ui,{trackerOffset:trackerOffset||0});
 	//if (!responses || !responses[value]) return;
 	if (!_avg || !_avg[value]) return;
 	var response = _avg[value];//responses[value];
@@ -503,10 +674,31 @@ jQuery(document).ready(function($)
 		height:150,
 		width:350,
 	});
-	
+
+	if (trackerData) setTrackerOptions();
 	if (defaultRange>0) 
 	{
 		
+		//Tracker tab set up
+		var left = 0.66*$('.tab-pane.active').width(),
+			offset = 5,
+			moodW = 0.33*$('.tab-pane.active').width();
+		$('#trackerChart').css('width',left+'px');
+		$('#trackerChart').css('left',-moodW+'px');
+		
+		$('#trackerMoodtabLeft').css('width',moodW+'px');
+		$('#trackerMoodtabLeft').css('left',0 - 5 - moodW+'px');
+		
+		$('#trackerCategories').css('left',-moodW+'px');
+		$('input[name=trackerSwitchCheckbox]').change(function() {
+			if ($(this)[0].checked) {
+				$('.TrackerSwitchLabel').html('View Chart Options');
+				slideTrackerRight();
+			} else {
+				$('.TrackerSwitchLabel').html('View Spider Graph');
+				slideTrackerLeft();
+			}
+		});
 		//Listen for slider changes to redraw tabs
 		$('#slider1').on('slidechange',function(event,ui) {
 			onMainSliderChange(ui);
@@ -540,7 +732,7 @@ jQuery(document).ready(function($)
 					//if (responses && responses[value]) setTopPeopleView(responses[value]);
 					if (_avg && _avg[value]) setTopPeopleView(_avg[value]);
 				} else if (el.attr('href').match(/trackers/)) {
-
+					
 				}
 				
 				
@@ -703,7 +895,7 @@ function getRandomInt(min, max)
 
 <div class="row">
 	<div class="addG-title">Stark Analyser</div>
-	<div class="col-sm-8">
+	<div class="col-sm-9">
 		
 		<div class="panel panel-primary addG-darkBG" id="charts_env" >
 			
@@ -838,22 +1030,31 @@ function getRandomInt(min, max)
 						    <div id='no-topics-tab' class='morrischart hidden' style='height:300px;'></div>
 							<div id="topics-tab" class="morrischart" style="height: 300px;"></div>
 						</div>
-						<div class="tab-pane" id="trackers">							
-							<div id="trackers-tab" class="addG-justleft" style="height: 300px;width:100%;">
+						<div class="tab-pane" id="trackers" >	
+							<div id='TrackerSwitch' style='float:left;'>
+							<div class='slideOne' style='display:inline-block;'>
+								<input type="checkbox" value="None" id="slideOne" name="trackerSwitchCheckbox" />
+								<label for="slideOne"></label>
+								
+							</div>					
+							<div class='TrackerSwitchLabel' style='display:inline-block;float:left;'>View Spider Graph</div>
+							</div>	
+							<div id="trackers-tab" class="addG-justleft" style="overflow:hidden;height: 350px;width:300%;">
+
 								<div id='Tooltip' class='plotTooltip'></div>
 								<div id='Tooltip0' class='plotTooltip'></div>
 								<div id='Tooltip1' class='plotTooltip'></div>
 								<div id='Tooltip2' class='plotTooltip'></div>
 								<div id='Tooltip3' class='plotTooltip'></div>
 								<div id='Tooltip4' class='plotTooltip'></div>
-								<div id="trackerChart" class="addG-fleft"style="height: 300px;width:525px;"></div>
-								<div id='trackerCategories' class="addG-fleft chartLegend" style='display:inline-block;height:300px;width:25%;'>
+
+								<div id="trackerMoodtabLeft" style='width:8%;position:relative;left:-8%;float:left;opacity:0;'>
+									<canvas id="tracker-mood-tab" style='height:300px;width:100%;position:relative;' ></canvas>
+								</div>
+								<div id="trackerChart" class="addG-fleft" style="float:left;height: 300px;width:75%;position:relative;left:0;"></div>
+								<div id='trackerCategories' class="addG-fleft chartLegend" style='display:inline-block;height:300px;width:7%;position:relative;left:0;'>
+
 									<div class='TrackSubCategories'>
-										<?php 
-											foreach ($subcategories as $sc) {
-												echo "<div><input type='checkbox' name='".$sc->event_subcategory_id."'  /><label>".$sc->name."</label></div>";
-											}
-										?>
 									</div>
 								</div>
 							</div>
@@ -893,7 +1094,7 @@ function getRandomInt(min, max)
 			</div>
 
 		</div>	
-		<div class="col-sm-4">
+		<div class="col-sm-3">
 		<div class="panel panel-primary addG-panelhalfheight" style="margin-top: 42px;">
 
 		</div>
