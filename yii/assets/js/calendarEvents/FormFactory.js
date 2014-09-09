@@ -127,6 +127,13 @@ var formFactory = {
 			formValues.push({value:'Yes',type:'NonForm',definition_id:nonFormValues[i].name});
 		}
 		
+		/*
+		 * If there is no input, we can leave
+		 */
+		if (!values) return formValues;
+		/*
+		 * This is for capping events
+		 */
 		for (var i = 0;i<values.length;i++)
 		{
 			if (values[i].name.match(/cappable_events/))
