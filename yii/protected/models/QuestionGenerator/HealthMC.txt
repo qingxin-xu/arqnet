@@ -1,0 +1,127 @@
+Do you lift on an empty stomach? #Fitness #Food 
+a. Yes 
+b. No 
+Do you think you're fat? #Self #Health #Fitness 
+a. Yes 
+b. No 
+Do you think you are overweight? #Self #Health #Fitness 
+a. Yes 
+b. No 
+Do you stretch before working out? #Fitness 
+a. Yes 
+b. No 
+Do you need to warm up and cool down when you work out? #Fitness 
+a. Yes 
+b. No 
+Do you like eating vegetables? #Food #Health 
+a. Yes 
+b. No 
+Do you lift weights? #Fitness 
+a. Yes 
+b. No 
+Do you use free weights? #Fitness 
+a. Yes 
+b. No 
+Do you use prefer free weights over machines? #Fitness 
+a. Yes 
+b. No 
+Do you use machines to exercise? #Fitness 
+a. Yes 
+b. No 
+Do you know how to work out? #Fitness 
+a. Yes 
+b. No 
+Can you lose weight without changing your diet? #Food #Fitness 
+a. Yes 
+b. No 
+Do you consider yourself healthy? #Health #Self 
+a. Yes 
+b. No 
+Are supplements necessary to gain positive results? #Health #Fitness 
+a. Yes 
+b. No 
+If you lift weights, do you get bigger muscles? #Fitness 
+a. Yes 
+b. No 
+Do you take dietary supplements? #Health #Fitness 
+a. Yes 
+b. No 
+Do you think a balanced diet is important? #Food #Health 
+a. Yes 
+b. No 
+Is it necessary to take dietary supplements? #Health #Fitness 
+a. Yes 
+b. No 
+Do you have rest periods between work outs? #Fitness 
+a. Yes 
+b. No 
+Should a personal trainer know all of the medications someone is on? #Fitness 
+a. Yes 
+b. No 
+Is it a good idea to workout when feeling mentally stressed? #Fitness 
+a. Yes 
+b. No 
+Is it safe for obese people to lift weights? #Fitness #Health 
+a. Yes 
+b. No 
+Should women lift weights if they don't want to get bulky looking? #Fitness 
+a. Yes 
+b. No 
+Is it true that some people naturally lose weight faster than others? #Fitness #Abstract 
+a. Yes 
+b. No 
+Is it true that it's not a good idea to do the same exercises during each workout session? #Fitness 
+a. Yes 
+b. No 
+Is it a good idea to workout with friends or family? #Fitness #Family 
+a. Yes 
+b. No 
+Is it good to have a "cheat day" where people can eat whatever they want once a week? #Fitness #Abstract 
+a. Yes 
+b. No 
+Is it true that people with diabetes have a harder time losing weight? #Health #Fitness 
+a. Yes 
+b. No Do you wear a belt during heavy lifting? #Fitness 
+a. Yes 
+b. No 
+Do you eat a lot of protein? #Food #Health #Fitness
+a. Yes 
+b. No 
+Do you control your carb intake? #Food #Health #Fitness 
+a. Yes 
+b. No 
+Do you track your calorie intake? #Food #Health #Fitness 
+a. Yes 
+b. No 
+Do you get less than eight hours of sleep? #Health 
+a. Yes 
+b. No 
+Do you strech on a regular basis? #Fitness 
+a. Yes 
+b. No 
+Do you eat a meal (or meals) after 9PM? #Food #Fitness 
+a. Yes 
+b. No 
+Do you work out while you're sick? #Fitness #Health
+a. Yes 
+b. No 
+Do you train the same body part two days in a row? #Fitness 
+a. Yes 
+b. No 
+Is sex considered an exercise? #Sex #Fitness 
+a. Yes 
+b. No 
+Do you get too busy and skip a meal? #Food #Health #Fitness 
+a. Yes 
+b. No 
+Do you have a work out schedule? #Fitness 
+a. Yes 
+b. No Do you have a gym membership? #Fitness 
+a. Yes 
+b. No 
+Do you go to the gym daily? #Fitness 
+a. Yes 
+b. No 
+Do you work out when you're still sore? #Fitness 
+a. Yes 
+b. No 

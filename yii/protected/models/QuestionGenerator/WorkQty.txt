@@ -1,0 +1,3 @@
+(Q) On a scale of 1-10, how happy are you at your current job? #Work
+(Q) On a scale of 1-10, how satisfied with your boss? #Work
+(Q) How much in do you make in a year at your job (in US dollars)? #Work #Money

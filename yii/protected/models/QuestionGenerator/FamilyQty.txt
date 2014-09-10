@@ -1,0 +1,9 @@
+(Q) How many hours a week do you spend with your family? #Family
+(Q) How many times a month do you argue with your parents? #Family #Negative
+(Q) How many times a month do you argue with your siblings? #Family #Negative
+(Q) How many times a month do you argue with your kids? (+have children) #Family #Negative
+(Q) How many siblings do you have? #family
+(Q) How many cousins do you have? #Family
+(Q) How old was your mom when she had you? #Family
+(Q) How old was your dad when he had you? #Family
+(Q)What’s the right age to move out of your parents’ home? #Family #Home

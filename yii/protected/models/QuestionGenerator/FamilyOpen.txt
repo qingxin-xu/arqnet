@@ -1,0 +1,62 @@
+In your family, what chores were assigned? #Family #Home
+Were there or are there chores that you dislike? #Family #Home #Negative
+What are your favorite chores? #Family #Home
+If you are a part of a stepfamily, what’s it like? #Family #Home
+If you are adopted, how does it feel knowing you’re adopted?  #Family #Self #Feeling
+If you are an only child, how does it feel to be an only child? #Self #Family
+What types of hardships did your family go through? #Self #Family #Reality
+Is there something about your siblings that you’re specifically jealous of? #Family #Negative
+Is there something about other families that you are jealous of? #Family #Negative 
+What do you argue with your parents about most? #Angry #Family #Self
+If your family from a different country, what types of hardships did you go through coming to America? #Family #Home 
+If you’re from another country, how different is the American culture compared to where you came from? #Home 
+Can you describe your idea of a typical family and the importance of family? #Home #Family
+Where do you think is the best place to raise a family? #Family #Home #Thinking #Beliefs
+How many children are you planning to have? #Family #Abstract
+Do you think parents understand you? #Family #Self #Abstract
+Who is the breadwinner in your family? #Family #Money
+Are you pressured from your family to act a certain way? #Family 
+Are you often compared to your siblings or relatives? #Family #Self
+If you have cousins, do you have a close relationship with them? #Family 
+How old are your parents? #Family #Reality
+How often do you see your cousins? #Family
+How different do you think your life would be if you were raised by a single parent? #Family #Abstract
+If you were abandoned as a child, do you or would you hold grudges against your birth parents? #Negative #Family #Abstract
+Would you want to find your birth parents if you were given up for adoption? #Abstract #Family
+What are some of the fondest memories of your childhood? #Family #Self
+What would you change about your childhood? #Family #Self
+What impact has divorce and/or modern day living have on your family? #Beliefs #Family #Abstract
+Describe the perfect family. #Beliefs #Abstract #Family
+What was the saddest time in your family history? #Family #Sad #Reality
+Why do you think people get married? #Love #Family #Beliefs
+How is your view of the world different based on how you were raised as a child? #Beliefs 
+What important life lessons did your parents teach you? #Family #Beliefs
+How do you know if you’re ready for marriage? #Love #Self
+How do you know if you’re ready to have children? #Family #Self
+What rules do you have to follow living at home? #Home #Family #Reality
+What is the worst experience you’ve ever had at home? #Negative #Home
+What traits did you get from your mother? #Family #Self
+What traits did you get from your father? #Family #Self
+How well do you get along with your mom? #Family  #Self
+How well do you get along with your dad? #Family  #Self
+How well do you get along with your grandparents? #Family  #Self
+How well do you get along with your sister? #Family  #Self
+How well do you get along with your brother? #Family  #Self
+Does your family own a business? #Family #Money  #Reality
+Do you feel that you’re gay? #Self 
+Are you gay and feel afraid to tell your parents? #Family #Self
+Is there a secret you’re keeping from your family that you’re afraid to tell them? #Family #Self
+Are you gay and feel that you should keep it a secret from your family? #Family #Self
+Are you gay and feel that sharing your secret will change how your family feels about you? #Family #Self #Abtract
+What are things you feel your parents pressure you most about? #Family  #Self
+What are ways you feel or worry you disappoint your family? #Family #Self #Negative
+What are ways you try to earn your family’s respect? #Family #Self
+In what ways is your family different from other families? #Family
+What are things you appreciate about your family? #Family #Positive
+What are things about your family that you’re thankful for? #Family #Positive
+What are things about your childhood that you’re thankful for? #Family #Positive
+What character traits did your parents enforce in you? #Family
+In what ways do you feel like you owe your family? #Family
+In what ways are you different from the rest of your family? #Family #Self
+In what ways are you different around your family than your friends? #Family #Self
+What can you depend on your family for? #Family

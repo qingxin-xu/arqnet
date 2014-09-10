@@ -1,0 +1,18 @@
+(Q) How many times a week do you work out? #Fitness(Q) How many hours a day do you work out? #Fitness 
+(Q) How old is safe to start lifting weights? #Fitness 
+(Q) How old were you when you started working out? #Fitness 
+(Q) What’s the heaviest weight you’ve ever been? (lbs) #Health #Self 
+(Q) What’s the lowest you’ve ever weighed? (lbs) # Health #Self 
+(Q) How much can you bench press? (lbs) #Fitness 
+(Q) What’s the longest distance you’ve ever run? (miles) #Fitness 
+(Q) What’s the longest distance you’ve ever biked? (miles) #Fitness 
+(Q) What’s the longest distance you’ve ever swam? #Fitness 
+(Q) How many marathons have you finished? #Fitness
+(Q) How many times a week do you work out? #Fitness
+(Q) How many pounds can you bench? #Fitness 
+(Q) How many crunches can you do in one set? #Fitness 
+(Q) How many pullups can you do in one set? #Fitness 
+(Q) How many pushups can you do in one set? #Fitness 
+(Q) How many bones have you ever broken in your body? #Health 
+(Q) What’s the longest distance (in miles) you’ve ever run? #Fitness 
+(Q) What’s the longest distance (in miles) you’ve ever biked? #Fitness 

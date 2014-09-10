@@ -1,0 +1,187 @@
+If you could travel 100 years into the future but never return to now, would you do it? #Abstract
+a. Yes
+b. No
+Would you rather be rich and a horrible person, or poor a good person? #Abstract #Money #Self
+a. Rich a-hole
+b. Poor saint
+If you were  in a situation where you were starving and stranded, could you eat another human being? #Abstract #Death
+a. Yes
+b. No
+If the world was always nighttime or daytime, which would you choose? #Abstract
+a. Nighttime
+b. Daytime 
+If Jurassic Park was possible, do you think we should do it? #Abstract
+a. Yes
+b. No
+If science could clone you, would you want to be cloned? #Abstract #Self
+a. Yes
+b. No
+Would you take a CEO job that paid millions a year knowing that the corporation itself was somewhat evil? #Abstract #Ambition
+a. Yes (#Money)
+b. No
+If there was a drug that maximized your brain to super-genius level but took a month off your life every time you took it, would you take it? #Abstract #Ambition
+a. Yes
+b. No
+Would you date a celebrity with all the public scrutiny and loss of privacy that comes with it? #Abstract #Love
+a. Yes
+b. No
+If you could have all the money and power in the world, but the catch is that you could never have a partner to share it with, would you take it? #Abstract #Love #Money
+a. Yes
+b. No
+If AI was so good that an android could be designed to fit your ideal of a perfect partner in every way, would you choose that over a human? #Abstract #Love
+a. Yes
+b. No
+If you found out that your partner was actually a criminal, would you report them? #Abstract #Love
+a. Yes
+b. No
+If your girlfriend and your mother changed bodies, and the only way to get them back to normal was to have sex with one of them, which do you choose? #Abstract #Sex
+a. Girlfriend in mom’s body
+b. Mom in girlfriend’s body
+Would you rather get smarter or better looking? #Abstract #Self
+a. Smarter
+b. Better Looking
+If you were really an android, would you want to know? #Abstract #Self
+a. Yes
+b. No
+Is it better to have love and lost, or to have never loved at all? #Abstract #Love
+a. Love and lost
+b. Never loved at all
+Would you rather be deaf or blind? #Abstract #Self
+a. Deaf
+b. Blind
+If someone offered you the superpower of knowing what other people were thinking, would you take it? #Abstract
+a. Yes
+b. No
+Is a high school diploma a requirement for success in life? #Abstract #Beliefs #School
+a. Yes
+b. No
+Are there smart people who fail at school? #Abstract #School
+a. Yes
+b. No
+Do you believe the American judicial system works? #Abstract #Beliefs
+a. Yes
+b. No
+Do you believe in the death penalty? #Abstract #Beliefs #Death
+a. Yes
+b. No
+Do you believe an eye for an eye? #Abstract #Beliefs #Death
+a. Yes
+b. No
+Do you believe marijuana should be legalized? #Abstract #Health #Leisure
+a. Yes 
+b. No 
+Do you believe alcohol is more dangerous than marijuana? #Abstract #Health #Leisure
+a. Yes 
+b. No 
+Do smoke marijuana? #Abstract #Health #Leisure #Self
+a. Frequently
+b. Occasionally 
+c. Never
+Do you believe everyone is capable of evil? #Abstract #Beliefs #Negative
+a. Yes 
+b. No
+Do you believe in ghosts? #Abstract #Beliefs #Death
+a. Yes (#Abstract)
+b. No (#Reality)
+Do you believe time travel is possible? #Abstract #Beliefs
+a. Yes (#Abstract)
+b. No (#Reality)
+Do you believe that aliens exist? #Abstract #Beliefs
+a. Yes (#Abstract)
+b. No (#Reality)
+Do you believe we’ll discover extraterrestrial life in our lifetime? #Abstract #Beliefs
+a. Yes (#Abstract)
+b. No (#Reality)
+Do you believe there are undiscovered intelligent lifeforms living in the ocean? #Abstract #Beliefs
+a. Yes (#Abstract)
+b. No (#Reality)
+Do you believe in karma? #Abstract #Beliefs
+a. Yes (#Abstract)
+b. No (#Reality)
+Do you believe in the concept of a soul? #Abstract #Beliefs
+a. Yes (#Abstract)
+b. No (#Reality)
+Do you believe people have souls? #Abstract #Beliefs
+a. Yes (#Abstract)
+b. No (#Reality)
+Do you believe in reincarnation? #Abstract #Beliefs
+c. Yes (#Abstract)
+d. No (#Reality)
+Are people inherently good or inherently evil? #Abstract #Beliefs
+a. Good (#Positive)
+b. Evil (#Negative)
+Do babies know right from wrong? #Abstract #Beliefs
+a. Yes
+b. No
+If a friend had bad breath, would you tell them? #Abstract #Friends
+a. Yes (#Proactive)
+b. No (#Passive)
+If someone did or said something that offended you, would you tell them? #Abstract #Negative #Friends
+a. Yes (#Proactive)
+b. No (#Passive
+Do you believe meat is murder? #Abstract  #Beliefs
+a. Yes 
+b. No
+Do you believe in God? #Abstract #Beliefs
+c. Yes (#Abstract)
+d. No (#Reality)
+Can people change? #Abstract  #Beliefs
+a. Yes (#Positive)
+b. No (#Negative)
+Can criminals be rehabilitated? #Abstract #Beliefs
+c. Yes (#Positive)
+d. No (#Negative)
+If you saw some kids bullying another kid, would you step in? #Abstract #Self
+a. Yes (#Proactive #Connected)
+b. No (#Passive #Disconnected)
+If you saw some big kids bullying on a smaller kid, would you step in? #Abstract #Self
+a. Yes (#Proactive #Connected)
+b. No (#Passive #Disconnected)
+If a woman knocked on your door asking for help, would you let her in? #Abstract #Self
+a. Yes (#Proactive #Connected)
+b. No (#Passive #Disconnected)
+If a woman knocked on your door in the middle of the night asking for help, would you let her in? #Abstract #Self
+a.  Yes (#Proactive #Connected)
+b. No (#Passive #Disconnected)
+If a man knocked on your door asking to use your phone, would you let him? #Abstract #Self
+a. Yes (#Proactive #Connected)
+b. No (#Passive #Disconnected)
+If the bank teller accidentally credited you for $200 extra, would you say anything? #Abstract #Money #Self
+a. Yes (#Proactive #Connected)
+b. No (#Passive #Disconnected)
+If the guy at the store gave you $10 too much in change, would your return it? #Abstract #Money #Self
+a. Yes (#Proactive #Connected)
+b. No (#Passive #Disconnected)
+If someone is standing uncomfortably close to you in conversation, would you say something? #Abstract #Self
+a. Yes (#Proactive)
+b. No (#Passive)
+If you were at a restaurant and they brought you the wrong dish, would you send it back? #Abstract #Self
+a. Yes (#Proactive)
+b. No (#Passive)
+If you were at a restaurant and you didn’t like your order, would you ask for your money back? #Abstract #Self
+a. Yes (#Proactive)
+b. No (#Passive)
+If a woman cut you off in traffic, would you give her the finger? #Abstract #Self
+a. Yes (#Negative #Proactive)
+b. No (#Passive)
+If a biker cut you off in traffic, would you give him the finger? #Abstract #Self
+a. Yes (#Negative #Proactive)
+b. No (#Passive)
+If you were in a grocery store and saw someone stealing, would you tell anyone? #Abstract #Self
+a. Yes
+b. No
+If you saw your best friend’s partner kissing someone else, would you tell them? #Abstract #Love #Friends #Self
+a. Yes (#Friends #Connected #Proactive)
+b. No (#Disconnected #Passive)
+If you found a wallet with $100 cash in it, would you try to return it? #Abstract #Self #Money
+a. Yes (#Proactive #Connected)
+b. No (#Passive #Disconnected)
+If you found a wallet with $1,000 cash in it, would you try to return it? #Abstract #Self #Money
+a. Yes (#Proactive #Connected)
+b. No (#Passive #Disconnected)
+Is racism alive and well in the United States?  #Beliefs #Reality
+a. Yes
+b. No
+Are conflicts in other countries our responsibility as well? #Beliefs #Reality
+a. Yes
+b. No

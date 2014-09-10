@@ -1,0 +1,8 @@
+What is the ideal number of people to travel with? #Leisure
+How many countries have you been to?
+How many US states have you visited?
+How much on average do you spend on vacations (in US dollars)? #Leisure #Money
+How many days of vacation do you take a year? #Leisure
+How often do you travel for work? #Work 
+What’s the best age to start taking a baby on a plane? #Leisure
+How many pieces of luggage do you usually take on a trip? 

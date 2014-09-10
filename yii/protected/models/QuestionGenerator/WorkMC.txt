@@ -1,0 +1,143 @@
+Do company benefit packages affect your decision whether or not to take a job? #Work 
+a. Yes
+b. No
+Would a contract job that paid more with no benefits be attractive to you? #Work
+a. Yes
+b. No
+Would you take a job if your significant other disapproved? #Work #Love #Negative
+a. Yes
+b. No
+Does a company’s cultural diversity (or lack of) affect your decision to take a job? #Work 
+a. Yes
+b. No
+How important to you is a company’s name when looking for a job?  #Work #Beliefs
+a. Very important
+b. Not very important
+Would you take a job with a high salary if the position was not a respected one?  #Money #Work #Abstract
+a. Yes
+b. No
+Would you accept a job with a high salary knowing that you may be sexually harassed? #Work #Beliefs #Sex
+a. Yes
+b. No
+Would you accept a job knowing that you were hired based on your looks? #Work #Self
+a. Yes
+b. No
+As an employer, would you hire someone based on their looks? #Work #Beliefs #Abstract
+a. Yes
+b. Secretly, yes
+c. Never
+Are you currently looking for a job? #Work 
+a. Yes
+b. No
+Have you ever lied in an interview?  #Work #Reality #Self
+a. Yes
+b. No
+Are you nervous during interviews?  #Self #Work #Feeling
+a. Yes
+b. No
+Is it better to have a stable boring job or an exciting dynamic one? #Work #Beliefs
+a. Stable
+b. Exciting
+How often do you discuss personal matters with coworkers? #Work 
+a. All the time (#Connected)
+b. Sometimes
+c. Never
+Does the success of the company matter to you?  #Work #Beliefs
+a. Yes
+b. No
+Do you have aspirations of running your own company one day? #Work #Ambition
+a. Yes
+b. No
+How would you feel if you left your job? #Work #Feeling
+a. Awesome
+b. I would miss it
+c. Don’t care
+Think about how long it takes to train a new person to fill your shoes.  Would you feel concern for the company you work for if you decided to leave them? #Work #Connected 
+a. Yes (#Connected)
+b. No (#Disconnected)
+If you left your job, would you bother to keep in touch with your coworkers? #Work #Friends
+a. Yes
+b. No
+Would you take a job that paid you more but was something you didn’t want to do as a profession? #Work #Money #Abstract
+a. Yes
+b. No
+Would it be hard to work with someone you’re in a relationship with? #Work #Love
+a. Yes
+b. No
+Do you think it’s a problem for couples in a relationship to work at the same office together? #Work #Love
+a. Yes
+b. No
+Do you frequently take work home? #Home #Work
+a. Yes
+b. No
+Do you prefer to work full time or part time?  #Work
+a. Full-Time
+b. Part-Time
+Have you ever been yelled at for something at work?   #Work #Negative
+a. Yes
+b. No
+Have you ever yelled at someone for something at work?  #Work #Negative #Self
+a. Yes
+b. No
+If youe were unhappy with your job, would you openly talk about your boss about it or just find another job?
+a. Talk about it 
+b. Find another job
+If you caught someone stealing something small from work, such as a pen, would you report it? #Work #Money #Beliefs
+a. Yes
+b. Depends on whether I like the person
+c. No
+Are you a leader at work? #Work #Self
+a. Yes
+b. No
+If you noticed an extra direct deposit from your company that shouldn’t be there, would you bring it up? #Work #Money #Beliefs
+a. Yes
+b. No
+Do you think you’re getting paid more than you really should be? #Work #Money
+a. Yes
+b. No
+Are you happy with your compensation? #Work #Money
+a. Yes
+b. No
+Do you think you should be paid more? #Work #Money
+a. Yes (#Ambition)
+b. No
+Is it unethical for coworkers to date? #Work#Beliefs
+a. Yes
+b. No
+If you found out your boss was dating one of his/her subordinates, would you report it? #Work #Abstract
+a. Yes
+b. No
+Is having a good relationship with your boss important to you? #Work 
+a. Yes
+b. No
+Do you like the people you work with? #Work #Friends
+a. Yes
+b. No
+Is having a good relationship with your coworkers important to you? #Work #Beliefs #Abstract #Self
+a. Yes
+b. No
+Are you good at your job? #Work #Self
+a. Yes
+b. Not really
+Do you care about having a job? #Work #Abstract #Self
+a. Yes
+b. No
+Are you grateful for having a job?  #Work #Feeling #Self
+a. Yes
+b. No
+How often do you slack off at work? #Work
+a. Never
+b. Sometimes
+c. It’s a way of life
+How happy are you in your current position? #Work #Self #Feeling
+a. Very happy
+b. It pays the bills
+c. Hate it
+How soon are you looking to change jobs? #Work #Self
+a. As soon as possible
+b. In the next year or so
+c. Whenever something better comes up
+d. I like my job
+Have you ever been afraid of losing your job? #Work
+a. Yes
+b. No

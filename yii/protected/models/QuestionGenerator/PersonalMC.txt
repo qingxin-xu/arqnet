@@ -1,0 +1,97 @@
+Have you ever considered suicide? #Abstract #Self #Death
+a. Yes
+b. No
+Would you ever pick up a hitchhiker? #Abstract #Self
+a. Yes
+b. A cute one
+c. No
+Do you sometimes feel like a victim? #Negative #Self #Abstract
+a. All the time (#Passive #Anxiety #Angry)
+b. Every once in a while
+c. Never (#Proactive)
+Do you sometimes feel that no one gets you? #Negative #Self #Abstract
+a. Yes (#Disconnected #Negative #Anxious)
+b. Sometimes (#Disconnected)
+c. Never (#Connected)
+Do you wish you had more friends? #Friends #Abstract #Self
+a. Yes 
+b. No
+Are you more worried about doing things right, or doing the right things? #Beliefs #Self 
+a. Doing things right
+b. Doing the right things
+Would you ever move to another country? #Abstract  #Self #Home
+a. Yes
+b. No
+Could you go a week without speaking to another human being? #Self #Friends #Abstract
+a. Probably
+b. Probably not
+Would you have kids outside of marriage? #Abstract #Self #Family
+a. Yes
+b. No
+Is it better to be loved or feared? #Abstract #Self #Beliefs
+a. Loved
+b. Feared
+Are you content with your life right now? #Abstract #Beliefs #Self
+a. Yes
+b. No
+Is respect from others important to you? #Abstract #Beliefs #Self 
+a. Yes (#Connected)
+b. No (#Disconnected)
+Which is worse, failing or never trying? #Abstract #Self
+a. Failing (#Passive)
+b. Never Trying (#Proactive)
+Are you able to keep secrets? #Abstract #Self
+a. Yes
+b. Sometimes
+c. No
+Do you feel comfortable talking to strangers? #Abstract #Self
+a. Yes (#Proactive)
+b. No (#Passive)
+Would you ever commit a crime for money? #Abstract #Self 
+a. Yes
+b. No
+Do you believe in heaven? #Abstract #Death #Beliefs #Self
+a. Yes
+b. No
+Do you believe in reincarnation? #Abstract #Beliefs #Self
+a. Yes
+b. No
+Did you ever experience violence as a child? #Reality #Negative #Home #Self
+a. Yes
+b. No
+Did you have a parent who suffered alcohol or substance abuse? #Reality #Self #Negative #Home
+a. Yes
+b. No
+Did you grow up with a single parent? #Reality #Self #Home
+a. Yes
+b. No
+Did you experience abandonment as a child? #Reality #Self #Home
+a. Yes
+b. No
+Are you an indoor or outdoor person? #Self #Leisure
+a. Indoor
+b. Outdoor
+Do you prefer to do things alone or with other people? #Self #Leisure #Friends
+a. Alone
+b. With Other People
+Do you like people? #Self
+a. Yes (#Connected)
+b. Not really (#Disconnected)
+Are you good at cooking? #Self #Food
+a. Yes
+b. Getting there
+c. No
+Were you a bedwetter? #Self
+a. Yes
+b. Sometimes
+c. No
+Do you have a stepparent? #Family #Self
+a. Yes
+b. No
+Do you have step brothers/sisters? #Family #Self
+a. Yes
+b. No
+Did you have a happy childhood? #Self #Family #Home
+a. Yes (#Positive)
+b. No (#Negative)
+c. It’s complicated

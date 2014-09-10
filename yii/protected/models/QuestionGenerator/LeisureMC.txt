@@ -1,0 +1,73 @@
+When you go on vacation do you like to relax or squeeze in the most activity possible?
+a. Relax
+b. See/Do as much as possible
+Do you plan your vacations in advance or are you spontaneous?
+a. Plan in advance
+b. Spontaneous
+Have you ever fallen in love on vacation? #Love #Leisure
+a. Yes
+b. No
+Do you like to travel for work? #Work
+a. Yes
+b. No
+c. Used to but now I’m tired of it
+Do you prefer to travel alone or with people? #Leisure
+a. Alone (#Disconnected)
+b. With People (#Connected)
+Have you ever lived abroad? #Leisure #Self #Home
+a. Yes
+b. No
+Would you like to live abroad? #Leisure #Self #Home
+a. Yes
+b. No
+Do you think everyone should try living abroad at least once in their lifetime? #Home #Abstract
+a. Yes
+b. No
+Do you think everyone should learn at least one foreign language? #Belief
+a. Yes
+b. No
+When you travel, which is more important—luxury or culture?
+a. Luxury
+b. Culture
+Do you get car sick? #Health
+a. Yes
+b. No
+Do you get sea sick? #Health
+a. Yes
+b. No
+Do you get motion sickness? #Health
+a. Yes
+b. No
+Would you be afraid of traveling abroad by yourself? #Self #Leisure
+a. Yes
+b. No
+Could you live in another country for the rest of your life? #Self #Home
+a. Yes
+b. No
+Do you like to travel with your parents? #Self #Family
+a. Yes
+b. No
+Have you ever gotten lost while traveling? #Leisure
+a. Yes
+b. No
+Have you ever hitchhiked? #Leisure
+a. Yes
+b. No
+Have you ever picked up a hitchhiker? #Leisure
+a. Yes
+b. No
+Is it better to plan your own trip or travel with a tour group? #Leisure
+a. Plan yourself
+b. Tour group
+Have you ever traveled with a tour group? #Leisure
+a. Yes
+b. No
+Have you ever been on a cruise? #Leisure
+a. Yes
+b. No
+Would you rather travel to a city or a more remote location? #Leisure
+a. City
+b. Remote
+Do you prefer to travel first class or on a budget? #Leisure #Money
+a. First Class
+b. On a Budget

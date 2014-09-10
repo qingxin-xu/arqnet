@@ -1,0 +1,19 @@
+(Q) How many times a week do you eat out? #Food
+(Q) How many seconds can food be on the floor before you won’t eat it? #Food
+(Q) How many days can you leave takeout in the fridge before it’s not okay to eat? #Food
+(Q) On average, how many drinks do you have in a week? #Food #Health
+(Q) What is the largest group you have ever cooked for? #Food
+(Q) How much was the most expensive meal you’ve ever had? #Food #Money
+(Q) How old were you when you learned how to cook? #Food #Self
+(Q) How many drinks a week does a person drink for you to consider them an alcoholic? #Food #Beliefs
+(Q) In US Dollars, what is your weekly food budget (shopping and eating out)? #Food #Money
+(Q) How much does a guy spend on a girl on dinner for him to expect her to put out? #Food #Sex 
+(Q) How many servings of soda do you drink a week? #Food
+(Q) How many drinks do you have a week? #Food
+(Q) How many meals a week do you eat fast food? #Food
+(Q) How many glasses of water a day do you drink on average? #Food
+(Q) How many calories do you try to have each day? #Food #Health
+(Q) How many meals do you eat each day?  #Food
+(Q) How much per person does a meal cost for you to consider it expensive? #Food #Money
+(Q) How much per person should a meal cost for you to consider it cheap? #Food #Money
+(Q) How much on average do you tip? #Food #Money

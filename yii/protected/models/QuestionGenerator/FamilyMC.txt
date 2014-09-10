@@ -1,0 +1,171 @@
+Do you think you should change who you are to please your parents? #Family #Self #Abstract
+a. Yes
+b. No
+Are you pressured to follow in your parent’s footsteps? #Family #Self
+a. Yes
+b. No
+How connected do you feel with your parents? #Family #Self #Abstract
+a. Very connected
+b. Sometimes connected
+c. Like we’re strangers
+Who do you think you are more like, your mother or your father? #Family #Self  
+a. Mother
+b. Father
+c. Neither
+Do you think your parents have the right to kick you out when you reach the age of 18? #Family #Home #Beliefs
+a. Yes
+b. No
+Do you ever feel lonely even though you are surrounded by your family? #Abstract #Self #Family #Negative
+a. Yes (#Disconnected)
+b. No
+Do you think it’s your parent’s job to put you through college? #School #Family #Money #Beliefs
+a. Yes
+b. No
+Have you ever been abused by your father? #Family #Negative 
+a. Yes
+b. No
+Do you think spanking is a good way to discipline children? #Beliefs #Family
+a. Yes
+b. Occasionally 
+c. Never
+Do you trust your parents? #Family #Abstract
+a. Yes
+b. With some things
+c. No
+Did your parents have you at a young age? #Family #Self
+c. Yes
+d. No
+How often is your entire family together? #Family #Reality
+a. Every Day
+b. A few times a week
+c. A few times a month
+d. A few times a year
+Are you named after a family member? #Family #Self
+a. Yes
+b. No
+Do you have a curfew? #Family #Self #Home #Reality 
+a. Yes
+b. No
+Did you ever meet any of your great grandparents? #Family
+a. Yes
+b. No
+If you are the oldest among your siblings, are you expected to be a role model? #Family #Self
+e. Yes
+f. No
+Who do you get along better with, your mother or father?  #Family 
+g. Mother
+h. Father
+i. Both Equally
+j. Neither
+Would you advise your mother to leave if you found out your father is abusing her? #Family #Beliefs #Abstract
+a. Yes
+b. No
+Do you think it’s the children’s job to take care of their parents when they grow old? #Family #Beliefs #Abstract
+a. Yes
+b. Depends on the relationship
+c. No
+Do you live in an abusive environment? #Family #Home #Negative
+a. Yes (#Anxious)
+b. Sort of (#Anxious)
+c. No
+Have you ever witnessed your parents fight? #Family #Negative
+a. All the time (#Anxious)
+b. Sometimes
+c. Not really
+Do you agree that men should always support their family? #Family #Money #Beliefs
+a. Yes
+b. No
+Do you think people should adopt children from other countries? #Family #Beliefs
+k. Yes
+l. No
+Do you think it’s okay for your parents to talk to you about sex? #Familiy #Sex #Thinking #Abstract #Beliefs
+m. Yes
+n. No
+Were you raised by your grandparents?  #Family #Reality #Self
+o. Yes
+p. No
+Were you raised by parental figures who weren’t your biological parents? #Family #Self
+Would you be or are you okay with having kids without being married? #Family #Beliefs
+a. Yes
+b. Not ideal but I would
+c. I think that’s wrong
+Do you think it’s okay to put having a family on hold to pursue your own personal goals? #Family #Work #Beliefs
+q. Yes
+r. No
+Do you live with your parents? #Home #Family #Reality
+s. Yes
+t. No
+How often do you argue with your siblings? #Family #Angry #Self
+u. Everyday
+v. Sometimes
+w. Most of the time
+x. Never
+How often do you argue with your parents? #Family #Angry #Self
+y. Everyday (#Angry #Anxious)
+z. Sometimes
+aa. Most of the time
+ab. Never
+Do you like your family? #Family #Feeling
+ac. Yes
+ad. No
+ae. Sometimes
+af. Most of the time
+Do you think it’s important to earn your in laws approval? #Family #Thinking (+married)
+ag. Yes
+ah. No
+Do you get along with your in laws?  #Family #Self (+married)
+ai. Yes
+aj. No
+ak. Sometimes
+Are your friends closer to you than family? #Family #Beliefs
+al. Yes
+am. No
+an. Sometimes
+Are you parents strict? #Family
+ao. Yes
+ap. No
+aq. Sometimes
+Do you think marriage changes a relationship? #Love #Abstract #Beliefs
+ar. Yes
+as. No
+Are you married? #Love #Reality
+at. Yes
+au. No
+av. Engaged
+aw. Never want to be (#Negative #Disconnected)
+Are you jealous of your siblings? #Family #Self #Feeling 
+ax. Yes
+ay. No
+az. Sometimes
+How is your relationship with your siblings? #Family
+ba. Great (#Postive)
+bb. Okay
+bc. Horrible (#Negative)
+How is your relationship with your parents? #Family 
+bd. Great (#Positive)
+be. Okay
+bf. Horrible (#Negative)
+Do you think money is a factor in raising a happy family?  #Beliefs #Money #Family #Abstract
+bg. Yes
+bh. No
+Do you think the youngest sibling is always the favorite?  #Family
+a. Yes
+b. No
+Growing up, would you consider yourself spoiled? #Self
+c. Yes
+d. No
+Do you think it’s better to grow up in a big family or a small family? #Family  #Abstract #Thinking
+e. Big Family
+f. Small Family
+Are you from a broken family? #Family #Self
+g. Yes
+h. No
+What’s more important to you, friends or family? #Family #Beliefs
+a. Friends
+b. Family
+Do you think it’s important to have a family? #Family #Beliefs #Thinking
+a. Yes (#Connected)
+b. No (#Disconnected)
+Are you parents still together? #Family #Reality
+a. Yes
+b. No

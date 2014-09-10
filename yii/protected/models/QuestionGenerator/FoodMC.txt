@@ -1,0 +1,174 @@
+Do you know how to use chopsticks? #Food
+a. Yes
+b. No
+What do you think about super-sizing? #Food
+a. Awesome
+b. Death of a Nation
+Have you ever worked in the food industry? #Food #Work
+a. Yes
+b. No
+Do you think fast food, soda and/or sweets should be sold in schools? #Food #Health #Beliefs
+a. Yes
+b. No
+Do you think you are knowledgeable about nutrition? #Food #Health
+a. Yes
+b. No
+Do you read the nutritional information of the food you buy ? #Food #Health
+a. Yes
+b. No
+Does reading the nutritional information at a restaurant change what you order? #Food #Health
+a. Yes
+b. No
+Have you ever eaten dog meat? #Food
+a. Yes
+b. No
+Do you like to date someone who has a healthy appetite? #Food #Love
+a. Yes
+b. No
+Is it okay to eat in bed? #Food
+a. Yes
+b. No
+Do you prefer to eat at a restaurant or at home? #Food #Home
+a. Restaurant
+b. Home
+Do you like spicy food? #Food
+a. Yes
+b. No
+Do you pray before each meal? #Food #Beliefs
+a. Yes
+b. No
+Do you think potatoes are healthy or unhealthy? #Food
+a. Healthy
+b. Unhealthy
+Do you usually order an appetizer when you eat out? #Food
+a. Yes
+b. No
+Do you usually order a dessert when you eat out? #Food
+a. Yes
+b. No
+Do you read restaurant reviews when choosing a restaurant? #Food
+a. Yes
+b. No
+Do you eat fast food? #Food
+a. Yes
+b. No
+Is soda bad for you? #Food
+a. Yes
+b. No
+Tequila—love or hate? #Food
+a. Love
+b. Hate
+Do you drink coffee every day? #Food
+a. Yes
+b. No
+Do you like milk? #Food
+a. Yes
+b. No
+Is meat murder? #Food #Beliefs
+a. Yes
+b. No
+Are you lactose intolerant? #Food #Health
+a. Yes
+b. No
+Do you eat vegetables on a daily basis? #Food #Health
+a. Yes
+b. No
+Would you consider yourself a foodie? #Food
+a. Yes
+b. No
+Could you eat the same thing for dinner every day for a year if someone gave you $10,000? #Food #Money #Abstract
+a. Yes
+b. No
+Could you eat the same thing for dinner every day for a year if someone gave you a million dollars? #Food #Money #Abstract
+a. Yes
+b. No
+Do you think death row inmates deserve to choose their ideal last meal? #Food #Death #Beliefs
+a. Yes
+b. No
+Could you eat the same thing for dinner every day for a week? #Food #Abstract
+a. Yes
+b. No
+Could you eat the same thing for dinner every day for a month? #Food #Abstract
+a. Yes
+b. No
+Is it important to you that your partner knows how to cook? #Food #Love
+a. Yes
+b. No
+Is it important to you to be with someone who is a good cook? #Food #Love
+a. Yes
+b. No
+Is it important to teach kids how to cook? #Food
+c. Yes
+d. No
+Is it important that a woman knows how to cook? #Food
+a. Yes
+b. No
+Is it important that a man knows how to cook? #Food
+a. Yes
+b. No
+How important is it that a family passes down recipes? #Food #Family
+a. Very important
+b. Not important
+Is it important to teach kids how to cook? #Food
+e. Yes
+f. No
+Is it important that a woman knows how to cook? #Food
+c. Yes
+d. No
+Is it important that a man knows how to cook? #Food
+c. Yes
+d. No
+How important is it that a family passes down recipes? #Food #Family
+c. Very important
+d. Not important
+Do you get hungry after sex? #Food #Sex
+a. Yes
+b. No
+Do you think it’s important to eat breakfast? #Food #Health
+a. Yes
+b. No
+Do you drink coffee in the morning? #Food
+a. Yes
+b. No
+Do you think coffee is unhealthy? #Food #Health
+a. Yes
+b. No
+Are you a vegetarian? #Self #Food
+a. Yes
+b. No
+Are you a vegan? #Self #Food
+a. Yes
+b. No
+Are you concerned about your daily calorie intake when choosing something to eat? #Food #Health
+a. Yes
+b. No
+Do you eat breakfast in general? #Food
+a. Yes
+b. No
+Are you a good cook? #Food #Self
+a. Yes
+b. No
+Do you try to eat as many colors as possible in a meal? #Food
+a. Yes
+b. No
+Do you think carbs are bad for you? #Food #Health
+a. Yes
+b. No
+What do you prefer, rice or noodles? #Food
+a. Rice
+b. Noodles
+What do you prefer, soup or salad? #Food
+a. Soup
+b. Salad
+Do you bring your lunch to work/school every day? #Food
+a. Yes
+b. No
+Have you ever struggled with an eating disorder? #Food #Health
+a. Yes
+b. No
+Do you think you have an eating disorder? #Food #Health
+a. Yes
+b. No
+Is bread bad? #Food #Health
+a. Yes
+b. No
