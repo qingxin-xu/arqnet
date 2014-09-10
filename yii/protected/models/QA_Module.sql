@@ -99,8 +99,7 @@ CREATE TABLE IF NOT EXISTS `question_category_xref` (
   CONSTRAINT `cq_question` FOREIGN KEY (`question_id`) REFERENCES `question` (`question_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 
-alter table question drop foreign key question_type_ref;
-ALTER TABLE `question` DROP COLUMN `question_type_id`;
+
 ALTER TABLE `question` ADD COLUMN `question_category_id` INT;
 commit;
 ALTER TABLE `question` ADD CONSTRAINT `question_category_ref` FOREIGN KEY (`question_category_id`) REFERENCES `question_category` (`question_category_id`);
