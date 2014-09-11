@@ -1,23 +1,26 @@
 <?php
 
 /**
- * This is the model class for table "question_type".
+ * This is the model class for table "question_flag".
  *
- * The followings are the available columns in table 'category':
- * @property integer $question_type_id
- * @property string name
+ * The followings are the available columns in table 'question_flag':
+ * @property integer $question_flag_id
+ * @property integer $user_id
+ * @property integer $question_id
+ * @property integer $question_flag_type_id
+ * @property timestamp $date_marked
  *
  * The followings are the available model relations:
  * 
  */
-class QuestionType extends CActiveRecord
+class QuestionFlag extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'question_type';
+		return 'question_flag';
 	}
 
 	/**
@@ -28,10 +31,10 @@ class QuestionType extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('question_type_id, is_active', 'numerical', 'integerOnly'=>true),
+			array('question_flag_id, user_id, question_id, question_flag_type_id', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('question_type_id, name, is_active', 'safe', 'on'=>'search'),
+			array('question_flag_id, user_id, question_id, question_flag_type_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -46,6 +49,8 @@ class QuestionType extends CActiveRecord
 		
 		return array(
 			'questions'=>array(self::HAS_MANY,'Question','question_id'),
+			'questionFlagType'=>array(self::BELONGS_TO,'QuestionFlagType','question_flag_type_id'),
+			'user'=>array(self::BELONGS_TO,'User','user_id'),
 		);
 		
 	}
@@ -56,8 +61,11 @@ class QuestionType extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'question_type_id' => 'Type',
-			'name' => 'Name'
+			'question_flag_id' => 'Flag',
+			'question_id' => 'Question',
+			'question_flag_type_id' => 'Flag Type',
+			'user_id' => 'User',
+			'date_marked'=>'Date Flagged'
 		);
 	}
 
@@ -79,8 +87,11 @@ class QuestionType extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('question_type_id',$this->question_type_id);
-		$criteria->compare('name',$this->name,true);
+		$criteria->compare('question_flag_id',$this->question_flag_id);
+		$criteria->compare('question_id',$this->question_id);
+		$criteria->compare('question_flag_type_id',$this->question_flag_type_id);
+		$criteria->compare('user_id',$this->user_id);
+		$criteria->compare('date_marked',$this->date_marked);
 
 
 		return new CActiveDataProvider($this, array(

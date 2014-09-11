@@ -5,7 +5,8 @@
  *
  * The followings are the available columns in table 'question_status':
  * @property integer $question_status_id
- * @property string name
+ * @property string $name
+ * 
  *
  * The followings are the available model relations:
  * 
@@ -81,7 +82,6 @@ class QuestionStatus extends CActiveRecord
 
 		$criteria->compare('question_status_id',$this->question_status_id);
 		$criteria->compare('name',$this->name,true);
-
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `question_flag_type` (
 insert into question_flag_type(name) values('Inappropriate');
 insert into question_flag_type(name) values('Unclear');
 
+
 DROP TABLE IF EXISTS `question_flag`;
 CREATE TABLE IF NOT EXISTS `question_flag` (
 	`question_flag_id` INT NOT NULL AUTO_INCREMENT,

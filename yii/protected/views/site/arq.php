@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="assets/js/jquery-ui/css/vader/jquery-ui.min.css">
+<link rel="stylesheet" href="assets/css/arq.css">
 <script type='text/javascript' src='assets/js/arq/AnswerQuestion.js'></script>
 <script type='text/javascript' src='assets/js/arq/OtherQuestions.js'></script>
 <script type="text/javascript">
@@ -6,6 +7,7 @@
 var categories = <?php echo json_encode($categories); ?>,
 	question_types = <?php echo json_encode($question_types); ?>,
 	question_statuses = <?php echo json_encode($question_statuses); ?>,
+	question_flags = <?php echo json_encode($question_flags); ?>,
 	//The initial question
 	initial_question = <?php echo json_encode($randomQuestion); ?>,
 	//This will populate other questions

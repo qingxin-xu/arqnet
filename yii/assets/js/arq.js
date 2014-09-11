@@ -16,7 +16,7 @@ var myArq = myArq || {},
 	$(document).ready(function()
 	{
 		myArq.$questionContainer = $("#createQuestion");
-		
+		/*
 		$('#answerQuestion').validate({
 			rules:{
 				user_answer:{required:true}
@@ -64,7 +64,7 @@ var myArq = myArq || {},
 				});
 			}
 		});
-		
+		*/
 		//Create question handler
 		myArq.$questionContainer.validate({
 			rules: {
@@ -75,7 +75,7 @@ var myArq = myArq || {},
 			
 			submitHandler:function(ev)
 			{		
-				
+				console.log("HERE");
 				var service = '/createQuestion';
 				updateMsg($('.validateTips'),thinkingMsg);
 				

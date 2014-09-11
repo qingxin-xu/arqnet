@@ -2,6 +2,8 @@
 
 class SiteController extends Controller
 {
+	var $flagThreshold = 10;
+	
 	var $dashboard_topics = array(
 		'love',
 		'sex',
@@ -520,10 +522,185 @@ class SiteController extends Controller
 			'question_types'=>$this->getQuestionTypes(),
 			'randomQuestion' => $randomQuestion,
 			'question'=>null,
+			'question_flags'=>$this->getQuestionFlags(),
 			'cachedQuestion'=>null,
 			'categories'=>$categories,
 			'randomQuestionsByCategory'=>$randomQuestions
 		));
+	}
+	
+	/*
+	 * Skip specified question and return another random question
+	 * from any category
+	 */
+	public function actionSkipQuestion()
+	{
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		header('Content-type: application/json');
+		$user_id = Yii::app()->user->id;
+		$question_id = Yii::app()->request->getPost('question_id', '');
+		if (!$question_id) {
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Unrecognized question',
+			));
+			Yii::app()->end();			
+		}
+		$different = -1;
+		while($different <0) {
+			$categories = $this->getQuestionCategories();
+			$randInt = rand(0,count($categories)-1);
+			$question = $this->getRandomQuestionByCategory($categories{$randInt});
+			if ($question && $question{'question_id'} != $question_id) $different = 1;
+		}
+		
+		echo CJSON::encode(array(
+				'question'=>$question,
+				'success'=>1
+		));
+		Yii::app()->end();
+		
+	}
+	
+	/*
+	 * Flag question as either unclear, inappropriate or as liked
+	 * if Liked
+	 */
+	public function actionFlagQuestion() {
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		header('Content-type: application/json');
+		$user_id = Yii::app()->user->id;
+		$myQuestion = null;
+		$question_id = Yii::app()->request->getPost('question_id', '');
+		if (!$question_id) {
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Unrecognized question',
+			));
+			Yii::app()->end();
+		}
+		$question_flag_type_id = Yii::app()->request->getPost('question_flag_type_id', '');
+		if (!$question_flag_type_id) {
+			echo CJSON::encode(array(
+					'success'=>-10,
+					'error'=>'Unrecognized flag type',
+			));
+			Yii::app()->end();
+		}
+		
+		//Check if this user has already flagged this question
+		$flagged = QuestionFlag::model()->findByAttributes(array(
+				'user_id'=>$user_id,
+				'question_id'=>$question_id
+				
+		));
+		
+		if ($flagged) {
+			echo CJSON::encode(array(
+					'success'=>-15,
+					'error'=>'You have already flagged this question',
+			));
+			Yii::app()->end();			
+		}
+		$flag = new QuestionFlag();
+		$flag->question_id = $question_id;
+		$flag->user_id = $user_id;
+		$flag->question_flag_type_id = $question_flag_type_id;
+		if ($flag->save()) {
+			
+			//Now check if this question's status should change
+			$flagName = Yii::app()->request->getPost('name', '');
+			if ($flagName && (strcmp($flagName,"Inappropriate") == 0 ||strcmp($flagName,'Unclear')==0)) {
+				$flags = QuestionFlag::model()->findByAttributes(array(
+						'question_id'=>$question_id,
+						'question_flag_type_id'=>$question_flag_type_id
+				));
+					
+				$flagStatusName = 'Flagged '.$flagName;
+				$flagStatus = QuestionStatus::model()->findByAttributes(array('name'=>$flagStatusName));
+				
+				if ($flagStatus && count($flags) >= $this->flagThreshold) {
+					$question = Question::model()->findByPk($question_id);
+					if ($question) {
+						$question->question_status_id = $flagStatus->question_status_id;
+						$question->update();
+					}
+				}
+				
+				//Generate a new question
+				$different = -1;
+				while($different <0) {
+					$categories = $this->getQuestionCategories();
+					$randInt = rand(0,count($categories)-1);
+					$myQuestion = $this->getRandomQuestionByCategory($categories{$randInt});
+					if ($myQuestion && $myQuestion{'question_id'} != $question_id) $different = 1;
+				}
+			}
+
+			echo CJSON::encode(array(
+					'success'=>1,
+					'question'=>$myQuestion
+			));		
+			Yii::app()->end();
+		} else {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'error'=>$flag->getErrors()
+			));			
+			Yii::app()->end();
+		}
+		
+	}
+	
+	public function actionRandomQuestionByCategory()
+	{
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		header('Content-type: application/json');
+		$user_id = Yii::app()->user->id;
+		$question_category_id = Yii::app()->request->getPost('question_category_id', '');
+		if (!$question_category_id) {
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Unrecognized question category',
+			));
+			Yii::app()->end();
+		}
+		$questionCategory = QuestionCategory::model()->findByPk($question_category_id);
+		if (!$questionCategory) {
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Could not locate the specified question category',
+			));
+			Yii::app()->end();			
+		}
+		
+		$question_id = Yii::app()->request->getPost('question_id', '');
+		if (!$question_id) {
+			echo CJSON::encode(array(
+					'success'=>-10,
+					'error'=>'Unrecognized question',
+			));
+			Yii::app()->end();
+		}
+		
+		$different = -1;
+		$category = array('question_category_id'=>$questionCategory->question_category_id,'name'=>$questionCategory->name);
+		while($different <0) {
+			$question = $this->getRandomQuestionByCategory($category);
+			if ($question && $question{'question_id'} != $question_id) $different = 1;
+		}
+		
+		echo CJSON::encode(array(
+				'question'=>$question,
+				'success'=>1
+		));
+		Yii::app()->end();		
 	}
 	
 	public function actionRecentJournals()
@@ -1082,6 +1259,69 @@ class SiteController extends Controller
 		$answer->user_id = $user_id;
 		$answer->question_id = $question->question_id;
 		
+		$question_type_id = (int)Yii::app()->request->getPost('question_type_id','');
+		
+		if (!$question_type_id) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Unknown question type',
+			));
+			Yii::app()->end();			
+		}
+		
+		$question_type = QuestionType::model()->findbyPk($question_type_id);
+		
+		if (!$question_type) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>-10,
+					'error'=>'Unknown question type',
+			));
+			Yii::app()->end();
+		}
+		
+		$user_answer = Yii::app()->request->getPost('user_answer','');
+		
+		if (strcmp($question_type->name,'Multiple Choice') == 0) {
+			$question_choice_id = Yii::app()->request->getPost('question_choice_id','');
+			if (!$question_choice_id) {
+				echo CJSON::encode(array(
+					'success'=>-20,
+					'error'=>'A multiple choice option is required',
+				));
+				Yii::app()->end();
+			}
+			$answer->question_choice_id = (int)$question_choice_id;
+		} else if (strcmp($question_type->name,'Quantitative') == 0) {
+			$qty = Yii::app()->request->getPost('quantitative_value','');
+			if (!$qty) {
+				echo CJSON::encode(array(
+						'success'=>-25,
+						'error'=>'A quantity is required',
+				));
+				Yii::app()->end();				
+			}
+			$answer->question_choice_id = (int)$qty;
+		} else {
+			if (!$user_answer) {
+				header('Content-type: application/json');
+				echo CJSON::encode(array(
+						'success'=>-15,
+						'error'=>'A comment is required',
+				));
+				Yii::app()->end();
+			}	
+		}
+		
+		if ($user_answer) {
+			$answer->user_answer = $user_answer;
+			$is_private = Yii::app()->request->getPost('is_private','');
+			if ($is_private) {
+				$answer->is_private = 1;
+			}
+		}
+		/*
 		if (Yii::app()->request->getPost('question_choice_id'))
 		{
 			$answer->question_choice_id = (int)Yii::app()->request->getPost('question_choice_id');
@@ -1097,18 +1337,11 @@ class SiteController extends Controller
 			));
 			Yii::app()->end();			
 		}
-		
-		/*
-		if ($question->quantitative=='Y') {
-			$answer->user_answer = Yii::app()->request->getPost('user_answer');
-		} else {
-			$answer->question_choice_id = (int)Yii::app()->request->getPost('question_choice_id');
-		}
 		*/
-		
 		if ($answer->save()) {
 			header('Content-type: application/json');
 			echo CJSON::encode(array(
+					'answer_id'=>$answer->answer_id,
 					'success'=>1,
 					'redirect'=>'/arq',
 			));
@@ -2264,6 +2497,15 @@ class SiteController extends Controller
 		$this->render('test');
 	}
 	
+	private function getQuestionFlags() {
+		$flags = QuestionFlagType::model()->findAll();
+		$myFlags = array();
+		foreach($flags as $flag) {
+			array_push($myFlags,array('question_flag_type_id'=>$flag->question_flag_type_id,'name'=>$flag->name));
+		}
+		return $myFlags;
+	}
+	
 	private function getQuestionCategories()
 	{
 		$catModel = QuestionCategory::model()->findAll();
@@ -2296,8 +2538,30 @@ class SiteController extends Controller
 	
 	private function getRandomQuestionByCategory($category) {
 		if (!$category) return null;
-		$questions = Question::model()->with(array('questionStatus'=>array('condition'=>"name='Approved'")))->findAll('t.question_category_id=:_id',array(':_id'=>$category{'question_category_id'}));
+		$user_id = Yii::app()->user->id;
+		$_questions = Question::model()->with(array(
+				'questionStatus'=>array('condition'=>"name='Approved'")
+		))->findAll('t.question_category_id=:_id',array(':_id'=>$category{'question_category_id'}));
 
+		$questions = array();
+		foreach ($_questions as $question) {
+			if ($question->answers)
+			{
+				$answered = 0;
+				$answers = $question->answers;
+				foreach($answers as $answer) {
+					if ($answer->user_id == $user_id) 
+					{
+						$answered = 1;
+						break;
+					}
+				}
+				if ($answered <= 0) array_push($questions,$question);
+			}	else {
+				array_push($questions,$question);
+			}
+		}
+		
 		$questionCount = count($questions);
 		if ($questionCount>0) {
 			$randomInt = rand(0,count($questions)-1);

@@ -1,23 +1,24 @@
 <?php
 
 /**
- * This is the model class for table "question_type".
+ * This is the model class for table "question_flag_type".
  *
  * The followings are the available columns in table 'category':
- * @property integer $question_type_id
- * @property string name
+ * @property integer $question_flag_type_id
+ * @property string $name
+ * @property integer $is_active
  *
  * The followings are the available model relations:
  * 
  */
-class QuestionType extends CActiveRecord
+class QuestionFlagType extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'question_type';
+		return 'question_flag_type';
 	}
 
 	/**
@@ -28,10 +29,10 @@ class QuestionType extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('question_type_id, is_active', 'numerical', 'integerOnly'=>true),
+			array('question_flag_type_id', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('question_type_id, name, is_active', 'safe', 'on'=>'search'),
+			array('question_flag_type_id, name', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -45,7 +46,7 @@ class QuestionType extends CActiveRecord
 		// class name for the relations automatically generated below.
 		
 		return array(
-			'questions'=>array(self::HAS_MANY,'Question','question_id'),
+			'questionFlag'=>array(self::HAS_ONE,'QuestionFlag','question_flag_type_id'),
 		);
 		
 	}
@@ -56,7 +57,7 @@ class QuestionType extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'question_type_id' => 'Type',
+			'question_flag_type_id' => 'Type',
 			'name' => 'Name'
 		);
 	}
@@ -79,7 +80,7 @@ class QuestionType extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('question_type_id',$this->question_type_id);
+		$criteria->compare('question_flag_type_id',$this->question_flag_type_id);
 		$criteria->compare('name',$this->name,true);
 
 

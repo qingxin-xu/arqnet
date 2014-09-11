@@ -44,11 +44,11 @@ class Question extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('question_id,user_id, is_active, question_category_id', 'numerical', 'integerOnly'=>true),
+			array('question_id,user_id, is_active, question_category_id,question_status_id', 'numerical', 'integerOnly'=>true),
 			array('content, date_created, date_modified', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('question_id, user_id, content, is_active, date_created, date_modified', 'safe', 'on'=>'search'),
+			array('question_id, question_category_id,question_status_id,user_id, content, is_active, date_created, date_modified', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -79,6 +79,7 @@ class Question extends CActiveRecord
 		return array(
 			'question_id' => 'Question',
 			'user_id' => 'User',
+			'question_status_id'=>'Question Status',
 			'content' => 'Content',
 			'is_active' => 'Is Active',
 			'date_created' => 'Date Created',
@@ -107,6 +108,7 @@ class Question extends CActiveRecord
 
 		$criteria->compare('question_id',$this->question_id);
 		$criteria->compare('user_id',$this->user_id);
+		$criteria->compare('question_status_id',$this->question_status_id);
 		$criteria->compare('content',$this->content,true);
 		$criteria->compare('is_active',$this->is_active);
 		$criteria->compare('date_created',$this->date_created,true);
