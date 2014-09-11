@@ -500,12 +500,29 @@ class SiteController extends Controller
 	public function actionArq()
 	{
 		$this->layout = 'arqLayout2';
-		$this->setPageTitle('Dashboard');
-		$question = $this->getRandomQuestion();
-		$categories = Category::getCategories();
+		$this->setPageTitle('Questions & Answers');
+		//$question = $this->getRandomQuestion();
+		$categories = $this->getQuestionCategories();
+		$randomQuestions = array();
+	
+		foreach ($categories as $c => $category) {
+			$randomQuestions{$category{'name'}} = $this->getRandomQuestionByCategory($category);
+		}
+		
+		$randomQuestion = null;
+		while(!$randomQuestion) {
+			$randInt = rand(0,count($categories)-1);
+			$randomQuestion = $this->getRandomQuestionByCategory($categories{$randInt});
+		}
+		
 		$this->render('arq', array(
-			'question' => $question,
-			'categories'=>$categories
+			'question_statuses'=>$this->getQuestionStatuses(),
+			'question_types'=>$this->getQuestionTypes(),
+			'randomQuestion' => $randomQuestion,
+			'question'=>null,
+			'cachedQuestion'=>null,
+			'categories'=>$categories,
+			'randomQuestionsByCategory'=>$randomQuestions
 		));
 	}
 	
@@ -2247,6 +2264,71 @@ class SiteController extends Controller
 		$this->render('test');
 	}
 	
+	private function getQuestionCategories()
+	{
+		$catModel = QuestionCategory::model()->findAll();
+		$categories = array();
+		foreach($catModel as $c) {
+			array_push($categories,array('question_category_id'=>$c->question_category_id,'name'=>$c->name));
+		}
+		return $categories;
+	}
+	
+	private function getQuestionTypes()
+	{
+		$model = QuestionType::model()->findAll();
+		$types = array();
+		foreach($model as $c) {
+			array_push($types,array('question_type_id'=>$c->question_type_id,'name'=>$c->name));
+		}
+		return $types;		
+	}
+	
+	private function getQuestionStatuses()
+	{
+		$model = QuestionStatus::model()->findAll();
+		$types = array();
+		foreach($model as $c) {
+			array_push($types,array('question_status_id'=>$c->question_status_id,'name'=>$c->name));
+		}
+		return $types;
+	}
+	
+	private function getRandomQuestionByCategory($category) {
+		if (!$category) return null;
+		$questions = Question::model()->with(array('questionStatus'=>array('condition'=>"name='Approved'")))->findAll('t.question_category_id=:_id',array(':_id'=>$category{'question_category_id'}));
+
+		$questionCount = count($questions);
+		if ($questionCount>0) {
+			$randomInt = rand(0,count($questions)-1);
+			$question = $questions{$randomInt};
+			$choices = $question->questionChoices;
+			$myChoices = array();
+			foreach($choices as $choice) {
+				array_push($myChoices,array(
+					'question_choice_id'=>$choice->question_choice_id,
+					'content'=>$choice->content,
+					'choice_order'=>$choice->choice_order,
+					'is_active'=>$choice->is_active
+				));
+			}
+			$myQuestion = array(
+					'question_category_id'=>$category{'question_category_id'},
+					'category'=>$category{'name'},
+					'type_id'=>$question->question_type_id,
+					'type_name'=>$question->questionType->name,
+					'question_id'=>$question->question_id,
+					'content'=>$question->content,
+					'choices'=>$myChoices,
+					'cachedAnswer'=>null
+					
+			);
+			//$myQuestion = array('randomInt'=>$randomInt);
+			return $myQuestion;
+		} else return null;
+	}
+	
+	
 	private function formatCappingDate($myDate)
 	{
 		if (!$myDate) 
@@ -2297,7 +2379,6 @@ class SiteController extends Controller
 		/* All calendar events within the specified date range */
 		$calendarEvents = CalendarEvent::model()->findAll('t.user_id=:_user_id and date(t.start_date)<=date(:end_date) and date(t.start_date)>=date(:start_date)',array(':_user_id'=>$user_id,':start_date'=>$start_date,':end_date'=>$end_date));
 		foreach ($calendarEvents as $ce) {
-			MyStuff::Log("CE IS ".$ce->calendar_event_id.' '.$ce->start_date);
 			/* The corresponding event values for each calendar event */
 			$eventValues = $eventValues = EventValue::model()->with('calendarEvent')->findAll('t.calendar_event_id=:_id',array(':_id'=>$ce->calendar_event_id));
 						

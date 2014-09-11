@@ -11,10 +11,17 @@
  * @property integer $is_active
  * @property string $date_created
  * @property string $date_modified
+ * @property integer $question_status_id
+ * @property integer $question_type_id
+ * @property integer $question_category_id
+ * @property integer $question_status_id
+ * 
  *
  * The followings are the available model relations:
  * @property Answer[] $answers
- * @property CategoryQuestion[] $categoryQuestions
+ * @property QuestionCategory $question_category
+ * @property QuestionType $question_type
+ * @property QuestionStatus $question_status
  * @property User $user
  * @property QuestionAction[] $questionActions
  * @property QuestionChoice[] $questionChoices
@@ -37,11 +44,11 @@ class Question extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('user_id, is_active', 'numerical', 'integerOnly'=>true),
-			array('content, quantitative, date_created, date_modified', 'safe'),
+			array('question_id,user_id, is_active, question_category_id', 'numerical', 'integerOnly'=>true),
+			array('content, date_created, date_modified', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('question_id, user_id, content, quantitative, is_active, date_created, date_modified', 'safe', 'on'=>'search'),
+			array('question_id, user_id, content, is_active, date_created, date_modified', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -54,7 +61,10 @@ class Question extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'answers' => array(self::HAS_MANY, 'Answer', 'question_id'),
-			'categoryQuestions' => array(self::HAS_MANY, 'CategoryQuestion', 'question_id'),
+			//'categoryQuestions' => array(self::HAS_MANY, 'CategoryQuestion', 'question_id'),
+			'questionCategory'=>array(self::BELONGS_TO,'QuestionCategory','question_category_id'),
+			'questionStatus'=>array(self::BELONGS_TO,'QuestionStatus','question_status_id'),
+			'questionType'=>array(self::BELONGS_TO,'QuestionType','question_type_id'),
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
 			'questionActions' => array(self::HAS_MANY, 'QuestionAction', 'question_id'),
 			'questionChoices' => array(self::HAS_MANY, 'QuestionChoice', 'question_id'),
@@ -70,10 +80,10 @@ class Question extends CActiveRecord
 			'question_id' => 'Question',
 			'user_id' => 'User',
 			'content' => 'Content',
-			'quantitative' => 'Quantitative',
 			'is_active' => 'Is Active',
 			'date_created' => 'Date Created',
 			'date_modified' => 'Date Modified',
+			'queston_category_id'=>'Question Category'
 		);
 	}
 
@@ -98,10 +108,10 @@ class Question extends CActiveRecord
 		$criteria->compare('question_id',$this->question_id);
 		$criteria->compare('user_id',$this->user_id);
 		$criteria->compare('content',$this->content,true);
-		$criteria->compare('quantitative',$this->quantitative);
 		$criteria->compare('is_active',$this->is_active);
 		$criteria->compare('date_created',$this->date_created,true);
 		$criteria->compare('date_modified',$this->date_modified,true);
+		$criteria->compare('question_category_id',$this->question_category_id,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

@@ -1,5 +1,15 @@
 <link rel="stylesheet" href="assets/js/jquery-ui/css/vader/jquery-ui.min.css">
+<script type='text/javascript' src='assets/js/arq/AnswerQuestion.js'></script>
+<script type='text/javascript' src='assets/js/arq/OtherQuestions.js'></script>
 <script type="text/javascript">
+
+var categories = <?php echo json_encode($categories); ?>,
+	question_types = <?php echo json_encode($question_types); ?>,
+	question_statuses = <?php echo json_encode($question_statuses); ?>,
+	//The initial question
+	initial_question = <?php echo json_encode($randomQuestion); ?>,
+	//This will populate other questions
+	randomQuestionsByCategory = <?php echo json_encode($randomQuestionsByCategory);?>;
 function updateMsg( description,t ) {
 	description
       .text( t );
@@ -13,6 +23,13 @@ jQuery(document).ready(function($){
 		height:150,
 		width:350,
 	});
+	if (AnswerQuestion && initial_question && AnswerQuestion.createForm) {
+		AnswerQuestion.createForm(initial_question);
+	}
+
+	if (OtherQuestions && OtherQuestions.create && randomQuestionsByCategory) {
+		OtherQuestions.create(randomQuestionsByCategory);
+	}
 });
 </script>
 	<!--  Hide the close button on dialog -->
@@ -59,61 +76,9 @@ jQuery(document).ready(function($){
 		
 		<div class="tab-content">
 			<div class="tab-pane active" id="home-2">
-				<div>
+				<div class='FormPlaceHolder'>
 <?php 
-
-	if ($question)
-	{
-		echo '<form role="form" id="answerQuestion" class="arq-form">'.
-			'<input type="hidden" name="question_id" value="'.$question->question_id.'">'.
-			'<div class="btn-group" style="float:right;">'.
-				'<button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" >'.
-					'<i class="entypo-flag"></i>'.
-				'</button>'.
-		
-				'<ul class="dropdown-menu dropdown-danger" role="menu">'.
-					'<li><a href="#"><i class="entypo-right"></i>Inappropriate</a>'.
-					'</li>'.
-					'<li><a href="#"><i class="entypo-right"></i>Unclear</a>'.
-					'</li>'.
-					'<li class="divider"></li>'.
-				'</ul>'.
-			'</div>'.
-			'<div class="btn-group" style="float:right;">'.
-				'<button type="button" class="btn btn-gold dropdown-toggle" data-toggle="dropdown" >'.
-					'<i class="entypo-forward"></i>'.
-				'</button>'.
-			'</div>'.
-		
-			'<div class="form-group">'.
-				'<h3>'.$question->content.'</h3>';
-					if (count($question->questionChoices)>0/*$question->quantitative=='N'*/) { 
-						echo '<div class="input-group">'.
-						'<ul class="icheck-list">';
-							foreach ($question->questionChoices as $choice) { 
-				    			echo '<li>'.
-				        				'<input class="icheck-10" type="radio" id="minimal-radio-1-10" name="question_choice_id" value="'.$choice->question_choice_id.'" required >'.
-				        				'<label for="minimal-radio-1-10">'.$choice->content.'</label>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'.
-				        			'</li>';
-				   			}
-				  		echo '</ul>';
-					echo '</div>';
-					} else {
-					echo '<div class="form-group">'.
-							'<label for="field-ta" class="col-sm-3 control-label">Written Answer</label>'.
-							'<textarea class="form-control autogrow" id="field-ta" name="user_answer" ></textarea>'.
-						'</div>';
-					}
-						echo '<button type="submit" class="btn btn-green btn-icon">'.
-								'Submit Answer'.
-								'<i class="entypo-check"></i>'.
-							'</button>'.
-							//'<input type="submit" name="submit" value="submit">'.
-						'</form></div>';		
-	} else
-	{
 		echo '<div>There are currently no questions to answer</div>';
-	}
 ?>
 
 				<!--  </div>-->
@@ -142,6 +107,7 @@ jQuery(document).ready(function($){
 							<input type="text" class="form-control" id="field-4" placeholder="Choice 4" name="choice_4">
 							</div>
 							<?php 
+							/*
 								if ($categories)
 								{
 									echo '<div style="margin:15px 0 15px 0;">'.
@@ -155,6 +121,7 @@ jQuery(document).ready(function($){
 									echo	'</select>'.
 									'</div>';									
 								}
+								*/
 							?>
 
 						<br>
@@ -167,10 +134,10 @@ jQuery(document).ready(function($){
 
 			</div>
 			<div class="tab-pane" id="messages-2">
-				<?php $this->widget('QuestionsAsked'); ?>
+				<?php /*$this->widget('QuestionsAsked');*/ ?>
 			</div>
 			<div class="tab-pane" id="settings-2">
-				<?php $this->widget('QuestionsAnswered')?>
+				<?php /*$this->widget('QuestionsAnswered')*/?>
 			</div>
 		</div>
 		<br />
@@ -187,7 +154,8 @@ jQuery(document).ready(function($){
 				<div class="panel-title addG-panel-title2" id="question_title" style="padding-top: 20px;">Other Questions</div>
 			</div>
 			<!-- panel body -->
-			<div class="panel-body" style="height: 433px;">
+			<div id='OtherQuestions' class="panel-body" style="height: 433px;overflow:scroll;">
+				<!--  
 				<div class="addG-innerdiv">
 					<span class="label label-success">Work</span><br><br>
 					<p>How do you feel about your boss at work?</p>		
@@ -200,6 +168,7 @@ jQuery(document).ready(function($){
 					<span class="label label-secondary">Emotions</span><br><br>
 					<p>How do you feel when someone embarrasses you?</p>		
 				</div>
+				-->
 			</div>
 		
 		</div>
