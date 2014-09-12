@@ -65,6 +65,7 @@ var myArq = myArq || {},
 			}
 		});
 		*/
+		/*
 		//Create question handler
 		myArq.$questionContainer.validate({
 			rules: {
@@ -119,7 +120,7 @@ var myArq = myArq || {},
 				});
 			}
 		});
-		
+		*/
 
 	});
 	

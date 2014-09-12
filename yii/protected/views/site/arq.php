@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="assets/css/arq.css">
 <script type='text/javascript' src='assets/js/arq/AnswerQuestion.js'></script>
 <script type='text/javascript' src='assets/js/arq/OtherQuestions.js'></script>
+<script type='text/javascript' src='assets/js/arq/CreateQuestion.js'></script>
 <script type="text/javascript">
 
 var categories = <?php echo json_encode($categories); ?>,
@@ -10,6 +11,7 @@ var categories = <?php echo json_encode($categories); ?>,
 	question_flags = <?php echo json_encode($question_flags); ?>,
 	//The initial question
 	initial_question = <?php echo json_encode($randomQuestion); ?>,
+	question_categories = <?php echo json_encode($categories);?>,
 	//This will populate other questions
 	randomQuestionsByCategory = <?php echo json_encode($randomQuestionsByCategory);?>;
 function updateMsg( description,t ) {
@@ -25,12 +27,43 @@ jQuery(document).ready(function($){
 		height:150,
 		width:350,
 	});
+
+	$('#createQuestionSuccess').dialog({
+		autoOpen:false,
+		closeOnEscape: false,
+		modal:true,
+		draggable:true,
+		height:320,
+		width:450,
+      buttons: {
+          Yes: function() {
+        	  $( this ).dialog( "close" );
+        	  $('div.tab-pane').removeClass('active');
+        	  $('ul.right-aligned li').removeClass('active');
+        	  $('#AnswerQuestionTab').addClass('active');
+        	  $('#AnswerQuestionPane').addClass('active');
+        	  if (CreateQuestion.newQuestion) {
+            	  AnswerQuestion.createForm(CreateQuestion.newQuestion);
+        	  }
+          },
+          No:function() {$( this ).dialog( "close" );}
+
+        },
+        close: function() {
+        	$( this ).dialog( "close" );
+        }		
+	});
+	
 	if (AnswerQuestion && initial_question && AnswerQuestion.createForm) {
 		AnswerQuestion.createForm(initial_question);
 	}
 
 	if (OtherQuestions && OtherQuestions.create && randomQuestionsByCategory) {
 		OtherQuestions.create(randomQuestionsByCategory);
+	}
+
+	if (CreateQuestion && CreateQuestion.createQuestionTypesSelect) {
+		CreateQuestion.createQuestionTypesSelect(question_types);
 	}
 });
 </script>
@@ -50,26 +83,26 @@ jQuery(document).ready(function($){
 	<div class="row">
 		<div class="panel panel-primary" data-collapsed="0">
 			<ul class="nav nav-tabs right-aligned"><!-- available classes "bordered", "right-aligned" -->
-				<li class="active">
-						<a href="#home-2" data-toggle="tab">
+				<li id='AnswerQuestionTab' class="active">
+						<a href="#AnswerQuestionPane" data-toggle="tab">
 					<span class="visible-xs"><i class="entypo-home"></i></span>
 					<span class="hidden-xs">Answer A Question</span>
 				</a>
 			</li>
-			<li>
-				<a href="#profile-2" data-toggle="tab">
+			<li id='CreateQuestionTab'>
+				<a href="#CreateQuestionPane" data-toggle="tab">
 					<span class="visible-xs"><i class="entypo-user"></i></span>
 					<span class="hidden-xs">Create A Question</span>
 				</a>
 			</li>
-			<li>
-				<a href="#messages-2" data-toggle="tab">
+			<li id='ViewQuestionsAskedTab'>
+				<a href="#ViewQuestionsAskedPane" data-toggle="tab">
 					<span class="visible-xs"><i class="entypo-mail"></i></span>
 					<span class="hidden-xs">Questions Asked</span>
 				</a>
 			</li>
-			<li>
-				<a href="#settings-2" data-toggle="tab">
+			<li id='ViewQuestionsAnsweredTab'>
+				<a href="#ViewQuestionsAnsweredPane" data-toggle="tab">
 					<span class="visible-xs"><i class="entypo-cog"></i></span>
 					<span class="hidden-xs">Questions Answered</span>
 				</a>
@@ -77,7 +110,7 @@ jQuery(document).ready(function($){
 		</ul>
 		
 		<div class="tab-content">
-			<div class="tab-pane active" id="home-2">
+			<div class="tab-pane active" id="AnswerQuestionPane">
 				<div class='FormPlaceHolder'>
 <?php 
 		echo '<div>There are currently no questions to answer</div>';
@@ -86,59 +119,15 @@ jQuery(document).ready(function($){
 				<!--  </div>-->
 				</div>
 			</div>
-			<div class="tab-pane" id="profile-2">
-<form id='createQuestion'>			
-<div class="arq-form">
-						<h3>What is your question?</h3>
-							<textarea name="content" class="form-control autogrow" id="field-ta" placeholder="Type here..."></textarea>
-							<br>
-							<div class="form-group">
-								<label class="control-label">Quantitative (<a href="#">?</a>)</label>
-								    <input type="checkbox" name="quantitative">
-							</div>		
-							<br>
-							<div>
-								<label>Multiple Choice (optional)</label>
-								<br>
-							<input type="text" class="form-control" id="field-1" placeholder="Choice 1" name="choice_1">
-							<br>
-							<input type="text" class="form-control" id="field-2" placeholder="Choice 2" name="choice_2">
-							<br>
-							<input type="text" class="form-control" id="field-3" placeholder="Choice 3" name="choice_3">
-							<br>
-							<input type="text" class="form-control" id="field-4" placeholder="Choice 4" name="choice_4">
-							</div>
-							<?php 
-							/*
-								if ($categories)
-								{
-									echo '<div style="margin:15px 0 15px 0;">'.
-											'<label >Optionally Select One or More Categoriess for this Question</label>'.
-										'</div><div>'.
-										'<select style="width:200px;" multiple name=\'categories[]\'>';
-									foreach ($categories as $category)
-									{
-										echo '<option value="'.$category['category_id'].'" >'.$category['display_name'].'</option>';
-									}
-									echo	'</select>'.
-									'</div>';									
-								}
-								*/
-							?>
-
-						<br>
-						<button type="submit" class="btn btn-green btn-icon">
-						Submit Question
-						<i class="entypo-check"></i>
-						</button>
-					</div>
-</form>
+			<div class="tab-pane" id="CreateQuestionPane">
+			<div id="questionTypeSelectPlaceHolder"></div>
+			<div id='createQuestionFormPH'></div>
 
 			</div>
-			<div class="tab-pane" id="messages-2">
+			<div class="tab-pane" id="ViewQuestionsAskedPane">
 				<?php /*$this->widget('QuestionsAsked');*/ ?>
 			</div>
-			<div class="tab-pane" id="settings-2">
+			<div class="tab-pane" id="ViewQuestionsAnsweredPane">
 				<?php /*$this->widget('QuestionsAnswered')*/?>
 			</div>
 		</div>
@@ -198,6 +187,11 @@ jQuery(document).ready(function($){
 <div id="myThinker" title="...">
   <p class="validateTips"></p> 
 </div>
+
+<div id='createQuestionSuccess' title='Thank you.  Your question has been submitted.'>
+	<p class='successMsg'>Would you like to answer this question?</p>
+</div>
+
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
 <script type='text/javascript' src='/assets/js/arq.js'></script>

@@ -3,7 +3,7 @@
 class SiteController extends Controller
 {
 	var $flagThreshold = 10;
-	
+	var $defaultQuestionStatus = 'Submitted';
 	var $dashboard_topics = array(
 		'love',
 		'sex',
@@ -1177,16 +1177,50 @@ class SiteController extends Controller
 			Yii::app()->end();			
 		}
 		
+		$question_type_id =  Yii::app()->request->getPost('question_type_id', '');
+		if (!$question_type_id) {
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Unidentified question type encountered',
+			));
+			Yii::app()->end();			
+		}
+		
+		$questionType = QuestionType::model()->findByPk($question_type_id);
+		
+		if (!$questionType) {
+			echo CJSON::encode(array(
+					'success'=>-10,
+					'error'=>'Unidentified question type encountered',
+			));
+			Yii::app()->end();			
+		}
+		
+		$question_category_id = Yii::app()->request->getPost('question_category_id',array());
+		if (!$question_category_id) {
+			echo CJSON::encode(array(
+					'success'=>-15,
+					'error'=>'Please select a category for this question',
+			));
+			Yii::app()->end();			
+		}
+		$questionCategory = QuestionCategory::model()->findByPk($question_category_id);
+		if (!$questionCategory) {
+			echo CJSON::encode(array(
+					'success'=>-25,
+					'error'=>'The specified category could not be found; please select another',
+			));
+			Yii::app()->end();			
+		}
+		
 		$question = new Question();
 		$question->user_id = Yii::app()->user->Id;
 		$question->content = Yii::app()->request->getPost('content', '');
-		$quantitative = Yii::app()->request->getPost('quantitative', '');
-		if ($quantitative=='on') {
-			$question->quantitative = 'Y';
-			$question->quantitative_value = (int)Yii::app()->request->getPost('quantitative_value', 0);
-		} else {
-			$question->quantitative = 'N';
-			$question->quantitative_value = 0;
+		$question->question_type_id = $question_type_id;
+		$question->question_category_id = $question_category_id;
+		$questionStatus = QuestionStatus::model()->findByAttributes(array('name'=>$this->defaultQuestionStatus));
+		if ($questionStatus) {
+			$question->question_status_id = $questionStatus->question_status_id;
 		}
 
 		// This will cause errors... use CDbExpression
@@ -1229,22 +1263,33 @@ class SiteController extends Controller
 				$qc->question_id = $question->question_id;
 				$qc->save();
 			}
-
-			$categories = Yii::app()->request->getPost('categories',array());
-			if (count($categories) >0)
-			{
-				foreach ($categories as $category) {
-					$categoryQuestion = new CategoryQuestion();
-					$categoryQuestion->question_id = $question->question_id;
-					$categoryQuestion->category_id = $category;
-					$categoryQuestion->save();
-				}
-			}
 		}
 		
-		
+		$question = Question::model()->findByPk($question->question_id);
+		//Unroll
+		$choices = $question->questionChoices;
+		$myChoices = array();
+		foreach($choices as $choice) {
+			array_push($myChoices,array(
+			'question_choice_id'=>$choice->question_choice_id,
+			'content'=>$choice->content,
+			'choice_order'=>$choice->choice_order,
+			'is_active'=>$choice->is_active
+			));
+		}
+		$myQuestion = array(
+				'question_category_id'=>$questionCategory->question_category_id,
+				'category'=>$questionCategory->name,
+				'type_id'=>$question->question_type_id,
+				'type_name'=>$question->questionType->name,
+				'question_id'=>$question->question_id,
+				'content'=>$question->content,
+				'choices'=>$myChoices,
+				'cachedAnswer'=>null
+		);		
 		echo CJSON::encode(array(
 				'success'=>1,
+				'question'=>$myQuestion
 		));
 		Yii::app()->end();
 	}
@@ -1321,23 +1366,7 @@ class SiteController extends Controller
 				$answer->is_private = 1;
 			}
 		}
-		/*
-		if (Yii::app()->request->getPost('question_choice_id'))
-		{
-			$answer->question_choice_id = (int)Yii::app()->request->getPost('question_choice_id');
-		} else if (Yii::app()->request->getPost('user_answer'))
-		{
-			$answer->user_answer = Yii::app()->request->getPost('user_answer');
-		} else
-		{
-			header('Content-type: application/json');
-			echo CJSON::encode(array(
-					'success'=>0,
-					'error'=>'Invalid form submission',
-			));
-			Yii::app()->end();			
-		}
-		*/
+	
 		if ($answer->save()) {
 			header('Content-type: application/json');
 			echo CJSON::encode(array(
