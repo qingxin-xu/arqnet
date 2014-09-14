@@ -3,6 +3,7 @@
 <script type='text/javascript' src='assets/js/arq/AnswerQuestion.js'></script>
 <script type='text/javascript' src='assets/js/arq/OtherQuestions.js'></script>
 <script type='text/javascript' src='assets/js/arq/CreateQuestion.js'></script>
+<script type='text/javascript' src='assets/js/arq/QuestionAnalysis.js'></script>
 <script type="text/javascript">
 
 var categories = <?php echo json_encode($categories); ?>,
@@ -12,6 +13,9 @@ var categories = <?php echo json_encode($categories); ?>,
 	//The initial question
 	initial_question = <?php echo json_encode($randomQuestion); ?>,
 	question_categories = <?php echo json_encode($categories);?>,
+	answered_questions  = <?php echo json_encode($answeredQuestions); ?>,
+	questions_asked = <?php echo json_encode($questionsAsked); ?>,
+	askedQuestions,answeredQuestions,
 	//This will populate other questions
 	randomQuestionsByCategory = <?php echo json_encode($randomQuestionsByCategory);?>;
 function updateMsg( description,t ) {
@@ -64,6 +68,13 @@ jQuery(document).ready(function($){
 
 	if (CreateQuestion && CreateQuestion.createQuestionTypesSelect) {
 		CreateQuestion.createQuestionTypesSelect(question_types);
+	}
+
+	if (QuestionAnalysis && QuestionAnalysis.display) {
+		askedQuestions = $.extend({},QuestionAnalysis);
+		askedQuestions.display('#ViewQuestionsAskedPane',questions_asked);
+		answeredQuestions = $.extend({},QuestionAnalysis);
+		answeredQuestions.display('#ViewQuestionsAnsweredPane',answered_questions);
 	}
 });
 </script>
@@ -124,7 +135,7 @@ jQuery(document).ready(function($){
 			<div id='createQuestionFormPH'></div>
 
 			</div>
-			<div class="tab-pane" id="ViewQuestionsAskedPane">
+			<div class="tab-pane" id="ViewQuestionsAskedPane" style="max-height: 433px;overflow:scroll;">
 				<?php /*$this->widget('QuestionsAsked');*/ ?>
 			</div>
 			<div class="tab-pane" id="ViewQuestionsAnsweredPane">

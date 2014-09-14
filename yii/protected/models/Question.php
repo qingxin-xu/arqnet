@@ -131,6 +131,42 @@ class Question extends CActiveRecord
 		return parent::model($className);
 	}
 	
+	/**
+	 * Unroll into php array with added information about the questions category 
+	 * 
+	 * @param unknown $user_id
+	 * @return unknown
+	 */
+	public function unroll($model) {
+		if (!$model) return array();
+		
+		$choices = $model->questionChoices;
+		$category = $model->questionCategory;
+		$myChoices = array();
+		foreach($choices as $choice) {
+			array_push($myChoices,array(
+				'question_choice_id'=>$choice->question_choice_id,
+				'content'=>$choice->content,
+				'choice_order'=>$choice->choice_order,
+				'is_active'=>$choice->is_active
+			));
+		}
+		$myQuestion = array(
+				'question_category_id'=>$category->question_category_id,
+				'category'=>$category->name,
+				'type_id'=>$model->question_type_id,
+				'type_name'=>$model->questionType->name,
+				'question_id'=>$model->question_id,
+				'content'=>$model->content,
+				'date_created'=>$model->date_created,
+				'status'=>$model->questionStatus->name,
+				'choices'=>$myChoices,
+				'cachedAnswer'=>null
+				
+		);
+		return $myQuestion;
+	}
+	
 	public function getQuestionsAsked($user_id)
 	{
 		$list = Yii::app()->db->createCommand(

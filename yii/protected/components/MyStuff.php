@@ -2,8 +2,8 @@
 
 class MyStuff {
 	public static function log($str) {
-		if (file_exists('/home/thomp/www/arnet-iq/www/yii/output.log')) {
-			$log_file = '/home/thomp/www/arnet-iq/www/yii/output.log';
+		if (file_exists('/home/thomp/www/arqnet/yii/output.log')) {
+			$log_file = '/home/thomp/www/arqnet/yii/output.log';
 		} elseif (file_exists('/Users/nrodrigo/git/arnet-iq/www/yii/output.log')) {
 			$log_file = '/Users/nrodrigo/git/arnet-iq/www/yii/output.log';
 		} elseif (file_exists('/home/arqbrand/public_html/yii/output.log')) {

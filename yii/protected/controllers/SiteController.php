@@ -525,7 +525,9 @@ class SiteController extends Controller
 			'question_flags'=>$this->getQuestionFlags(),
 			'cachedQuestion'=>null,
 			'categories'=>$categories,
-			'randomQuestionsByCategory'=>$randomQuestions
+			'randomQuestionsByCategory'=>$randomQuestions,
+			'answeredQuestions'=>$this->getMyAnsweredQuestions(),
+			'questionsAsked'=>$this->getMyQuestions()
 		));
 	}
 	
@@ -1267,6 +1269,7 @@ class SiteController extends Controller
 		
 		$question = Question::model()->findByPk($question->question_id);
 		//Unroll
+		/*
 		$choices = $question->questionChoices;
 		$myChoices = array();
 		foreach($choices as $choice) {
@@ -1287,6 +1290,8 @@ class SiteController extends Controller
 				'choices'=>$myChoices,
 				'cachedAnswer'=>null
 		);		
+		*/
+		$myQuestion = Question::unroll($question);
 		echo CJSON::encode(array(
 				'success'=>1,
 				'question'=>$myQuestion
@@ -1347,7 +1352,7 @@ class SiteController extends Controller
 				));
 				Yii::app()->end();				
 			}
-			$answer->question_choice_id = (int)$qty;
+			$answer->quantitative_value = (int)$qty;
 		} else {
 			if (!$user_answer) {
 				header('Content-type: application/json');
@@ -2526,6 +2531,72 @@ class SiteController extends Controller
 		$this->render('test');
 	}
 	
+	private function getMyQuestions()
+	{
+		$user_id = Yii::app()->user->id;
+		if (!$user_id) return null;
+		$model = Question::model()->findAll('t.user_id=:_uid',array(':_uid'=>$user_id));
+		
+		$myQuestions = array();
+		foreach ($model as $m) {
+			$question = Question::unroll($m);
+			$answers = array();
+			$myAnswer = null;
+			foreach ($m->answers as $answer) {
+				$a = array(
+					'answer_id'=>$answer->answer_id,
+					'user_answer'=>$answer->is_private?null:$answer->user_answer,
+					'date_created'=>$answer->date_created,
+					'question_choice_id'=>$answer->question_choice_id,
+					'quantitative_value'=>$answer->quantitative_value,
+				);
+				array_push($answers,$a);
+				if ($answer->user_id == $user_id) $myAnswer = $a;
+			}
+			array_push($myQuestions,array(
+				'question'=>$question,
+				'answers'=>$answers,
+				'myAnswer'=>$myAnswer
+			));
+		
+		}
+		
+		return $myQuestions;		
+	}
+	
+	private function getMyAnsweredQuestions()
+	{
+		$user_id = Yii::app()->user->id;
+		if (!$user_id) return null;
+		$model = Question::model()->with(array(
+				'answers'=>array('condition'=>"answers.user_id=".$user_id)))->findAll();
+
+		$answeredQuestions = array();
+		foreach ($model as $answeredQuestion) {
+			$question = Question::unroll($answeredQuestion);
+			$answers = array();
+			$myAnswer = null;
+			foreach ($answeredQuestion->answers as $answer) {
+				$a =array(
+					'answer_id'=>$answer->answer_id,
+					'user_answer'=>$answer->is_private?null:$answer->user_answer,
+					'date_created'=>$answer->date_created,
+					'question_choice_id'=>$answer->question_choice_id,
+					'quantitative_value'=>$answer->quantitative_value,
+				);
+				array_push($answers,$a);
+				if ($answer->user_id == $user_id) $myAnswer = $a;
+			}
+			array_push($answeredQuestions,array(
+				'question'=>$question,
+				'answers'=>$answers,
+				'myAnswer'=>$myAnswer
+			));
+
+		}
+		return $answeredQuestions;
+	}
+	
 	private function getQuestionFlags() {
 		$flags = QuestionFlagType::model()->findAll();
 		$myFlags = array();
@@ -2595,6 +2666,8 @@ class SiteController extends Controller
 		if ($questionCount>0) {
 			$randomInt = rand(0,count($questions)-1);
 			$question = $questions{$randomInt};
+			$myQuestion = Question::unroll($question);
+			/*
 			$choices = $question->questionChoices;
 			$myChoices = array();
 			foreach($choices as $choice) {
@@ -2617,6 +2690,7 @@ class SiteController extends Controller
 					
 			);
 			//$myQuestion = array('randomInt'=>$randomInt);
+			*/
 			return $myQuestion;
 		} else return null;
 	}

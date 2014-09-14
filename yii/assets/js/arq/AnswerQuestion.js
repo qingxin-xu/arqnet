@@ -1,3 +1,6 @@
+/*
+ * Logic for answering a question
+ */
 var AnswerQuestion = {
 		
 	service:'/answerQuestion',

@@ -1,3 +1,6 @@
+/*
+ * Logic for creating a question
+ */
 var CreateQuestion = {
 		createService:'/createQuestion',
 		formSelector:'#createQuestion',
