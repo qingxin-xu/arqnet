@@ -18,7 +18,7 @@ $img_dir_rel = DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'images';
 //    $analysis_engine_url = PROD_URL;
 // } else {
 //$analysis_engine_url = 'localhost:8124';
-$analysis_engine_url = 'http://69.226.2.21/ae_web_api.php';
+$analysis_engine_url = 'http://157.22.244.225/ae_web_api.php';
 // }
 
 if (file_exists("/home/thomp")) {
