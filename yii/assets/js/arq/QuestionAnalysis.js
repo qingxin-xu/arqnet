@@ -9,6 +9,14 @@ var QuestionAnalysis = {
 	placeHolder:null,
 	mainDisplay:null,
 	analysisPages:{},
+	sortParameter:'date_created',
+	//sortDirection:['DESC','DESC','DESC']
+	sortable:['category','date_created','status'],
+	sortable:{
+		category:'ASC',
+		date_created:'DESC',
+		status:'ASC'
+	},
 	
 	/*
 	 * Use the create method to create a stand alone analysis display
@@ -36,13 +44,19 @@ var QuestionAnalysis = {
 		var html = this.template,
 			rows = '',
 			self = this;
+		if (!this.questions) 
+		{
+			this.questions = questions;
+			this.sort('date_created',false);
+		}
+		
 		
 		for (var i = 0;i<questions.length;i++)
 		{
 			rows+=this.createRow(questions[i].question,i);
 		}
 		html = html.replace(/{ROWS}/,rows);
-		this.questions = questions;
+		
 		$(placeHolder).html(html);
 		$(placeHolder+' tr').each(function(index,row) {
 			
@@ -51,6 +65,18 @@ var QuestionAnalysis = {
 			});
 		});
 		
+		for (var i in this.sortable) {
+			$(placeHolder+' th.sort_'+i).click({property:i},function(e) {
+				if (self.sortable[e.data.property] == 'ASC') {
+					self.sortable[e.data.property] = 'DESC';
+				} else {
+					self.sortable[e.data.property] = 'ASC';
+				}
+				self.sort(e.data.property,true);
+				self._toggleSortClass(e.data.property);
+			});
+		}
+
 		this.mainDisplay = $(placeHolder+' table');
 	},
 
@@ -69,9 +95,11 @@ var QuestionAnalysis = {
 		if (!index) index = 1;
 		var rowClass = index%2==0?'even':'odd';
 		var row = '<tr class="rowClass" style="cursor:pointer;">';
+		var date_created = '';
+		if (question.date_created) date_created = question.date_created;
 		row+='<td>'+question.content+'</td>';
 		row+='<td>'+question.category+'</td>';
-		row+='<td>'+question.date_created+'</td>';
+		row+='<td>'+date_created+'</td>';
 		row+='<td>'+question.status+'</td>';
 		row+='<td>delete</td>';
 		row+='</tr>';
@@ -269,9 +297,9 @@ var QuestionAnalysis = {
 	},
 	
 	showAnalysisGraph:function(_question,id) {
-		if (!_question) return 1;
-		if (!_question.answers || !_question.answers.length || _question.answers.length<=0) return 1;
-		if (!id) return 1;
+		if (!_question) return null;
+		if (!_question.answers || !_question.answers.length || _question.answers.length<=0) return null;
+		if (!id) return null;
 		
 		var question = _question.question,
 			answers = _question.answers,
@@ -289,9 +317,9 @@ var QuestionAnalysis = {
 	
 	plotMCGraph:function(question,answers,myAnswer,placeAt) {
 		console.log('PLOT',question,answers,placeAt);
-		if (!question) return 1;
-		if (!question.choices) return 1;
-		if (!answers) return 1;
+		if (!question) return null;
+		if (!question.choices) return null;
+		if (!answers) return null;
 		var year = 2014,
 			day  = 1,
 			options = {
@@ -375,9 +403,9 @@ var QuestionAnalysis = {
 	},
 	
 	plotQtyGraph:function(question,answers,myAnswer,placeAt) {
-		if (!question) return 1;
-		if (!question.choices) return 1;
-		if (!answers) return 1;
+		if (!question) return null;
+		if (!question.choices) return null;
+		if (!answers) return null;
 		var myBarColor='blue',
 			otherBarColor='red',
 			options = {
@@ -541,6 +569,56 @@ var QuestionAnalysis = {
 		});
 	},
 	
+	sort:function(property,redraw) {
+		console.log('sort',property);
+		if (!this.questions) return;
+		if (!property) return;
+		if (!this.sortable[property]) return;
+		var self = this;
+		if (this.sortable[property] == 'DESC') {
+			this.questions.sort(function(a,b) {
+				if (!a.question[property]) return 1;
+				if (!b.question[property]) return -1;
+				if (a.question[property] > b.question[property]) return 1;
+				else if (a.question[property] == b.question[property]) return 0;
+				else return -1;
+			});
+		} else {
+			this.questions.sort(function(a,b) {
+				if (!a.question[property]) return -1;
+				if (!b.question[property]) return 1;
+				if (a.question[property] > b.question[property]) return -1;
+				else if (a.question[property] == b.question[property]) return 0;
+				else return 1;
+			});			
+		}
+		if (redraw) {
+			this.display(this.placeHolder,this.questions);
+		}
+	},
+	
+	_toggleSortClass:function(property) {
+		if (!property) return;
+		if (!this.sortable[property]) return;
+		
+		if (this.sortable[property] == 'ASC') {
+			$(this.placeHolder+' th.sort_'+property).removeClass('headerSortDESC');
+			$(this.placeHolder+' th.sort_'+property).addClass('headerSortASC');
+		} else {
+			$(this.placeHolder+' th.sort_'+property).removeClass('headerSortASC');
+			$(this.placeHolder+' th.sort_'+property).addClass('headerSortDESC');
+		}
+		
+		for (var i in this.sortable) {
+			if (i != property) {
+				$(this.placeHolder+' th.sort_'+i).removeClass('headerSortDESC');
+				$(this.placeHolder+' th.sort_'+i).removeClass('headerSortASC');
+				this.sortable[i] = 'ASC';
+			}
+		}
+
+	},
+	
 	viewQuestion:function(question) {
 		if (!question) return;
 	},
@@ -610,9 +688,9 @@ var QuestionAnalysis = {
 				'<thead>',
 				'<tr>',
 					'<th>Question</th>',
-					'<th>Category</th>',
-					'<th>Date</th>',
-					'<th>Status</th>',
+					'<th class="sort_category headerSortable">Category</th>',
+					'<th class="sort_date_created headerSortable headerSortASC">Date</th>',
+					'<th class="sort_status headerSortable">Status</th>',
 					'<th>Actions</th>',
 				'</thead>',
 				'<tbody>',
