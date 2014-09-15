@@ -14,3 +14,14 @@ label input {
     top: -1px;
     *overflow: hidden;
 }
+
+.plotTooltip {
+	position:absolute;
+	display: none;
+	border: 1px solid #fdd;
+	padding: 2px;
+	background-color:#fee;
+	color:rgb(84,84,84);
+	opacity: 1;
+	z-index:1100;
+}

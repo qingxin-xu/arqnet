@@ -86,10 +86,12 @@ jQuery(document).ready(function($){
 		button {color:rgb(51,51,51);}
 	</style>
 <br />
+<!-- 
 <div class="row">
 	<div class="addG-title2"><h1 style="padding-left: 20px;">We've got some Questions</h1></div>
 	
 </div>
+ -->
 <div class="row col-sm-8">
 	<div class="row">
 		<div class="panel panel-primary" data-collapsed="0">

@@ -16,6 +16,7 @@ var QuestionAnalysis = {
 		if (!placeHolder) return;
 		if (!questions || !questions.length || !questions.length<=0) {
 			 $(placeHolder).html('Thre are currently no questions to display');
+			 return;
 		}
 		
 		this.placeHolder = placeHolder;
@@ -87,6 +88,10 @@ var QuestionAnalysis = {
 		html = html.replace(/{YOUR_ANSWER_ID}/,'Answer_'+id);
 		html = html.replace(/{COMMENT_CONTAINER_ID}/,'CommentContainer_'+id);
 		html = html.replace(/{VIEW_COMMENTS_ID}/,'ViewComments_'+id);
+		for (var i = 0;i<=4;i++) 
+		{
+			html = html.replace("Tooltip"+i+"_{ID}","Tooltip"+i+"_"+id);
+		}
 		//html = html.replace(/{ANSWER_COMMENTS}/,'Comments_'+id);
 		
 		
@@ -163,14 +168,22 @@ var QuestionAnalysis = {
 			});
 		}
 		
+		this.analysisPages[id] = {plot:1};
+		
 		$(placeHolder+' .displayed').fadeOut({
 			done:function() {
-				$('#Wrapper_'+id).fadeIn();
+				$('#Wrapper_'+id).fadeIn({
+					done:function() {
+						self.analysisPages[id]['plot'] = self.showAnalysisGraph(_question,id);
+						if (type == 'Multiple Choice') self.showMCTooltips(id);
+					}
+				});
 				$(placeHolder+' .displayed').removeClass('displayed');
 				$('#Wrapper_'+id).addClass('displayed');
 			}
 		});
-		this.analysisPages[id] = 1;
+		
+		
 	},
 	
 	_displayAnalysis:function(id) {
@@ -239,8 +252,277 @@ var QuestionAnalysis = {
 		return html;
 	},
 	
-	hideComments:function(id) {
+	showAnalysisGraph:function(_question,id) {
+		if (!_question) return 1;
+		if (!_question.answers || !_question.answers.length || _question.answers.length<=0) return 1;
+		if (!id) return 1;
 		
+		var question = _question.question,
+			answers = _question.answers,
+			myAnswer = question.myAnswer||[],
+			type = question.type_name|| 'Open Answer',
+			placeAt = '#Canvas_'+id;
+		
+		if (type == 'Multiple Choice') {
+			return this.plotMCGraph(question,answers,myAnswer,placeAt);
+		} else if (type == 'Quantitative') {
+			return this.plotQtyGraph(question,answers,myAnswer,placeAt);
+		} else return 1;
+			
+	},
+	
+	plotMCGraph:function(question,answers,myAnswer,placeAt) {
+		console.log('PLOT',question,answers,placeAt);
+		if (!question) return 1;
+		if (!question.choices) return 1;
+		if (!answers) return 1;
+		var year = 2014,
+			day  = 1,
+			options = {
+				xaxis:{
+					font:{size:16,family:'sans-serif',color:'rgb(104,72,162)'},
+					min:0,/*sorted_set[nWords-1].count-1*/
+					//max:answers.length+2,
+	                axisLabel: 'Count',
+	                axisLabelUseCanvas: true,
+	                axisLabelFontSizePixels: 18,
+	                axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+	                axisLabelPadding: 5				
+				},
+				yaxis:{
+					font:{size:16,family:'sans-serif',color:'rgb(104,72,162)'},
+	                min: (new Date(year, 0, 1)).getTime(),
+	                //max: (new Date(year, keys.length+1, 1)).getTime(),
+	                tickSize: [1, "month"],
+	          		monthNames:[""],
+	         	   	mode:'time',
+	                axisLabel: 'Value',
+	                axisLabelUseCanvas: true,
+	                axisLabelFontSizePixels: 18,
+	                axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+	                axisLabelPadding: 5				
+				}
+		},
+		results = {},
+		count = answers.length+1;;
+		
+		for (var i = 0;i<question.choices.length;i++) {
+			results[question.choices[i].question_choice_id] = {
+				count:0,
+				choice:question.choices[i].content
+			};
+		}
+
+		for (var i = 0;i<answers.length;i++) {
+			var choice = answers[i].question_choice_id;
+			results[choice].count = results[choice].count+1;
+
+		}
+		
+		var keys = Object.keys(results);
+		console.log('RESULTS',keys,results);
+		keys.sort(function(a,b) {
+			if (results[a].count > results[b].count) return -1;
+			else if (results[a].count == results[b].count) return 0;
+			else return 1;
+		});
+		options['xaxis'].max = results[ keys[keys.length-1] ].count+2;
+		options['yaxis'].max = new Date(year, keys.length+1, 1).getTime();
+		j = keys.length;
+		var data = [];
+		
+		for (var i = 0;i<keys.length;i++) {
+			data.push({
+				bars: {
+					show:true,
+					horizontal:true,
+					barWidth:4*12*24*60*60*300,
+					fill:true,
+					align:'center',
+					fillColor:  "#80699B",
+					lineWidth:1,				
+				},
+				data:[ [ results[keys[i]].count,(new Date(year,j,day)).getTime() ] ]
+			});
+
+			options['yaxis']['monthNames'].push("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+results[keys[j-1]].choice);
+			j--;
+		}
+		console.log("DATA",placeAt);
+		options['yaxis']['monthNames'].push("");
+		options['yaxis']['tickLength']=0;
+		options['xaxis']['show']=false;
+		options['grid'] = {
+			borderWidth:0
+		};
+		 return $.plot($(placeAt),data,options);
+	},
+	
+	plotQtyGraph:function(question,answers,myAnswer,placeAt) {
+		if (!question) return 1;
+		if (!question.choices) return 1;
+		if (!answers) return 1;
+		var myBarColor='blue',
+			otherBarColor='red',
+			options = {
+				xaxis:{
+					font:{size:16,family:'sans-serif',color:'rgb(104,72,162)'},
+					//min:0,/*sorted_set[nWords-1].count-1*/
+					//max:answers.length+2,
+	                axisLabel: 'Quantity',
+	                axisLabelUseCanvas: true,
+	                axisLabelFontSizePixels: 18,
+	                axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+	                axisLabelPadding: 5	,
+	                tickLength:0
+				},
+				yaxis:{
+					font:{size:16,family:'sans-serif',color:'rgb(104,72,162)'},
+	                min: 0,
+	       
+	                axisLabel: 'Count',
+	                axisLabelUseCanvas: true,
+	                axisLabelFontSizePixels: 18,
+	                axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+	                axisLabelPadding: 5,
+	                tickLength:0
+				}
+		},
+		results = {},
+		count = answers.length+1;;
+		
+		for (var i = 0;i<answers.length;i++) {
+			var answer_id = answers[i].answer_id;
+			if (results[answer_id]) {
+				results[answer_id].count = results[answer_id].count+1;
+			} else {
+				results[answer_id] = {
+					count:1,
+					qty:parseInt(answers[i].quantitative_value)
+				};
+			}
+		}
+		
+		var keys = Object.keys(results);
+		console.log('RESULTS',keys,results);
+		keys.sort(function(a,b) {
+			if (results[a].qty > results[b].qty) return 1;
+			else if (results[a].qty == results[b].qty) return 0;
+			else return -1;
+		});
+		
+		options['xaxis'].min = 0;
+		options['xaxis'].max = results[ keys[keys.length-1] ].qty+2;
+		options['yaxis'].max = results[keys[keys.length-1]].count+2;
+		var data = [],
+			ticks = [];
+		
+		for (var i = 0;i<keys.length;i++) {
+			var barColor = otherBarColor;
+			if (myAnswer && myAnswer.answer_id == keys[i]) barColor = myBarColor;
+			data.push({
+				bars: {
+					show:true,
+					horizontal:false,
+					barWidth:0.25,
+					align:'center',
+					fill:true,
+					fillColor:  barColor,
+					lineWidth:1,				
+				},
+				data:[ [ results[keys[i]].qty,results[keys[i]].count ] ]
+			});
+			ticks.push([results[keys[i]].qty,results[keys[i]].count]);
+		}
+		options['xaxis'].ticks = ticks;
+
+		 return $.plot($(placeAt),data,options);		
+	},
+	
+	showMCTooltips:function(id) {
+		if (!id) return;
+		if (!this.analysisPages[id] || !this.analysisPages[id].plot) return;
+		var plot = this.analysisPages[id].plot
+		var ctx = plot.getCanvas().getContext("2d"); // get the context
+		var _data = plot.getData();//[0].data;  // get your series data
+		var xaxis = plot.getXAxes()[0]; // xAxis
+		var yaxis = plot.getYAxes()[0]; // yAxis
+		var offset = plot.getPlotOffset(); // plots offset
+		ctx.font = "18px Verdana"; // set a pretty label font
+		ctx.fillStyle = "black";
+		
+		$.each(_data,function(index,item) {
+			var data = item.data;
+			for (var i = 0; i < data.length; i++){
+			    var text = data[i][0]*100 + '%';
+			    var metrics = ctx.measureText(text);
+			    var xPos = (xaxis.p2c(data[i][0])+offset.left + 15); // place it in the middle of the bar
+			    var yPos = yaxis.p2c(data[i][1]) + offset.top + 6; // place at top of bar, slightly up
+			    ctx.fillText(text, xPos, yPos);
+			}	
+		});
+
+	},
+	
+	showQtyTooltips:function(id) {
+		if (!id) return;
+		if (!this.analysisPages[id] || !this.analysisPages[id].plot) return;
+		var plot = this.analysisPages[id].plot
+		var ctx = plot.getCanvas().getContext("2d"); // get the context
+		var _data = plot.getData();//[0].data;  // get your series data
+		var xaxis = plot.getXAxes()[0]; // xAxis
+		var yaxis = plot.getYAxes()[0]; // yAxis
+		var offset = plot.getPlotOffset(); // plots offset
+		ctx.font = "18px Verdana"; // set a pretty label font
+		ctx.fillStyle = "black";
+		
+		$.each(_data,function(index,item) {
+			var data = item.data;
+			for (var i = 0; i < data.length; i++){
+			    var text = data[i][0]*100 + '%';
+			    var metrics = ctx.measureText(text);
+			    var xPos = (xaxis.p2c(data[i][0])+offset.left + 15); // place it in the middle of the bar
+			    var yPos = yaxis.p2c(data[i][1]) + offset.top + 6; // place at top of bar, slightly up
+			    ctx.fillText(text, xPos, yPos);
+			}	
+		});		
+	},
+	
+	_showTooltips:function(id) {
+		if (!id) return;
+		if (!this.analysisPages[id] || !this.analysisPages[id].plot) return;
+		
+		var plot = this.analysisPages[id].plot,
+			offset = 0;
+		
+		plot.unhighlight();
+		//this.trackerPlot.unhighlight();
+		$.each(plot.getData(),function(index,item) {
+			var point = {x:item.data[0],y:item.data[1]};
+			var pointOffset = plot.pointOffset(point);
+			if (!point || !('x' in point)) return;
+			
+			var html = '';
+			/*
+			if (item.capped) {
+				if (item.originalData[point['x']]) {
+					
+					html = item.tipLabel;
+				} else {
+					$("#Tooltip"+index).hide();
+					return;
+				}
+			} else {
+				if (!item.originalData) return;
+				html = item.tipLabel+' = '+item.originalData[point['x']];//point['y'].toFixed(2);
+			}
+			*/
+			html = 'HI ';
+			$("#Tooltip"+index+"_"+id).html(html)
+			.css({top: pointOffset.top+20, left: pointOffset.left+40+offset})
+			.fadeIn(200);
+			//plot.highlight(index,sliderValue);
+		});
 	},
 	
 	viewQuestion:function(question) {
@@ -266,10 +548,15 @@ var QuestionAnalysis = {
 	answerAnalysisTemplate:[
 		'<div class="answerAnalysisWrapper" style="display:none;" id="{ANSWER_ANALYSIS_WRAPPER_ID}" >',
 			//'<div style="width:100%;height:50px;"></div>',
-			'<div style="height:300px;width:100%;">',
+			'<div style="height:400px;width:100%;">',
 			'<div id="{ANALYSIS_PLOT_ID}"  style="width:65%;height:300px;float:left;">',
 				'<h2>{QUESTION_CONTENT}</h2>',
-				'<canvas id="{CANVAS_ID}"></canvas>',
+				'<div id="Tooltip0_{ID}" class="plotTooltip"></div>',
+				'<div id="Tooltip1_{ID}" class="plotTooltip"></div>',
+				'<div id="Tooltip2_{ID}" class="plotTooltip"></div>',
+				'<div id="Tooltip3_{ID}" class="plotTooltip"></div>',
+				'<div id="Tooltip4_{ID}" class="plotTooltip"></div>',
+				'<div id="{CANVAS_ID}" style="height:100%;width:100%;"></div>',
 			'</div>',
 			'<div id="{YOUR_ANSWER_ID}"  style="width:30%;height:300px;float:right;">',
 				'<h4>Your Answer:{YOUR_ANSWER_TYPE}</h4>',
