@@ -97,7 +97,7 @@ jQuery(document).ready(function($){
 		<div class="panel panel-primary" data-collapsed="0">
 			<ul class="nav nav-tabs right-aligned"><!-- available classes "bordered", "right-aligned" -->
 				<li id='AnswerQuestionTab' class="active">
-						<a href="#AnswerQuestionPane" data-toggle="tab">
+					<a href="#AnswerQuestionPane" data-toggle="tab">
 					<span class="visible-xs"><i class="entypo-home"></i></span>
 					<span class="hidden-xs">Answer A Question</span>
 				</a>
@@ -124,13 +124,14 @@ jQuery(document).ready(function($){
 		
 		<div class="tab-content">
 			<div class="tab-pane active" id="AnswerQuestionPane">
-				<div class='FormPlaceHolder'>
+				<div class='FormPlaceHolder displayed' ></div>
+				<div class='AnswerQuestionAnalysisPH'></div>
 <?php 
 		echo '<div>There are currently no questions to answer</div>';
 ?>
 
 				<!--  </div>-->
-				</div>
+				
 			</div>
 			<div class="tab-pane" id="CreateQuestionPane">
 			<div id="questionTypeSelectPlaceHolder"></div>

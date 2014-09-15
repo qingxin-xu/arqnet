@@ -1373,9 +1373,34 @@ class SiteController extends Controller
 		}
 	
 		if ($answer->save()) {
+			$answeredQuestion = Question::unroll($question);
+			$newQuestion = $this->getRandomQuestionByCategory(array('question_category_id'=>$question->question_category_id));
+			$answers = array();
+			$myAnswer = null;
+			
+			foreach ($question->answers as $ans) {
+				$a = array(
+					'answer_id'=>$ans->answer_id,
+					'user_answer'=>$ans->is_private?null:$ans->user_answer,
+					'date_created'=>$ans->date_created,
+					'question_choice_id'=>$ans->question_choice_id,
+					'quantitative_value'=>$ans->quantitative_value
+				);
+				array_push($answers,$a);
+				if ($ans->user_id == $user_id) $myAnswer = $a;
+			}
+			
+			$answerResponse = array(
+				'question'=>$answeredQuestion,
+				'answers'=>$answers,
+				'myAnswer'=>$myAnswer
+			);
+			
 			header('Content-type: application/json');
 			echo CJSON::encode(array(
 					'answer_id'=>$answer->answer_id,
+					'response'=>$answerResponse,
+					'newQuestion'=>$newQuestion,
 					'success'=>1,
 					'redirect'=>'/arq',
 			));
@@ -2636,6 +2661,9 @@ class SiteController extends Controller
 		return $types;
 	}
 	
+	/*
+	 * Random question from a category AND not answered by this user
+	 */
 	private function getRandomQuestionByCategory($category) {
 		if (!$category) return null;
 		$user_id = Yii::app()->user->id;
@@ -2667,30 +2695,6 @@ class SiteController extends Controller
 			$randomInt = rand(0,count($questions)-1);
 			$question = $questions{$randomInt};
 			$myQuestion = Question::unroll($question);
-			/*
-			$choices = $question->questionChoices;
-			$myChoices = array();
-			foreach($choices as $choice) {
-				array_push($myChoices,array(
-					'question_choice_id'=>$choice->question_choice_id,
-					'content'=>$choice->content,
-					'choice_order'=>$choice->choice_order,
-					'is_active'=>$choice->is_active
-				));
-			}
-			$myQuestion = array(
-					'question_category_id'=>$category{'question_category_id'},
-					'category'=>$category{'name'},
-					'type_id'=>$question->question_type_id,
-					'type_name'=>$question->questionType->name,
-					'question_id'=>$question->question_id,
-					'content'=>$question->content,
-					'choices'=>$myChoices,
-					'cachedAnswer'=>null
-					
-			);
-			//$myQuestion = array('randomInt'=>$randomInt);
-			*/
 			return $myQuestion;
 		} else return null;
 	}

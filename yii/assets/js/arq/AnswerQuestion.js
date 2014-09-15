@@ -119,7 +119,21 @@ var AnswerQuestion = {
 					updateMsg($('.validateTips'),ansSuccessMsg);
 					setTimeout(function() {
 						$('#myThinker').dialog('close');
-						if (d.redirect) window.location.href=d.redirect;
+						//if (d.redirect) window.location.href=d.redirect;
+						if ('newQuestion' in d && d['newQuestion']) {
+							if (AnswerQuestion && initial_question && AnswerQuestion.createForm) {
+								AnswerQuestion.createForm(d['newQuestion']);
+							}
+						}
+						
+						if ('response' in d && d['response']) {
+							if (QuestionAnalysis ) {
+								var analysis = $.extend({},QuestionAnalysis);
+								//analysis.mainDisplay = '.FormPlaceHolder';//('#ViewQuestionsAskedPane',questions_asked);
+								analysis.create('.FormPlaceHolder','#AnswerQuestionPane');
+								analysis.displayAnswerAnalysis('#AnswerQuestionPane',d['response'],-1);
+							}
+						}
 					},1000);							
 				} else
 				{

@@ -7,19 +7,31 @@ var QuestionAnalysis = {
 	id:null,
 	questions:null,
 	placeHolder:null,
+	mainDisplay:null,
 	analysisPages:{},
+	
+	/*
+	 * Use the create method to create a stand alone analysis display
+	 * i.e., not corresponding table of answers exists
+	 */
+	create:function(mainDisplay,placeHolder) {
+		if (!mainDisplay) return;
+		if (!placeHolder) return;
+		this.mainDisplay = mainDisplay;
+		this.placeHolder = placeHolder;
+		this.id = Math.floor((Math.random() * 10000000) + 1);
+	},
 	
 	display:function(placeHolder,questions) {
 		
 		this.id = Math.floor((Math.random() * 10000000) + 1);
 		
 		if (!placeHolder) return;
+		this.placeHolder = placeHolder;
 		if (!questions || !questions.length || questions.length<=0) {
 			 $(placeHolder).html('Thre are currently no questions to display');
 			 return;
 		}
-		
-		this.placeHolder = placeHolder;
 		
 		var html = this.template,
 			rows = '',
@@ -38,6 +50,8 @@ var QuestionAnalysis = {
 				self.displayAnswerAnalysis(placeHolder, self.questions[e.data.row], e.data.row);
 			});
 		});
+		
+		this.mainDisplay = $(placeHolder+' table');
 	},
 
 	add:function(placeHolder,question) {
@@ -135,11 +149,11 @@ var QuestionAnalysis = {
 			prev = index-1;
 
 		buttons += '<input id="GOBACK_'+id+'" type="button" value="Back" style="margin:0 8px 0 8px;float:right;" />';
-		if (this.questions[next]) {
+		if (this.questions && this.questions[next]) {
 			buttons += '<input id="NEXT_'+id+'" type="button" value="Next" style="margin:0 8px 0 8px;float:right;" />';			
 		}
 		
-		if (this.questions[prev]) {
+		if (this.questions && this.questions[prev]) {
 			buttons += '<input id="PREV_'+id+'" type="button" value="Previous" style="margin:0 8px 0 8px;float:right;" />';
 
 		}
@@ -156,13 +170,13 @@ var QuestionAnalysis = {
 			self.goBack(id);
 		});
 		
-		if (this.questions[next]) {
+		if (this.questions && this.questions[next]) {
 			$('#NEXT_'+id).click(function() {
 				self.displayAnswerAnalysis(placeHolder, self.questions[next], next);
 			});
 		}
 		
-		if (this.questions[prev]) {
+		if (this.questions && this.questions[prev]) {
 			$('#PREV_'+id).click(function() {
 				self.displayAnswerAnalysis(placeHolder, self.questions[prev], prev);
 			});
@@ -203,8 +217,10 @@ var QuestionAnalysis = {
 		var self = this;
 		$(this.placeHolder+' .displayed').fadeOut({
 			done:function() {
-				$(self.placeHolder+' table').fadeIn();
-				$(self.placeHolder+' table').addClass('displayed');
+				//$(self.placeHolder+' table').fadeIn();
+				//$(self.placeHolder+' table').addClass('displayed');
+				$(self.mainDisplay).fadeIn();
+				$(self.mainDisplay).addClass('displayed');
 				$('#Wrapper_'+id).removeClass('displayed');
 			}
 		});
