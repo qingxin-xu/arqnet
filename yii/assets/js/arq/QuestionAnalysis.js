@@ -14,7 +14,7 @@ var QuestionAnalysis = {
 		this.id = Math.floor((Math.random() * 10000000) + 1);
 		
 		if (!placeHolder) return;
-		if (!questions || !questions.length || !questions.length<=0) {
+		if (!questions || !questions.length || questions.length<=0) {
 			 $(placeHolder).html('Thre are currently no questions to display');
 			 return;
 		}
