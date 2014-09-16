@@ -96,12 +96,12 @@ var QuestionAnalysis = {
 		var rowClass = index%2==0?'even':'odd';
 		var row = '<tr class="rowClass" style="cursor:pointer;">';
 		var date_created = '';
-		if (question.date_created) date_created = question.date_created;
-		row+='<td>'+question.content+'</td>';
-		row+='<td>'+question.category+'</td>';
-		row+='<td>'+date_created+'</td>';
-		row+='<td>'+question.status+'</td>';
-		row+='<td>delete</td>';
+		if (question.date_created) date_created = new Date(question.date_created).toDateString();
+		row+='<td style="width:50%;">'+question.content+'</td>';
+		row+='<td class="centered">'+question.category+'</td>';
+		row+='<td class="centered">'+date_created+'</td>';
+		row+='<td class="centered">'+question.status+'</td>';
+		row+='<td class="centered">delete</td>';
 		row+='</tr>';
 		return row;
 	},
@@ -688,10 +688,10 @@ var QuestionAnalysis = {
 				'<thead>',
 				'<tr>',
 					'<th>Question</th>',
-					'<th class="sort_category headerSortable">Category</th>',
-					'<th class="sort_date_created headerSortable headerSortASC">Date</th>',
-					'<th class="sort_status headerSortable">Status</th>',
-					'<th>Actions</th>',
+					'<th class="centered sort_category headerSortable">Category</th>',
+					'<th class="centered sort_date_created headerSortable headerSortASC">Date</th>',
+					'<th class="centered sort_status headerSortable">Status</th>',
+					'<th class="centered">Actions</th>',
 				'</thead>',
 				'<tbody>',
 				'{ROWS}',

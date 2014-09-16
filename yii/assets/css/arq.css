@@ -40,3 +40,7 @@ label input {
 .headerSortDESC {
 	background-image:url('/assets/images/sorting/desc.gif');
 }
+
+.centered {
+	text-align:center;
+}
