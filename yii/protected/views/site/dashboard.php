@@ -136,8 +136,9 @@ function initializeMainSlider(range,dateRangeAverages)
 		if (!(currentValue in _avg) ) {return;}
 		var str = _avg[currentValue]['date'].replace(/-/g,'_');
 		if (!str) return;
-		window.open('/calendar?atDate='+str,'_blank');
-		//window.open('/calendar','_blank');
+		var tmp = str.split(/_/);
+		tmp[1] = tmp[1] - 1;
+		window.open('/calendar?atDate='+tmp[0]+'_'+tmp[1]+'_'+tmp[2],'_blank');
 	});
 	
 	onMainSliderChange({value:0});

@@ -44,3 +44,7 @@ label input {
 .centered {
 	text-align:center;
 }
+
+.questionContent,.questionDate {
+	cursor:pointer;
+}

@@ -58,10 +58,25 @@ var QuestionAnalysis = {
 		html = html.replace(/{ROWS}/,rows);
 		
 		$(placeHolder).html(html);
-		$(placeHolder+' tr').each(function(index,row) {
-			
-			$(this).click({row:index-1},function(e) {
+		
+		//Click on question will bring up answer analysis
+		$(placeHolder+' td.questionContent').each(function(index,row) {
+			$(this).click({row:index},function(e) {
 				self.displayAnswerAnalysis(placeHolder, self.questions[e.data.row], e.data.row);
+			});
+		});
+		
+		//Click on date will navigate to the calendar
+		$(placeHolder+' td.questionDate').each(function(index,row) {
+			$(this).click({row:index},function(e) {
+				console.log('DATE',$(this).html());
+				if ($(this).html()) {
+					var myD = new Date($(this).html()),
+						strDate = myD.getFullYear()+'_'+myD.getMonth()+'_'+myD.getDate();
+					
+					window.open('/calendar?atDate='+strDate,'_blank');
+				}
+				
 			});
 		});
 		
@@ -94,12 +109,12 @@ var QuestionAnalysis = {
 		if (!question) return '';
 		if (!index) index = 1;
 		var rowClass = index%2==0?'even':'odd';
-		var row = '<tr class="rowClass" style="cursor:pointer;">';
+		var row = '<tr class="rowClass" ">';
 		var date_created = '';
 		if (question.date_created) date_created = new Date(question.date_created).toDateString();
-		row+='<td style="width:50%;">'+question.content+'</td>';
+		row+='<td class="questionContent" style="width:50%;">'+question.content+'</td>';
 		row+='<td class="centered">'+question.category+'</td>';
-		row+='<td class="centered">'+date_created+'</td>';
+		row+='<td class="questionDate centered">'+date_created+'</td>';
 		row+='<td class="centered">'+question.status+'</td>';
 		row+='<td class="centered">delete</td>';
 		row+='</tr>';
