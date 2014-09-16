@@ -46,6 +46,9 @@ class Question extends CActiveRecord
 		return array(
 			array('question_id,user_id, is_active, question_category_id,question_status_id', 'numerical', 'integerOnly'=>true),
 			array('content, date_created, date_modified', 'safe'),
+			array('date_created','default',
+					'value'=>new CDbExpression('NOW()'),
+					'setOnEmpty'=>false,'on'=>'insert'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('question_id, question_category_id,question_status_id,user_id, content, is_active, date_created, date_modified', 'safe', 'on'=>'search'),
