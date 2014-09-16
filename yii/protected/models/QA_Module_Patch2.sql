@@ -1,0 +1,1 @@
+alter table `question` change `date_created` `date_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP;
