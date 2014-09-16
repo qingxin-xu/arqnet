@@ -6,10 +6,10 @@ class MyStuff {
 			$log_file = '/home/thomp/www/arqnet/yii/output.log';
 		} elseif (file_exists('/home/arqbrand/public_html/yii/output.log')) {
 			$log_file = '/home/arqbrand/public_html/yii/output.log';
-		} elseif ($_SERVER['HTTP_HOST']=='157.22.244.225:8002') {
+		} elseif (strcmp($_SERVER['HTTP_HOST'],'157.22.244.225:8002')==0) {
 			$log_file = '/var/www/arqnet8002/yii/output.log';
 		} elseif ($_SERVER['HTTP_HOST']=='157.22.244.225:8001') {
-			$log_file = '/var/www/arqnet8001/yii/output.log';
+			$log_file = '/home/arq/arqnet8001/yii/output.log';
 		} elseif ($_SERVER['HTTP_HOST']=='157.22.244.225') {
 			$log_file = '/var/www/arqnet/yii/output.log';
 		}
