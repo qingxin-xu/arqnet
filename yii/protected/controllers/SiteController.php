@@ -283,7 +283,7 @@ class SiteController extends Controller
 		
 		$diff = abs(strtotime($end_date) - strtotime($start_date));
 		$diff = $diff/(24*60*60);
-		MyStuff::Log('CHANGE DATE RANGE '.$diff.' '.$end_date);
+		#MyStuff::Log('CHANGE DATE RANGE '.$diff.' '.$end_date);
 		$responses = $this->getDashboardResponses($diff,$end_date,$user_id);
 		
 		echo CJSON::encode(array(
@@ -876,7 +876,7 @@ class SiteController extends Controller
 		}		
 		header('Content-type: application/json');
 		$note_id = Yii::app()->request->getPost('note_id',-1);
-		MyStuff::Log('DELETE');
+		#MyStuff::Log('DELETE');
 		
 		if (!$note_id || $note_id<0) {
 			echo CJSON::encode(array(
@@ -1157,8 +1157,8 @@ class SiteController extends Controller
 			throw new CHttpException('403', 'Forbidden access.');
 		}
 		
-		MyStuff::log("CREATE QUESTION");
-		MyStuff::log($_POST);
+		#MyStuff::log("CREATE QUESTION");
+		#MyStuff::log($_POST);
 		header('Content-type: application/json');
 		
 		if (!Yii::app()->user->Id>0) {
@@ -1471,8 +1471,8 @@ class SiteController extends Controller
 		$text_msg_login_notifications = Yii::app()->request->getPost('text_notifications', '');
 		if ($text_msg_login_notifications!=$user->text_msg_login_notifications) { $user->text_msg_login_notifications = $text_msg_login_notifications; }
 		
-		MyStuff::log($_POST);
-		MyStuff::log('here...');
+		#MyStuff::log($_POST);
+		#MyStuff::log('here...');
 		//Yii::app()->end();
 		
 		/* upload user image */
@@ -1491,7 +1491,7 @@ class SiteController extends Controller
 		}
 		
 		$saved = $user->save();
-		MyStuff::log($user->getErrors());
+		#MyStuff::log($user->getErrors());
 		
 		if ($saved) {
 			echo CJSON::encode(array(
@@ -1531,8 +1531,8 @@ class SiteController extends Controller
 			Yii::app()->end();
 		}
 		
-		MyStuff::Log('CAL');
-		MyStuff::Log($_POST);
+		#MyStuff::Log('CAL');
+		#MyStuff::Log($_POST);
 		$cal = new CalendarEvent();
 		$cal->user_id=$user_id;
 		$start = Yii::app()->request->getPost('start', '');
@@ -1573,8 +1573,8 @@ class SiteController extends Controller
 				$event->value = $defn{'value'};
 				$event->event_definition_id = $defn{'definition_id'};
 				$event->save();
-				MyStuff::Log('EVENT');
-				MyStuff::Log($event);
+				#MyStuff::Log('EVENT');
+				#MyStuff::Log($event);
 					
 			}			
 		} else {
@@ -1661,8 +1661,9 @@ class SiteController extends Controller
 		$content = strip_tags(Yii::app()->request->getPost('stripped_content', ''));
 		$publication_date = Yii::app()->request->getPost('publish_date', '');
 		$publication_time = Yii::app()->request->getPost('publish_time', '');
-		$content = preg_replace('/\+/', '%2B', $content); 
-		$content = str_replace('&',' ',$content);
+		#$content = preg_replace('/\+/', '%2B', $content); 
+		#$content = str_replace('&',' ',$content);
+		$content = urlencode($content);
 		$post_data = array('content'=>$content);
 		$raw_response = MyStuff::curl_request(Yii::app()->params['analysis_engine_url'], $post_data);
 		if ($aer_test_response!='') {
@@ -1779,7 +1780,7 @@ class SiteController extends Controller
 	}
 
 	public function actionTestLoadAer() {
-		MyStuff::Log('here?');
+		#MyStuff::Log('here?');
 		$test1 = '{
 	"timestamp": 1399060885,
 	"date": "5/2/2014",
@@ -2726,7 +2727,7 @@ class SiteController extends Controller
 	
 	private function trackerData($start_date,$end_date,$user_id)
 	{
-		MyStuff::Log('TRACKER DATA DATES '.$start_date.' '.$end_date);
+		#MyStuff::Log('TRACKER DATA DATES '.$start_date.' '.$end_date);
 		$dates = array();
 		$myCurrent = $start_date;
 		while( strcmp($myCurrent,$end_date) <= 0) {
@@ -2838,7 +2839,7 @@ class SiteController extends Controller
 	private function calendarActivities($start_date,$end_date,$user_id)
 	{
 
-		MyStuff::Log('CALENAER ACTIVITIES '.$start_date.' '.$end_date);
+		#MyStuff::Log('CALENAER ACTIVITIES '.$start_date.' '.$end_date);
 		$myEvents = array();
 		$calendarEvents = CalendarEvent::model()->findAll('t.user_id=:_user_id and t.start_date<=date(:end_date) and t.start_date>=date(:start_date)',array(':_user_id'=>$user_id,':start_date'=>$start_date,':end_date'=>$end_date));
 		foreach ($calendarEvents as $ce)
@@ -3058,13 +3059,13 @@ order by avg_rank desc";
 				where report_date<=date('".$from_date."')
   				and report_date>=date_sub(date('".$from_date."'), interval $days_back day)
 				order by report_date desc";
-		MyStuff::Log('DAY');
-		MyStuff::Log($days_back);
-		MyStuff::Log($from_date);
-		MyStuff::Log(Yii::app()->db->createCommand($sql)->queryAll());
+		#MyStuff::Log('DAY');
+		#MyStuff::Log($days_back);
+		#MyStuff::Log($from_date);
+		#MyStuff::Log(Yii::app()->db->createCommand($sql)->queryAll());
 		foreach (Yii::app()->db->createCommand($sql)->queryAll() as $day) {
 			
-			MyStuff::Log($day);
+			#MyStuff::Log($day);
 			$return[$day['report_date']] = array(
 					'top_categories' => array(),
 					'top_people' => array(),

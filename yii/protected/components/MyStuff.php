@@ -4,14 +4,14 @@ class MyStuff {
 	public static function log($str) {
 		if (file_exists('/home/thomp/www/arqnet/yii/output.log')) {
 			$log_file = '/home/thomp/www/arqnet/yii/output.log';
-		} elseif (file_exists('/Users/nrodrigo/git/arnet-iq/www/yii/output.log')) {
-			$log_file = '/Users/nrodrigo/git/arnet-iq/www/yii/output.log';
 		} elseif (file_exists('/home/arqbrand/public_html/yii/output.log')) {
 			$log_file = '/home/arqbrand/public_html/yii/output.log';
-		} elseif (file_exists('/var/www/arq/arnet-iq/www/yii/output.log')) {
-			$log_file = '/var/www/arq/arnet-iq/www/yii/output.log';
-		} elseif (file_exists('/home/arq/arnet-iq.dev/www/yii/output.log')) {
-			$log_file = '/home/arq/arnet-iq.dev/www/yii/output.log';
+		} elseif ($_SERVER['HTTP_HOST']=='157.22.244.225:8002') {
+			$log_file = '/var/www/arqnet8002/yii/output.log';
+		} elseif ($_SERVER['HTTP_HOST']=='157.22.244.225:8001') {
+			$log_file = '/var/www/arqnet8001/yii/output.log';
+		} elseif ($_SERVER['HTTP_HOST']=='157.22.244.225') {
+			$log_file = '/var/www/arqnet/yii/output.log';
 		}
 		
 		if (file_exists($log_file) and is_writable($log_file)) {
