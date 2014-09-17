@@ -1774,8 +1774,8 @@ class SiteController extends Controller
     	//$this->actionCreateJournal();
     	//$this->createAEResponse();
 		//$raw_response = MyStuff::curl_request(Yii::app()->params['analysis_engine_url'], array('content'=>'some data'));
-		$this->mean_score_per_day(20);
-    	$this->layout = 'arqLayout2';
+	#	$this->mean_score_per_day(20);
+    	#$this->layout = 'arqLayout2';
 		$this->render('test');
 	}
 
@@ -3198,5 +3198,44 @@ order by avg_rank desc";
 		$month = $myD->format('m')+1;
 		$from_date = date('Y-m-d',strtotime( $myD->setDate($myD->format('Y'),$month,1)->format('Y-m-d') ));
 		return $from_date;
+	}
+
+	public function actionDeleteQuestion() {
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		header('Content-type: application/json');
+		$question_id = Yii::app()->request->getPost('question_id',-1);
+		
+		if (!$question_id || $question_id<0) {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'msg'=>'Entry not found'
+			));
+			Yii::app()->end();			
+		}
+		
+		$question = Question::model()->findByPk($question_id);
+		if (!$question) {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'msg'=>'Entry not found'
+			));
+			Yii::app()->end();			
+		}
+
+		$question->is_active = 0;
+		if ($question->save()) {
+			echo CJSON::encode(array(
+					'success'=>1,
+					'id'=>$question->question_id,
+			));
+		} else {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'msg'=>'Update not saved',
+			));
+		}
+		Yii::app()->end();
 	}
 }
