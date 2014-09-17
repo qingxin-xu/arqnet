@@ -2792,7 +2792,6 @@ class SiteController extends Controller
 						if (in_array($eventDefn->parameter,$bar)) {
 							$hash{$subcategory->name}{$event_date} = 1;
 						} else {
-							MyStuff::Log('VALUE '.$eventDefn->label.' '.$ev->value.'  AND '.str_replace($eventDefn->label. ' ','',$ev->value));
 							$hash{$subcategory->name}{$event_date} = str_replace($eventDefn->label. ' ','',$ev->value);
 						}
 						

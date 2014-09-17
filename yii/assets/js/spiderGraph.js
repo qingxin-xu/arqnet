@@ -9,7 +9,6 @@
  function drawradar(moodValues,canvasObj){
 	 
 	 	if (!canvasObj) canvasObj = $('canvas');
-	 	console.log('canvasObj',canvasObj);
          var R0 = moodValues['happy']?2*5*moodValues['happy']:0;
          var R1 = moodValues['anxious']?2.5*moodValues['anxious']:0;//2*5*moodValues['angry'];
          var R2 = moodValues['sad']?2*5*moodValues['sad']:0;

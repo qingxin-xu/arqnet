@@ -499,7 +499,7 @@ function setTrackerOptions()
 		else if (a == b) return 0;
 		else return 1;
 	});
-	console.log('OPTIONS',options);
+	
 	for (var i = 0;i<options.length;i++)
 	{
 		menu.append("<div class='roundedOne'><input type='checkbox' name='"+options[i]+"'  /><label>"+options[i]+"</label></div>");
@@ -547,7 +547,7 @@ function setTrackerOptions()
 				menu.find('input:unchecked').attr('disabled',false);
 			}
 			//Tracker._draw(trackerSelection);
-			initializeMainSlider();
+			initializeMainSlider(currentRangeValue);
 		});
 	});
 }
