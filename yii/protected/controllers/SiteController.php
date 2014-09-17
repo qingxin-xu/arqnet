@@ -198,11 +198,9 @@ class SiteController extends Controller
 		
 		// The unique dates with ae_responses from today to 30 days ago
 		$user_id = Yii::app()->user->id;
-		$_dates = AeResponse::getResponseDate(30,null,$user_id);
-		$myCurrent = date('Y-m-d');
-
 		
-		$responseCount = count($_dates);
+		$myCurrent = date('Y-m-d');
+		//$responseCount = count($_dates);
 		$date_ranges = array();
 		$range_labels = array();
 		$default_range = 3;
@@ -215,30 +213,53 @@ class SiteController extends Controller
 		$end_date = date('Y-m-d',strtotime($today) - 30*$day);
 		
 		$activities = $this->calendarActivities($end_date,$today,$user_id);
+		/*
 		$responses = $this->getDashboardResponses(30,null,$user_id);
+		$trackerInfo = $this->trackerData($end_date,$today,$user_id);
 		
+		$all_dates = array_merge($trackerInfo{'trackerDates'});
+		
+		foreach ($responses{'avg'} as $r) {
+			if (!in_array($r{'date'},$all_dates)) array_push($all_dates,$r{'date'});
+		}
+		sort($all_dates);
+		
+		//Intervleave tracker data and AE response data
+		$eventData = array();
+		foreach ($all_dates as $eventDate) {
+			if (in_array($eventDate,$_dates)) {
+				//array_push($eventData,$responses{'avg'});
+				foreach ($responses{'avg'} as $r) {
+					if (strcmp($r{'date'},$eventDate)==0) {
+						array_push($eventData,$r);
+						break;
+					}
+				}
+			} else {
+				array_push($eventData,array(
+					'top_categories'=>array(),
+					'top_words'=>array(),
+					'top_people'=>array(),
+					'date'=>$eventDate
+				));
+			}
+		}
+		*/
+		$dashboardData = $this->getDashboardData(30,null,$today,$user_id);
 		$event_units = EventUnit::model()->findall();
 		$units = array();
 		foreach ($event_units as $eu) {
 			array_push($units,$eu->name);	
 		}
-		
-		$quantifiable = array('_no_input_','boolean','scale_1_to_10','quantity','weight','height','minutes','distance');
-		$condition = '';
-		foreach ($quantifiable as $qty) {
-			$condition = $condition." parameter = '".$qty."' or";
-		}
-		
-		$condition = preg_replace('/or$/', '', $condition);
-				
+
 		$this->render('dashboard',
 			array(
 				'range_labels'=>$range_labels,
 				'date_ranges'=>$date_ranges,
 				'_pairs'=>array('thinking'=>'feeling','reality'=>'fantasy','negative'=>'positive','proactive'=>'passive','connected'=>'disconnected'),
 				'moods'=>array("angry","happy","sad","anxious"),
-				'responseCount'=>$responses{'responseCount'},//$sliderCount,
-				'avg'=>$responses{'avg'},//$avgResponses,
+				'responseCount'=>count($dashboardData{'eventData'}),//$responses{'responseCount'},//$sliderCount,
+				'avg'=>$dashboardData{'eventData'},//$responses{'avg'},//$avgResponses,
 				/* The default number of days to display on main slider */
 				'default_range'=>$default_range,
 				'topics'=>$this->dashboard_topics,
@@ -247,12 +268,10 @@ class SiteController extends Controller
 				'post_visibility'=>NoteVisibility::model()->findByAttributes(array('name'=>'Public')),
 				'recentActivity'=>$this->recentActivities($today,$yesterday),
 				'activities'=>$activities,
-				'trackerData'=>$this->trackerData($end_date,$today,$user_id),
+				'trackerData'=>$dashboardData{'trackerData'},
+				//'trackerDates'=>$trackerInfo{'trackerDates'},
 				'event_units'=>$units,
-				'subcategories'=>EventSubcategory::model()->with(array(
-						'eventDefinitions'=>array('condition'=>$condition)
-				))->findall( array('order'=>'name ASC') ),
-				'_dates'=>$_dates
+				//'_dates'=>$eventData
 			)
 		);
 	}
@@ -284,13 +303,13 @@ class SiteController extends Controller
 		$diff = abs(strtotime($end_date) - strtotime($start_date));
 		$diff = $diff/(24*60*60);
 		#MyStuff::Log('CHANGE DATE RANGE '.$diff.' '.$end_date);
-		$responses = $this->getDashboardResponses($diff,$end_date,$user_id);
-		
+		//$responses = $this->getDashboardResponses($diff,$end_date,$user_id);
+		$dashboardData = $this->getDashboardData($diff,$start_date,$end_date,$user_id);
 		echo CJSON::encode(array(
 				'success'=>1,
-				'responses'=>$responses{'avg'},
-				'responseCount'=>count($responses{'avg'}),
-				'trackerData'=>$this->trackerData($start_date,$end_date,$user_id),
+				'responses'=>$dashboardData{'eventData'},
+				'responseCount'=>count($dashboardData{'eventData'}),
+				'trackerData'=>$dashboardData{'trackerData'},
 		));
 		Yii::app()->end();
 	}
@@ -2712,6 +2731,70 @@ class SiteController extends Controller
 		return $formattedDate;	
 	}
 	
+	/*
+	 * Get dashboard data - top words, top categories, etc. for the specified amount of days
+	 * Mix in tracker data
+	 * Then determine the set of dates that either a tracker data event occurs on or a AE
+	 * response occurs, and fill in an array of AE responses with empty entries for those dates
+	 * in which a tracker event occurs, but not an AE response
+	 * 
+	 * So if the user has AE responses on Dates d1, d2, and d3
+	 * and tracker data on dates d0, d4, d5, and d6, we generate an AE response array:
+	 * 
+	 * array(
+	 * d0=>empty array,
+	 * d1=>data,
+	 * d2=>data,
+	 * d3=>data,
+	 * d4=>empty array,
+	 * d5=>empty array,
+	 * d6=>empty array
+	 */
+	private function getDashboardData($duration,$from_date,$to_date,$user_id) {
+		if (!$user_id) return array();
+		if (!$duration) $duration = 30;
+		$_dates = AeResponse::getResponseDate($duration,null,$user_id);
+		if (!$to_date) $to_date = date('Y-m-d');
+		if (!$from_date) {
+			$day = 24*3600;
+			$from_date = date('Y-m-d',strtotime($to_date) - $duration*$day);
+		}
+		$responses = $this->getDashboardResponses($duration,$to_date,$user_id);
+		$trackerInfo = $this->trackerData($from_date,$to_date,$user_id);
+		
+		$all_dates = array_merge($trackerInfo{'trackerDates'});
+		
+		foreach ($responses{'avg'} as $r) {
+			if (!in_array($r{'date'},$all_dates)) array_push($all_dates,$r{'date'});
+		}
+		sort($all_dates);
+		
+		//Intervleave tracker data and AE response data
+		$eventData = array();
+		foreach ($all_dates as $eventDate) {
+			if (in_array($eventDate,$_dates)) {
+				//array_push($eventData,$responses{'avg'});
+				foreach ($responses{'avg'} as $r) {
+					if (strcmp($r{'date'},$eventDate)==0) {
+						array_push($eventData,$r);
+						break;
+					}
+				}
+			} else {
+				array_push($eventData,array(
+				'top_categories'=>array(),
+				'top_words'=>array(),
+				'top_people'=>array(),
+				'date'=>$eventDate
+				));
+			}
+		}
+		return array(
+			'eventData'=>$eventData,
+			'trackerData'=>$trackerInfo{'trackerData'}	
+		);
+	}
+	
 	private function recentActivities($from_date,$to_date)
 	{
 		if (!$from_date) {$from_date = date('Y-m-d');}
@@ -2727,7 +2810,7 @@ class SiteController extends Controller
 	
 	private function trackerData($start_date,$end_date,$user_id)
 	{
-		#MyStuff::Log('TRACKER DATA DATES '.$start_date.' '.$end_date);
+		$tracker_dates = array();
 		$dates = array();
 		$myCurrent = $start_date;
 		while( strcmp($myCurrent,$end_date) <= 0) {
@@ -2789,51 +2872,37 @@ class SiteController extends Controller
 						}
 						
 						$event_date = date('Y-m-d',strtotime($ce->start_date));
+						if (!in_array($event_date,$tracker_dates)) array_push($tracker_dates,$event_date);
 						if (in_array($eventDefn->parameter,$bar)) {
 							$hash{$subcategory->name}{$event_date} = 1;
 						} else {
 							$hash{$subcategory->name}{$event_date} = str_replace($eventDefn->label. ' ','',$ev->value);
 						}
 						
-						/*
-						 * Fill out the tracker hashes with remaining dates
-						 */
-						
+						/* Cap cappable events */
 						foreach ($dates as $key => $d) {
 							if (!array_key_exists($key,$hash{$subcategory->name})) {
 								if ($cap_date)
 								{
 									if (strcmp($key,$event_date)>=0 && strcmp($key,$cap_date)<=0)
 									{
+										MyStuff::Log('KEY DATE '.$key.' '.$event_date.' '.$cap_date);
 										$hash{$subcategory->name}{$key}=1;
-									}
-									//MyStuff::Log('CAP '.$subcategory->name.' '.$key.' '.$cap_date);
+									} 
+									
+								} else if ($subcategory->capping_subcategory_id) {
+									//The event is still opened up to and including, possibly, today's date
+									if (strcmp($key,$event_date)>=0) $hash{$subcategory->name}{$key}=1;
+									
 								}
-								else {$hash{$subcategory->name}{$key} = 0;}
+								//else {$hash{$subcategory->name}{$key} = 0;}
 							}
 						}
-						
-						/*
-						 * Remove 0 entries from cappable events
-						
-						if (array_key_exists($subcategory->name,$tracker{'cappable_events'}))
-						{
-							$hash = &$tracker{'cappable_events'}{$subcategory->name};
-							//MyStuff::Log('REFERENCE3');MyStuff::Log($_hash);
-								
-							$toRemove = array();
-							foreach ($hash as $key => $value) {
-								if ($value == 0) array_push($toRemove,$key);
-							}
-								
-							foreach ($toRemove as $_date) {unset($hash{$_date});}						
-						}
-						 */
 					}
 				}
 			}
 		}
-		return $tracker;
+		return array('trackerData'=>$tracker,'trackerDates'=>$tracker_dates);
 	}
 	
 	private function calendarActivities($start_date,$end_date,$user_id)
@@ -2875,7 +2944,8 @@ class SiteController extends Controller
 		if (!$from_date) $from_date = date('Y-m-d');
 		if ($duration) $duration = 30;
 		
-		//$_dates = AeResponse::getResponseDate($duration,$from_date,$user_id);
+		$_dates = AeResponse::getResponseDate($duration,$from_date,$user_id);
+		/*
 		$_dates = array();
 		//while( strcmp($myCurrent,$end_date) <= 0) {
 		$myCurrent = $from_date;//date('Y-m-d');
@@ -2883,6 +2953,7 @@ class SiteController extends Controller
 			array_push($_dates,$myCurrent);
 			$myCurrent = date('Y-m-d',strtotime('-1 day',strtotime($myCurrent) ) );
 		}
+		*/
 		$avg = $this->mean_score_per_day($duration,$from_date);
 		$avgResponses = array();
 		$sliderCount = count($_dates);

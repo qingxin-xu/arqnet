@@ -48,7 +48,8 @@ var topics_donut_chart,
 	trackerActivities =  <?php echo json_encode($activities);?>,
 	trackerData = <?php echo json_encode($trackerData);?>,
 	eventUnits = <?php echo json_encode($event_units); ?>,
-	_dates = <?php echo json_encode($_dates);?>,
+	//_dates = <?php /*echo json_encode($_dates);*/?>,
+	//trackerDates = <?php /*echo json_encode($trackerDates);*/?>,
 	currentValue=0,
 	trackerOffset = 0,
 	trackerSelection = {};
@@ -487,6 +488,7 @@ function setTrackerOptions()
 {
 	if (!trackerData) return;
 	var menu = $('.TrackSubCategories');
+	menu.html("");
 
 	if (!menu || menu.length<=0) return;
 	
