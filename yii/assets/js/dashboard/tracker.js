@@ -287,7 +287,7 @@ var Tracker = {
 			
 			for (var i = 0;i<values.length;i++) sortedHash[i] = values[i];
 			for (var i in sortedHash) {
-				sorted.push({index:i,value:sortedHash[i]});
+				sorted.push({index:i,value:parseFloat(sortedHash[i])});
 			}
 			
 			sorted.sort(function(a,b) {
