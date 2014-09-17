@@ -3238,4 +3238,43 @@ order by avg_rank desc";
 		}
 		Yii::app()->end();
 	}
+
+	public function actionDeleteAnswer() {
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		header('Content-type: application/json');
+		$answer_id = Yii::app()->request->getPost('answer_id',-1);
+		
+		if (!$answer_id || $answer_id<0) {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'msg'=>'Entry not found'
+			));
+			Yii::app()->end();			
+		}
+		
+		$answer = Question::model()->findByPk($answer_id);
+		if (!$answer) {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'msg'=>'Entry not found'
+			));
+			Yii::app()->end();			
+		}
+
+		$answer->is_active = 0;
+		if ($answer->save()) {
+			echo CJSON::encode(array(
+					'success'=>1,
+					'id'=>$answer->answer_id,
+			));
+		} else {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'msg'=>'Update not saved',
+			));
+		}
+		Yii::app()->end();
+	}
 }
