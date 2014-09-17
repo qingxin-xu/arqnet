@@ -1310,6 +1310,7 @@ class SiteController extends Controller
 		$answer->question_id = $question->question_id;
 		
 		$question_type_id = (int)Yii::app()->request->getPost('question_type_id','');
+		$is_published = (int)Yii::app()->request->getPost('is_published',0);
 		
 		if (!$question_type_id) {
 			header('Content-type: application/json');
@@ -1370,6 +1371,10 @@ class SiteController extends Controller
 			if ($is_private) {
 				$answer->is_private = 1;
 			}
+		}
+
+		if (!$is_published) {
+			$answer->is_published = 0;
 		}
 	
 		if ($answer->save()) {
