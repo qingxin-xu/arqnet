@@ -279,7 +279,7 @@ var Tracker = {
 		normalizeValues:function(values,units,displacement,range) {
 			var sortedHash = {},
 				sorted = [],
-				offset = 0;
+				offset = range?range/10:0;
 
 			for (var i = 0;i<values.length;i++) {
 				values[i] = this.convertUnit(values[i]);
@@ -301,10 +301,10 @@ var Tracker = {
 				if (max>0) {
 					if (values[i] == max) {values[i] = displacement+range;}
 					else if (values[i]<0.000001) {
-						values[i] = displacement+5;
+						values[i] = displacement+offset;
 					} else
-						values[i] = (values[i]/max)*(range) + displacement;
-				} else values[i] = values[i] + displacement+5;
+						values[i] = (values[i]/max)*(range) + displacement +offset;
+				} else values[i] = values[i] + displacement+offset;
 			}
 			return values;
 		},
