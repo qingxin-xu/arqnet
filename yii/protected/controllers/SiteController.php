@@ -2937,7 +2937,8 @@ class SiteController extends Controller
 			'start'=>$ce->start_date,
 			'end'=>$ce->end_date,
 			'allDay'=>$ce->all_day,
-			'description'=>$description
+			'description'=>$description,
+			'editable'=>false
 			));
 		}
 		return $myEvents;
