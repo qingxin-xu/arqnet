@@ -13,6 +13,7 @@ var OtherQuestions = {
 				html = this.generateHTMLFromTemplate(questions[i]);
 				$(this.placeHolder).append(html);
 				this.hookupButton(questions[i]);
+				this.hookupQuestion(questions[i]);
 			}
 		}
 	},
@@ -23,8 +24,10 @@ var OtherQuestions = {
 		var div = $('#'+question.category);
 		div.html("");
 		html = this.generateHTMLFromTemplate(question);
-		div.html(html);
+		$(this.placeHolder).find(div).after(html);
+		div.remove();
 		this.hookupButton(question);
+		this.hookupQuestion(question);
 	},
 	
 	generateHTMLFromTemplate:function(question)
@@ -41,11 +44,19 @@ var OtherQuestions = {
 		if (!question) return;
 		var self = this;
 		$("#OTHER_"+question.question_category_id).click({question:question},function(e) {
+			self.replace(e.data.question,true);
+		});				
+	},
+	
+	hookupQuestion:function(question) {
+		if (!question) return;
+		var self = this;
+		$("#"+question.category+" p").click({question:question},function(e) {
 			self.replace(e.data.question);
 		});		
 	},
 	
-	replace:function(question) {
+	replace:function(question,byCategory) {
 		if (!question) return;
 		if (!AnswerQuestion || !AnswerQuestion.randomQuestionService) return;
 		var self = this;
@@ -63,8 +74,12 @@ var OtherQuestions = {
 				{		
 					if (d.question) 
 					{
-						self.replaceQuestion(d.question);
-						self.createQuestion(question);
+						if (byCategory) {
+							self.createQuestion(d.question);
+						} else {
+							self.replaceQuestion(d.question);
+							self.createQuestion(question);
+						}
 					}
 				} else
 				{
@@ -87,9 +102,9 @@ var OtherQuestions = {
 	
 	template:[
 	'<div id="{QUESTION_CATEGORY}" class="addG-innerdiv">',
-		'<p>{CONTENT}</p>',
+		'<p style="cursor:pointer;" title="Click to answer">{CONTENT}</p>',
 		'<div class="btn-group" >',
-		'<button id="{QUESTION_CATEGORY_ID}" type="button" class="btn btn-green"  >',
+		'<button id="{QUESTION_CATEGORY_ID}" type="button" class="btn btn-green"  title="Click to answer a random question from this category">',
 			'{QUESTION_CATEGORY}',
 		'</button>',
 	'</div>'].join("")
