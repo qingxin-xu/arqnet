@@ -2758,12 +2758,12 @@ class SiteController extends Controller
 	private function getDashboardData($duration,$from_date,$to_date,$user_id) {
 		if (!$user_id) return array();
 		if (!$duration) $duration = 30;
-		$_dates = AeResponse::getResponseDate($duration,null,$user_id);
 		if (!$to_date) $to_date = date('Y-m-d');
 		if (!$from_date) {
 			$day = 24*3600;
 			$from_date = date('Y-m-d',strtotime($to_date) - $duration*$day);
 		}
+		$_dates = AeResponse::getResponseDate($duration,$to_date,$user_id);
 		$responses = $this->getDashboardResponses($duration,$to_date,$user_id);
 		$trackerInfo = $this->trackerData($from_date,$to_date,$user_id);
 		
