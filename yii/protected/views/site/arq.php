@@ -60,6 +60,7 @@ jQuery(document).ready(function($){
 	
 	if (AnswerQuestion && initial_question && AnswerQuestion.createForm) {
 		AnswerQuestion.createForm(initial_question);
+		$('#NoQuestionsToAnswer').hide();
 	}
 
 	if (OtherQuestions && OtherQuestions.create && randomQuestionsByCategory) {
@@ -127,7 +128,7 @@ jQuery(document).ready(function($){
 				<div class='FormPlaceHolder displayed' ></div>
 				<div class='AnswerQuestionAnalysisPH'></div>
 <?php 
-		echo '<div>There are currently no questions to answer</div>';
+		echo '<div id="NoQuestionsToAnswer">There are currently no questions to answer</div>';
 ?>
 
 				<!--  </div>-->
