@@ -474,7 +474,8 @@ var QuestionAnalysis = {
 		options['xaxis'].max = results[ keys[keys.length-1] ].qty+2;
 		options['yaxis'].max = results[keys[keys.length-1]].count+2;
 		var data = [],
-			ticks = [];
+			ticks = [],
+			yticks = [];
 		
 		for (var i = 0;i<keys.length;i++) {
 			var barColor = otherBarColor;
@@ -491,10 +492,13 @@ var QuestionAnalysis = {
 				},
 				data:[ [ results[keys[i]].qty,results[keys[i]].count ] ]
 			});
-			ticks.push([results[keys[i]].qty,results[keys[i]].count]);
+			//ticks.push([results[keys[i]].qty,results[keys[i]].count]);
+			ticks.push(results[keys[i]].qty);
+			yticks.push(results[keys[i]].count);
 		}
 		options['xaxis'].ticks = ticks;
-
+		//options['yaxis'].ticks = yticks;
+			console.log("DATA",data);
 		 return $.plot($(placeAt),data,options);		
 	},
 	
