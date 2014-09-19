@@ -75,7 +75,7 @@ jQuery(document).ready(function($){
 		askedQuestions = $.extend({},QuestionAnalysis);
 		askedQuestions.display('#ViewQuestionsAskedPane',questions_asked);
 		answeredQuestions = $.extend({},QuestionAnalysis);
-		answeredQuestions.display('#ViewQuestionsAnsweredPane',answered_questions);
+		answeredQuestions.display('#ViewQuestionsAnsweredPane',answered_questions,true);
 	}
 });
 </script>

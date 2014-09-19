@@ -2585,7 +2585,7 @@ class SiteController extends Controller
 	{
 		$user_id = Yii::app()->user->id;
 		if (!$user_id) return null;
-		$model = Question::model()->findAll('t.user_id=:_uid',array(':_uid'=>$user_id));
+		$model = Question::model()->findAll('t.user_id=:_uid and t.is_active=1',array(':_uid'=>$user_id));
 		
 		$myQuestions = array();
 		foreach ($model as $m) {
@@ -2619,7 +2619,7 @@ class SiteController extends Controller
 		$user_id = Yii::app()->user->id;
 		if (!$user_id) return null;
 		$model = Question::model()->with(array(
-				'answers'=>array('condition'=>"answers.user_id=".$user_id)))->findAll();
+				'answers'=>array('condition'=>"answers.user_id=".$user_id." and answers.is_active=1")))->findAll();
 
 		$answeredQuestions = array();
 		foreach ($model as $answeredQuestion) {
@@ -3331,7 +3331,7 @@ order by avg_rank desc";
 			Yii::app()->end();			
 		}
 		
-		$answer = Question::model()->findByPk($answer_id);
+		$answer = Answer::model()->findByPk($answer_id);
 		if (!$answer) {
 			echo CJSON::encode(array(
 					'success'=>-1,
