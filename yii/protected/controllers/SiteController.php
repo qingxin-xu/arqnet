@@ -1298,19 +1298,46 @@ class SiteController extends Controller
 		));
 		Yii::app()->end();
 	}
+
+	public function actionUpdateAnswer() {
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		$answer_id = (int)Yii::app()->request->getPost('answer_id',0);
+		$is_published = (int)Yii::app()->request->getPost('is_published',1);
+		$user_answer = Yii::app()->request->getPost('user_answer','');
+		$answer = Answer::model()->findbyPk($answer_id);
+		if ($user_answer) {
+			$answer->user_answer = $user_answer;
+			$is_private = Yii::app()->request->getPost('is_private','');
+			if ($is_private) {
+				$answer->is_private = 1;
+			}
+		}
+
+		if (!$is_published) {
+			$answer->is_published = 0;
+		}
+	}
 	
 	public function actionAnswerQuestion() {
 		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
 			throw new CHttpException('403', 'Forbidden access.');
 		}
 		$question = Question::model()->findByAttributes(array('question_id'=>Yii::app()->request->getPost('question_id')));
-		$user_id = Yii::app()->user->Id;
-		$answer = new Answer();
-		$answer->user_id = $user_id;
-		$answer->question_id = $question->question_id;
-		
 		$question_type_id = (int)Yii::app()->request->getPost('question_type_id','');
-		$is_published = (int)Yii::app()->request->getPost('is_published',0);
+		$is_published = (int)Yii::app()->request->getPost('is_published',1);
+		$user_answer = Yii::app()->request->getPost('user_answer','');
+		$user_id = Yii::app()->user->Id;
+		$answer_id = (int)Yii::app()->request->getPost('answer_id', 0);
+
+		if ($answer_id>0) {
+			$answer = Answer::model()->findbyPk($answer_id);
+		} else {
+			$answer = new Answer();
+			$answer->user_id = $user_id;
+			$answer->question_id = $question->question_id;
+		}
 		
 		if (!$question_type_id) {
 			header('Content-type: application/json');
@@ -1332,8 +1359,6 @@ class SiteController extends Controller
 			Yii::app()->end();
 		}
 		
-		$user_answer = Yii::app()->request->getPost('user_answer','');
-		
 		if (strcmp($question_type->name,'Multiple Choice') == 0) {
 			$question_choice_id = Yii::app()->request->getPost('question_choice_id','');
 			if (!$question_choice_id) {
@@ -1343,7 +1368,9 @@ class SiteController extends Controller
 				));
 				Yii::app()->end();
 			}
-			$answer->question_choice_id = (int)$question_choice_id;
+			if ($answer->question_choice_id != (int)$question_choice_id) {
+				$answer->question_choice_id = (int)$question_choice_id;
+			}
 		} else if (strcmp($question_type->name,'Quantitative') == 0) {
 			$qty = Yii::app()->request->getPost('quantitative_value','');
 			if (!$qty) {
@@ -1353,7 +1380,9 @@ class SiteController extends Controller
 				));
 				Yii::app()->end();				
 			}
-			$answer->quantitative_value = (int)$qty;
+			if ($answer->quantitative_value != (int)$qty) {
+				$answer->quantitative_value = (int)$qty;
+			}
 		} else {
 			if (!$user_answer) {
 				header('Content-type: application/json');
@@ -3281,5 +3310,73 @@ order by avg_rank desc";
 			));
 		}
 		Yii::app()->end();
+	}
+
+	public function actionFlagAnswer() {
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		$answer_id = (int)Yii::app()->request->getPost('answer_id', 0);
+		$user_id = Yii::app()->user->Id;
+		//MyStuff::log("user_id: $user_id");
+		//MyStuff::log("answer_id: $answer_id");
+		if ($answer = Answer::model()->findbyPk($answer_id)) {
+			$flag = new AnswerFlag();
+			$flag->answer_id = $answer->answer_id;
+			$flag->user_id = $user_id;
+    			$flag->date_created = new CDbExpression('NOW()');
+			if ($flag->save()) {
+				echo CJSON::encode(array(
+					'success'=>1,
+					'id'=>$answer_id,
+				));
+				Yii::app()->end();
+			} else {
+				echo CJSON::encode(array(
+					'success'=>-1,
+					'msg'=>'Entry not saved'
+				));
+				Yii::app()->end();
+			}
+		} else {
+			echo CJSON::encode(array(
+				'success'=>-1,
+				'msg'=>'Entry not found'
+			));
+			Yii::app()->end();
+		}
+	}
+
+	public function actionLikeAnswer() {
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		$answer_id = (int)Yii::app()->request->getPost('answer_id', 0);
+		$user_id = Yii::app()->user->Id;
+		if ($answer = Answer::model()->findbyPk($answer_id)) {
+			$like = new AnswerLike();
+			$like->answer_id = $answer->answer_id;
+			$like->user_id = $user_id;
+    			$like->date_created = new CDbExpression('NOW()');
+			if ($like->save()) {
+				echo CJSON::encode(array(
+					'success'=>1,
+					'id'=>$answer_id,
+				));
+				Yii::app()->end();
+			} else {
+				echo CJSON::encode(array(
+					'success'=>-1,
+					'msg'=>'Entry not saved'
+				));
+				Yii::app()->end();
+			}
+		} else {
+			echo CJSON::encode(array(
+				'success'=>-1,
+				'msg'=>'Entry not found'
+			));
+			Yii::app()->end();
+		}
 	}
 }
