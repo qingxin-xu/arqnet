@@ -46,8 +46,16 @@ var Tracker = {
 						return;
 					}
 				} else {
-					if (!item.originalData) return;
-					html = item.tipLabel+' = '+item.originalData[point['x']];//point['y'].toFixed(2);
+					if (!item.originalData) {
+						$('#Tooltip'+index).hide();
+						return;
+					}
+					if (!item.originalData[point['x']])
+					{
+						html = item.tipLabel+' = None';
+					} else {
+						html = item.tipLabel+' = '+item.originalData[point['x']];//point['y'].toFixed(2);
+					}
 				}
 				$("#Tooltip"+index).html(html/*'Y = '+point['y'].toFixed(2)*/)
 				.css({top: pointOffset.top+20, left: pointOffset.left+40+offset})
@@ -94,7 +102,6 @@ var Tracker = {
 		 */
 		_draw:function(selection)
 		{
-			console.log("DRAW");
 			if (this.trackerPlot) {
 				this.trackerPlot.shutdown();
 				this.trackerPlot.destroy();
@@ -114,7 +121,7 @@ var Tracker = {
 				for (var j in selection[i])
 				nPlots++;
 			}
-			console.log('CAPPED and UNCAPPED',capped,uncapped);
+			
 			range = this.plotMax/nPlots;
 		
 			for (var i in capped/*var i = 0;i<capped.length;i++*/) {
@@ -124,7 +131,7 @@ var Tracker = {
 					values.push(trackerData['cappable_events'][i][_date]);
 				}
 				//values = this.normalizeValues(values, eventUnits||null, index*range);
-				console.log('CAPPED NORMALIZED',values);
+				
 				for (var v = 0;v<values.length;v++) 
 				{
 					if (values[v] == 0) {

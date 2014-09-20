@@ -185,42 +185,6 @@ jQuery(document).ready(function($){
 		});
 		$(ms).on('blur',function() {$('.ms-helper').css('display','none');});
 	}
-
-/*	
-	if (milestones != null) 
-	{
-		var div = $('.template_milestones'),
-		str ='<input id="myMilestones" />',
-		select = $(str);
-		events = [];
-		for (var i in milestones)
-		{
-			events.push(i);
-		}
-		
-		div.append(select);
-		var ms = $('#myMilestones').magicSuggest({
-			data:events,
-			placeholder:'Select a Milestone',
-			maxSelection:1,
-			resultAsString:true
-		});
-		
-		$(ms).on('selectionchange',function(e,m) {
-			console.log(this.getValue());
-			if ((!this.getValue()||this.getValue().length<=0) && milestoneEventDropDown) 
-			{
-				milestoneEventDropDown.clear(true);
-				milestoneEventDropDown.setData([]);
-			}
-			$('.ms-helper').css('display','none');
-			//createMilestonesDropDown(this.getValue()[0],milestones[this.getValue()]);
-		});
-		$(ms).on('blur',function() {$('.ms-helper').css('display','none');});		
-		
-	}
-*/	
-
 	
 });
 </script>

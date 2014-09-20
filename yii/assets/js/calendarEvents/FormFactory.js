@@ -69,6 +69,7 @@ var formFactory = {
 						eventObj['calendar_event_id'] = response['calendar_event_id'];
 						eventObj['className'] +=' '+response['calendar_event_id'];
 					}
+					eventObj['editable'] = false;
 					$('#calendar').fullCalendar('renderEvent', eventObj, true);
 				} else {
 					var msg = 'Unable to create event';
@@ -239,6 +240,9 @@ var formFactory = {
 			height:220
 		});
 
+		table.find('input[value=Cancel]').click(function() {
+			dialog.dialog('close');
+		});
 		/*
 		 * If we have input; we have rules, and the form needs to be filled out and
 		 * validated before submission
@@ -301,7 +305,8 @@ var formFactory = {
 	 */
 	createBtnRow:function()
 	{
-		var str = '<tr height="40"><td>'+'<input type="submit" value="Submit" /></td>';
+		var str = '<tr height="40"><td>'+'<input type="submit" value="Submit" /></td>'+
+		'<td><input type="button" value="Cancel" /></tr>';
 		//str+='<td><input type="button" value="Cancel" class="cancelDnD" /></td></tr>';
 		return str;
 	},

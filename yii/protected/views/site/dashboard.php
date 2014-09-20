@@ -48,7 +48,8 @@ var topics_donut_chart,
 	trackerActivities =  <?php echo json_encode($activities);?>,
 	trackerData = <?php echo json_encode($trackerData);?>,
 	eventUnits = <?php echo json_encode($event_units); ?>,
-	_dates = <?php echo json_encode($_dates);?>,
+	//_dates = <?php /*echo json_encode($_dates);*/?>,
+	//trackerDates = <?php /*echo json_encode($trackerDates);*/?>,
 	currentValue=0,
 	trackerOffset = 0,
 	trackerSelection = {};
@@ -113,11 +114,11 @@ function initializeMainSlider(range,dateRangeAverages)
 	var values = Tracker.generateSliderValues(nData>=myRange?myRange:nData);
 	maxStep = increments;
 
-	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width();
+	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width() - trackerOffset;
 	//console.log('PADDING MAX',$('#trackers-tab').width(),$('#trackerChart').width(),paddingMax);
 	//$('#slider1').slider('option',{paddingMin:50,paddingMax:100,step:increments,min:minValue,max:maxValue,values:sliderValues});
 	$('#slider1').slider('option',{
-		paddingMin:42+Tracker.trackerPlot.getPlotOffset().left-8,
+		paddingMin:trackerOffset+42+Tracker.trackerPlot.getPlotOffset().left-8,
 		paddingMax:paddingMax,//$('#trackers-tab').width()-$('#trackerChart').width()+20,
 		step:values.length>1?values[1]-values[0]:null,
 		min:values[0],
@@ -487,6 +488,7 @@ function setTrackerOptions()
 {
 	if (!trackerData) return;
 	var menu = $('.TrackSubCategories');
+	menu.html("");
 
 	if (!menu || menu.length<=0) return;
 	

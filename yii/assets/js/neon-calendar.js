@@ -124,7 +124,7 @@ function submitCalendarEvent(data,input,appendTo)
 						var myEvent = $(this).data('eventObj');
 						
 						var myFields = [];
-	
+
 						for (var i in myEvent.data)
 						{
 							myFields.push(Fields.createField(myEvent.data[i]));
@@ -133,7 +133,34 @@ function submitCalendarEvent(data,input,appendTo)
 						formFactory.create(myEvent.data,eventObject,$(this));
 
 					},
-					
+					eventClick:function(event,jsEvent,view) {
+						if (!event) return;
+						if (!event.title) return;
+						if (!event.description) return;
+						if (!categories) return;
+						var eventTemplate;
+						//console.log('click',event);
+						for (var i in categories) {
+							for (var j in categories[i]) {
+								if (j == event.title) {
+									//console.log('THIS ONE',categories[i][j],event.description);
+									eventTemplate = $.extend({},categories[i][j]);
+									break;
+								}
+							}
+						}
+						if (eventTemplate) {
+							eventTemplate.values = {};
+							for (var i = 0;i<event.description.length;i++) {
+								var value = event.description[i].value;
+								for (var j in eventTemplate.labels) {
+									if (value.match(i)) {
+										
+									}
+								}
+							}
+						}
+					},
 					events:function(start,end,callback) {
 						console.log('start',start.toISOString(),end.toISOString());
 						$.ajax({

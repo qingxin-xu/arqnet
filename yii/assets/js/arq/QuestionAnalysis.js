@@ -3,12 +3,14 @@
  */
 var QuestionAnalysis = {
 	deleteService:'/deleteQuestion',
+	answerDeleteService:'/deleteAnswer',
 	
 	id:null,
 	questions:null,
 	placeHolder:null,
 	mainDisplay:null,
 	analysisPages:{},
+	areAnswers:false,
 	sortParameter:'date_created',
 	//sortDirection:['DESC','DESC','DESC']
 	sortable:['category','date_created','status'],
@@ -30,8 +32,8 @@ var QuestionAnalysis = {
 		this.id = Math.floor((Math.random() * 10000000) + 1);
 	},
 	
-	display:function(placeHolder,questions) {
-		
+	display:function(placeHolder,questions,areAnswers) {
+		this.areAnswers = areAnswers;
 		this.id = Math.floor((Math.random() * 10000000) + 1);
 		
 		if (!placeHolder) return;
@@ -53,7 +55,7 @@ var QuestionAnalysis = {
 		
 		for (var i = 0;i<questions.length;i++)
 		{
-			rows+=this.createRow(questions[i].question,i);
+			rows+=this.createRow(questions[i].question,i,areAnswers);
 		}
 		html = html.replace(/{ROWS}/,rows);
 		
@@ -66,10 +68,22 @@ var QuestionAnalysis = {
 			});
 		});
 		
+		//Click the delete button
+		$(placeHolder+' input.deleteButton').each(function(index,row) {
+			$(this).on('click',{index:index,row:row},function(e) {
+				if (areAnswers) {
+					self.deleteQuestion(e.data.index,true);
+				} else {
+					self.deleteQuestion(e.data.index);
+				}
+			});
+			
+		});
+		
 		//Click on date will navigate to the calendar
 		$(placeHolder+' td.questionDate').each(function(index,row) {
 			$(this).click({row:index},function(e) {
-				console.log('DATE',$(this).html());
+				
 				if ($(this).html()) {
 					var myD = new Date($(this).html()),
 						strDate = myD.getFullYear()+'_'+myD.getMonth()+'_'+myD.getDate();
@@ -105,18 +119,29 @@ var QuestionAnalysis = {
 		if (!question) return;		
 	},
 	
-	createRow:function(question,index) {
+	removeQuestion:function(index,id) {
+		if (index == null) return;
+		if (!this.placeHolder) return;
+		$(this.placeHolder+' tr.rowNumber'+index).remove();
+		if ( $('#Wrapper_'+this.id+'_'+id) ) {
+			$('#Wrapper_'+this.id+'_'+id).remove();
+		}
+		this.questions.splice(index,1);
+	},
+	
+	createRow:function(question,index,areAnswers) {
 		if (!question) return '';
-		if (!index) index = 1;
+		if (index==null) index = 1;
 		var rowClass = index%2==0?'even':'odd';
-		var row = '<tr class="rowClass" ">';
+		var row = '<tr class="rowClass rowNumber'+index+'" >';
 		var date_created = '';
+		var buttonTitle = areAnswers?'Delete my answer':'Delete my question';
 		if (question.date_created) date_created = new Date(question.date_created).toDateString();
 		row+='<td class="questionContent" style="width:50%;">'+question.content+'</td>';
 		row+='<td class="centered">'+question.category+'</td>';
 		row+='<td class="questionDate centered">'+date_created+'</td>';
 		row+='<td class="centered">'+question.status+'</td>';
-		row+='<td class="centered">delete</td>';
+		row+='<td class="centered"><input title="'+buttonTitle+'" class="deleteButton" type="button" value="Delete" /></td>';
 		row+='</tr>';
 		return row;
 	},
@@ -205,7 +230,6 @@ var QuestionAnalysis = {
 		$(placeHolder).append(html);
 		
 		$('#ViewComments_'+id).click(function() {
-			console.log('show comment container');
 			self.showAnswerComments(id);
 		});
 		
@@ -254,6 +278,60 @@ var QuestionAnalysis = {
 				$('#Wrapper_'+id).addClass('displayed');
 			}
 		});		
+	},
+	
+	deleteQuestion:function(index,isAnswered) {
+		
+		if (index==null) return;
+		if (!this.questions[index]) return;
+		var question = this.questions[index].question;
+		if (isAnswered && !this.questions[index].myAnswer) return;
+		
+		var id = isAnswered?this.questions[index].myAnswer.answer_id:question.question_id,
+			question_id = this.questions[index].question.question_id;
+		var data = {};
+		if (isAnswered) {
+			data['answer_id'] = id;
+		} else 
+		{
+			data['question_id'] = id;
+		}
+
+		if (!id) return;
+		var self = this;
+		updateMsg($('.validateTips'),"Removing Question");
+		
+		$('#myThinker').dialog('open');
+		
+		$.ajax({
+			url:isAnswered?this.answerDeleteService:this.deleteService,
+			type:'POST',
+			dataType:'json',
+			data:data,
+			success:function(d) {
+				$('#myThinker').dialog('close');
+				if (d.success && d.success>0)
+				{					
+					self.removeQuestion(index,question_id);
+				} else
+				{
+					//$("#createQuestion")[0].reset();
+					if (d.msg) msg = d.msg;
+					else msg = errorMsg;
+					updateMsg($('.validateTips'),msg);
+					setTimeout(function() {$('#myThinker').dialog('close');},2000);
+				}
+			},
+			
+			error:function(err)
+			{
+				console.log('error',err);
+				//$("#createQuestion")[0].reset();
+				updateMsg($('.validateTips'),"Unable to delete your question at this time");
+				setTimeout(function() {$('#myThinker').dialog('close');},3000);
+				//_handleError();
+			}
+		});			
 	},
 	
 	goBack:function(id) {
@@ -331,7 +409,7 @@ var QuestionAnalysis = {
 	},
 	
 	plotMCGraph:function(question,answers,myAnswer,placeAt) {
-		console.log('PLOT',question,answers,placeAt);
+		//console.log('PLOT',question,answers,placeAt);
 		if (!question) return null;
 		if (!question.choices) return null;
 		if (!answers) return null;
@@ -379,7 +457,7 @@ var QuestionAnalysis = {
 		}
 		
 		var keys = Object.keys(results);
-		console.log('RESULTS',keys,results);
+		
 		keys.sort(function(a,b) {
 			if (results[a].count > results[b].count) return -1;
 			else if (results[a].count == results[b].count) return 0;
@@ -463,7 +541,7 @@ var QuestionAnalysis = {
 		}
 		
 		var keys = Object.keys(results);
-		console.log('RESULTS',keys,results);
+		
 		keys.sort(function(a,b) {
 			if (results[a].qty > results[b].qty) return 1;
 			else if (results[a].qty == results[b].qty) return 0;
@@ -474,7 +552,8 @@ var QuestionAnalysis = {
 		options['xaxis'].max = results[ keys[keys.length-1] ].qty+2;
 		options['yaxis'].max = results[keys[keys.length-1]].count+2;
 		var data = [],
-			ticks = [];
+			ticks = [],
+			yticks = [];
 		
 		for (var i = 0;i<keys.length;i++) {
 			var barColor = otherBarColor;
@@ -491,9 +570,12 @@ var QuestionAnalysis = {
 				},
 				data:[ [ results[keys[i]].qty,results[keys[i]].count ] ]
 			});
-			ticks.push([results[keys[i]].qty,results[keys[i]].count]);
+			//ticks.push([results[keys[i]].qty,results[keys[i]].count]);
+			ticks.push(results[keys[i]].qty);
+			yticks.push(results[keys[i]].count);
 		}
 		options['xaxis'].ticks = ticks;
+		//options['yaxis'].ticks = yticks;
 
 		 return $.plot($(placeAt),data,options);		
 	},
@@ -585,7 +667,7 @@ var QuestionAnalysis = {
 	},
 	
 	sort:function(property,redraw) {
-		console.log('sort',property);
+		
 		if (!this.questions) return;
 		if (!property) return;
 		if (!this.sortable[property]) return;
@@ -608,7 +690,7 @@ var QuestionAnalysis = {
 			});			
 		}
 		if (redraw) {
-			this.display(this.placeHolder,this.questions);
+			this.display(this.placeHolder,this.questions,this.areAnswers);
 		}
 	},
 	
