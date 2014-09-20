@@ -1,31 +1,22 @@
 <?php
 
 /**
- * This is the model class for table "answer".
+ * This is the model class for table "answer_like".
  *
- * The followings are the available columns in table 'answer':
+ * The followings are the available columns in table 'answer_like':
+ * @property integer $answer_like_id
  * @property integer $answer_id
  * @property integer $user_id
- * @property integer $question_id
- * @property integer $question_choice_id
- * @property string $user_answer
- * @property integer $is_active
  * @property string $date_created
- * @property integer $quantitative_value
- * @property integer $is_published
- *
- * The followings are the available model relations:
- * @property Question $question
- * @property User $user
  */
-class Answer extends CActiveRecord
+class AnswerLike extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'answer';
+		return 'answer_like';
 	}
 
 	/**
@@ -36,11 +27,11 @@ class Answer extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('user_id, question_id, question_choice_id, is_active, quantitative_value, is_published', 'numerical', 'integerOnly'=>true),
-			array('user_answer, date_created', 'safe'),
+			array('answer_id, user_id', 'numerical', 'integerOnly'=>true),
+			array('date_created', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('answer_id, user_id, question_id, question_choice_id, user_answer, is_active, date_created, quantitative_value, is_published', 'safe', 'on'=>'search'),
+			array('answer_like_id, answer_id, user_id, date_created', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -52,8 +43,6 @@ class Answer extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'question' => array(self::BELONGS_TO, 'Question', 'question_id'),
-			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
 		);
 	}
 
@@ -63,15 +52,10 @@ class Answer extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
+			'answer_like_id' => 'Answer Like',
 			'answer_id' => 'Answer',
 			'user_id' => 'User',
-			'question_id' => 'Question',
-			'question_choice_id' => 'Question Choice',
-			'user_answer' => 'User Answer',
-			'is_active' => 'Is Active',
 			'date_created' => 'Date Created',
-			'quantitative_value' => 'Quantitative Value',
-			'is_published' => 'Is Published',
 		);
 	}
 
@@ -93,15 +77,10 @@ class Answer extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
+		$criteria->compare('answer_like_id',$this->answer_like_id);
 		$criteria->compare('answer_id',$this->answer_id);
 		$criteria->compare('user_id',$this->user_id);
-		$criteria->compare('question_id',$this->question_id);
-		$criteria->compare('question_choice_id',$this->question_choice_id);
-		$criteria->compare('user_answer',$this->user_answer,true);
-		$criteria->compare('is_active',$this->is_active);
 		$criteria->compare('date_created',$this->date_created,true);
-		$criteria->compare('quantitative_value',$this->quantitative_value);
-		$criteria->compare('is_published',$this->is_published);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -112,7 +91,7 @@ class Answer extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return Answer the static model class
+	 * @return AnswerLike the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
