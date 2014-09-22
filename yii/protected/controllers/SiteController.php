@@ -4,6 +4,41 @@ class SiteController extends Controller
 {
 	var $flagThreshold = 10;
 	var $defaultQuestionStatus = 'Submitted';
+	
+	var $AEEncodings = array(
+		'$'=>'ARQDOLLARSIGNARQ',
+		'!'=>'ARQWHAMARQ',
+		'_'=>'ARQUNDERSCOREARQ',
+		'-'=>'ARQDASHARQ',
+		'"'=>'ARQDOUBLEQUOTESARQ',
+		'#'=>'ARQHASHTAGARQ',
+		'%'=>'ARQPERCENTARQ',
+		'&'=>'ARQAMPERSANDARQ',
+		'('=>'ARQLEFTPARENARQ',
+		')'=>'ARQRIGHTPARENARQ',
+		'*'=>'ARQASTERISKARQ',
+		','=>'ARQCOMMAARQ',
+		'.'=>'ARQPERIODARQ',
+		'/'=>'ARQSLASHARQ',
+		':'=>'ARQCOLONARQ',
+		';'=>'ARQSEMICOLONARQ',
+		'<'=>'ARQLESSTHANARQ',
+		'='=>'ARQEQUALARQ',
+		'>'=>'ARQGREATERARQ',
+		'?'=>'ARQQUESTIONMARKARQ',
+		'@'=>'ARQATSIGNARQ',
+		'['=>'Leftsquarebracket',
+		"\\"=>'Reversesolidus',
+		']'=>'Rightsquarebracket',
+		'^'=>'Caret',
+		'_'=>'Horizontalbar',
+		'`'=>'Acuteaccent',
+		'{'=>'Leftcurlybrace',
+		'|'=>'Verticalbar',
+		'}'=>'Rightcurlybrace',
+		'~'=>'Tilde'
+	);
+	
 	var $dashboard_topics = array(
 		'love',
 		'sex',
@@ -1714,14 +1749,17 @@ class SiteController extends Controller
 		$content = strip_tags(Yii::app()->request->getPost('stripped_content', ''));
 		$publication_date = Yii::app()->request->getPost('publish_date', '');
 		$publication_time = Yii::app()->request->getPost('publish_time', '');
-		#$content = preg_replace('/\+/', '%2B', $content); 
-		#$content = str_replace('&',' ',$content);
-		$content = urlencode($content);
+		//$content = preg_replace('/\+/', '%2B', $content); 
+		//$content = str_replace('&',' ',$content);
+		//$content = urlencode($content);
+		$content = $this->encodeAEContent($content);
 		$post_data = array('content'=>$content);
 		$raw_response = MyStuff::curl_request(Yii::app()->params['analysis_engine_url'], $post_data);
 		if ($aer_test_response!='') {
 			$raw_response = $aer_test_response;
 		}
+		$raw_response = $this->decodeAEResponse($raw_response);
+		
 		$start = 0;
 		$ae_data = array();
 		$matches = array();
@@ -2641,6 +2679,32 @@ class SiteController extends Controller
 		}
 		
 		return $myQuestions;		
+	}
+	
+	private function encodeAEContent($content) {
+		if (!$content) return '';
+		//$return_content = urlencode($content);
+		$contentArr = preg_split('/\s+/',$content);
+		$return_content = '';
+		foreach ($contentArr as $word) {
+			if (preg_match('/^\+/',$word)) {
+				foreach ($this->AEEncodings as $key => $value) {
+					$word = str_ireplace($key,$value,$word);
+				}
+			}
+			$return_content = $return_content.' '.$word;
+		}
+		return urlencode($return_content);
+	}
+	
+	private function decodeAEResponse($content) {
+		if (!$content) return '';
+		//$return_content = urldecode($content);
+		$return_content = $content;
+		foreach ($this->AEEncodings as $key => $value) {
+			$return_content = str_ireplace($value,$key,$return_content);
+		}
+		return $return_content;
 	}
 	
 	private function getMyAnsweredQuestions()
