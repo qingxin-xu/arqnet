@@ -22,9 +22,9 @@ class SiteController extends Controller
 		'/'=>'ARQSLASHARQ',
 		':'=>'ARQCOLONARQ',
 		';'=>'ARQSEMICOLONARQ',
-		'<'=>'ARQLESSTHANARQ',
+		//'<'=>'ARQLESSTHANARQ',
 		'='=>'ARQEQUALARQ',
-		'>'=>'ARQGREATERARQ',
+		//'>'=>'ARQGREATERARQ',
 		'?'=>'ARQQUESTIONMARKARQ',
 		'@'=>'ARQATSIGNARQ',
 		'['=>'Leftsquarebracket',
@@ -1753,6 +1753,7 @@ class SiteController extends Controller
 		//$content = str_replace('&',' ',$content);
 		//$content = urlencode($content);
 		$content = $this->encodeAEContent($content);
+		MyStuff::Log("ENCODED ".$content);
 		$post_data = array('content'=>$content);
 		$raw_response = MyStuff::curl_request(Yii::app()->params['analysis_engine_url'], $post_data);
 		if ($aer_test_response!='') {
