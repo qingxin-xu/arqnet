@@ -100,10 +100,10 @@ jQuery(document).ready(function($){
 	<!-- WYSIWYG - Content Editor -->	<div class="row">
 		<div class="col-sm-12">
 			<textarea class="form-control wysihtml5" rows="18" data-stylesheet-url="assets/css/wysihtml5-color.css" name="post_content" id="post_content">
-			<?php 
+<?php 
 				if ($edit_journal) {echo $edit_journal->content;}
-			?>
-			</textarea>
+				
+?></textarea>
 		</div>
 	</div>
 	<textarea style='display:none;' type='hidden' name='stripped_content'></textarea>
