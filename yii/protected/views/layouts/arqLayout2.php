@@ -9,7 +9,7 @@
 	<meta name="author" content="" />
 	
 	<title>ArQnet | <?php echo CHtml::encode($this->pageTitle); ?></title>
-	
+	<link href='http://fonts.googleapis.com/css?family=Roboto:100' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="assets/js/jquery-ui/css/no-theme/jquery-ui-1.10.3.custom.min.css">
 	<link rel="stylesheet" href="/assets/css/font-icons/entypo/css/entypo.css">
 	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic">
@@ -20,8 +20,9 @@
 	<link rel="stylesheet" href="/assets/css/neon-forms.css">
 	-->
 	<link rel="stylesheet" href="assets/css/neon.css">
-	<link rel="stylesheet" href="/assets/css/custom.css">
 	<link rel="stylesheet" type="text/css" href="styles/addonsG.css">
+	<link rel="stylesheet" href="/assets/css/custom.css">
+	
 	<style type='text/css'>
 		.addG-date {margin:-23px 42%;}
 		.addG-panelhalfheight {height:398px;}
@@ -139,7 +140,7 @@ function updateMsg( description,t ) {
 		
 <?php $this->widget('HeaderWidget'); ?>
 
-<hr />
+
 
 <?php echo $content; ?>
 
@@ -336,34 +337,6 @@ function updateMsg( description,t ) {
 
 
 </script>
-<?php 
-/**
- * This style tag removes a red line that appears when paddingMin is in effect
- */
-?>
-	<style type='text/css'>
-		.slider .ui-slider-range {background:none;}
-		
-		#slider1 .ui-label {
-			display:block;
-			top:-20px;
-			margin-left:-20px;
-		}
-		
-		#slider1 .ui-label {z-index:1100;}
-		#slider1 .ui-label a {
-			color:rgb(148, 148, 148);
-		}
-		
-		#slider1 .ui-slider-handle {
-			height:15px;
-			width:15px;
-			top:-5px;
-			/* This is only valid when there is one data point - 
-			 * It shift the handle to the middle
-			*/
-			left:50%
-		}
-	</style>
+
 </body>
 </html>

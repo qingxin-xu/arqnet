@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="assets/js/jquery-ui/css/vader/jquery-ui.min.css">
-<link rel="stylesheet" href="assets/css/dashboard.css">
+
 <style type='text/css'>
 #slider1 .ui-label {cursor:pointer;}
 </style>
@@ -113,7 +113,7 @@ function initializeMainSlider(range,dateRangeAverages)
 	Tracker._draw(trackerSelection);
 	var values = Tracker.generateSliderValues(nData>=myRange?myRange:nData);
 	maxStep = increments;
-
+	
 	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width() - trackerOffset;
 	//console.log('PADDING MAX',$('#trackers-tab').width(),$('#trackerChart').width(),paddingMax);
 	//$('#slider1').slider('option',{paddingMin:50,paddingMax:100,step:increments,min:minValue,max:maxValue,values:sliderValues});
@@ -121,9 +121,11 @@ function initializeMainSlider(range,dateRangeAverages)
 		paddingMin:trackerOffset+42+Tracker.trackerPlot.getPlotOffset().left-8,
 		paddingMax:paddingMax,//$('#trackers-tab').width()-$('#trackerChart').width()+20,
 		step:values.length>1?values[1]-values[0]:null,
+		animate:true,
 		min:values[0],
 		max:values[values.length-1],
-		values:values/*,
+		values:values,
+		create:function(event,ui) {$('#slider1').slider('value',values[values.length-1]);}/*,
 		hooks: {drawOverlay: [Tracker.drawOverlayLine]}*/
 	});
 	$('#slider1').slider({
@@ -141,7 +143,7 @@ function initializeMainSlider(range,dateRangeAverages)
 		tmp[1] = tmp[1] - 1;
 		window.open('/calendar?atDate='+tmp[0]+'_'+tmp[1]+'_'+tmp[2],'_blank');
 	});
-	
+	console.log('VALUES',values);
 	onMainSliderChange({value:0});
 	
 }
@@ -318,7 +320,9 @@ function setOverviewDisplay(response)
 				} else val = 0.5;
 				val = 1000*val;
 			} else val = 500;
-			
+
+			if (val>=900) val=940;
+			if (val<=50) val=40;
 			slider.slider('value',val);
 			slider.slider('disable');
 		} 
@@ -897,9 +901,9 @@ function getRandomInt(min, max)
 <br />
 
 <div class="row">
-	<div class="addG-title">Stark Analyser</div>
+	
 	<div class="col-sm-9">
-		
+		<div class="boxHeader"><span class="word1">The </span><span class="word2">Analyzer</span></div>
 		<div class="panel panel-primary addG-darkBG" id="charts_env" >
 			
 			<div class="panel-heading">
@@ -907,12 +911,12 @@ function getRandomInt(min, max)
 				
 				<div class="panel-options" style="float:left;">
 					<ul class="nav nav-tabs">
-						<li class="active"><a href="#overview" data-toggle="tab">Overview</a></li>
-						<li class=""><a href="#mood" data-toggle="tab">Mood</a></li>
-						<li class=""><a href="#topics" data-toggle="tab">Topics</a></li>
-						<li class=""><a href="#trackers" data-toggle="tab">Trackers</a></li>
-						<li class=""><a href="#topwords" data-toggle="tab">Top Words</a></li>
-						<li class=""><a href="#toppeople" data-toggle="tab">Top People</a></li>
+						<li class="active"><a href="#overview" data-toggle="tab"><img src="/assets/images/dashboard/overview.png" /><span class="tabTitle">Overview</span></a></li>
+						<li class=""><a href="#mood" data-toggle="tab"><img src="/assets/images/dashboard/mood.png" /><span class="tabTitle">Mood</span></a></li>
+						<li class=""><a href="#topics" data-toggle="tab"><img src="/assets/images/dashboard/topics.png" /><span class="tabTitle">Topics</span></a></li>
+						<li class=""><a href="#trackers" data-toggle="tab"><img src="/assets/images/dashboard/tracker.png" /><span class="tabTitle">Trackers</span></a></li>
+						<li class=""><a href="#topwords" data-toggle="tab"><img src="/assets/images/dashboard/top-words.png" /><span class="tabTitle">Top Words</span></a></li>
+						<li class=""><a href="#toppeople" data-toggle="tab"><img src="/assets/images/dashboard/top-people.png" /><span class="tabTitle">Top People</span></a></li>
 					</ul>
 				</div>
 			</div>
@@ -926,9 +930,9 @@ function getRandomInt(min, max)
 									<p>Thinking</p>
 								</div>
 								<div class="addG-aroundslider">
-									<div class="addG-squarething" style="margin-left: 2%;"><div class="addG-roundInSquare"></div></div>
-									<div class="thinking slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all addG-slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="10" aria-disabled="false"><a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: 37.77777777777778%;"></a></div>
-									<div class="addG-squarething"><div class="addG-roundInSquare"></div></div>
+									<div class="addG-sliderContainer">
+										<div class="thinking slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all addG-slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="10" aria-disabled="false"><a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: 37.77777777777778%;"></a></div>
+									</div>
 								</div>
 								<div class="addG-righttab1">
 									<p>Feeling</p>
@@ -938,9 +942,9 @@ function getRandomInt(min, max)
 									<p>Reality</p>
 								</div>
 								<div class="addG-aroundslider">
-									<div class="addG-squarething" style="margin-left: 2%;"><div class="addG-roundInSquare"></div></div>
-									<div class="reality slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all addG-slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="10" aria-disabled="false"><a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: 37.77777777777778%;"></a></div>
-									<div class="addG-squarething"><div class="addG-roundInSquare"></div></div>
+									<div class="addG-sliderContainer">
+										<div class="reality slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all addG-slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="10" aria-disabled="false"><a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: 37.77777777777778%;"></a></div>
+									</div>
 								</div>
 								<div class="addG-righttab1">
 									<p>Abstract</p>
@@ -950,9 +954,9 @@ function getRandomInt(min, max)
 									<p>Negative</p>
 								</div>
 								<div class="addG-aroundslider">
-									<div class="addG-squarething" style="margin-left: 2%;"><div class="addG-roundInSquare"></div></div>
-									<div class="negative slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all addG-slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="10" aria-disabled="false"><a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: 37.77777777777778%;"></a></div>
-									<div class="addG-squarething"><div class="addG-roundInSquare"></div></div>
+									<div class="addG-sliderContainer">
+										<div class="negative slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all addG-slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="10" aria-disabled="false"><a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: 37.77777777777778%;"></a></div>
+									</div>
 								</div>
 								<div class="addG-righttab1">
 									<p>Positive</p>
@@ -962,9 +966,9 @@ function getRandomInt(min, max)
 									<p>Proactive</p>
 								</div>
 								<div class="addG-aroundslider">
-									<div class="addG-squarething" style="margin-left: 2%;"><div class="addG-roundInSquare"></div></div>
-									<div class="proactive slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all addG-slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="10" aria-disabled="false"><a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: 37.77777777777778%;"></a></div>
-									<div class="addG-squarething"><div class="addG-roundInSquare"></div></div>
+									<div class="addG-sliderContainer">
+										<div class="proactive slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all addG-slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="10" aria-disabled="false"><a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: 37.77777777777778%;"></a></div>
+									</div>
 								</div>
 								<div class="addG-righttab1">
 									<p>Passive</p>
@@ -974,9 +978,9 @@ function getRandomInt(min, max)
 									<p>Connected</p>
 								</div>
 								<div class="addG-aroundslider">
-									<div class="addG-squarething" style="margin-left: 2%;"><div class="addG-roundInSquare"></div></div>
-									<div class="connected slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all addG-slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="10" aria-disabled="false"><a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: 37.77777777777778%;"></a></div>
-									<div class="addG-squarething"><div class="addG-roundInSquare"></div></div>
+									<div class="addG-sliderContainer">
+										<div class="connected slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all addG-slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="10" aria-disabled="false"><a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: 37.77777777777778%;"></a></div>
+									</div>
 								</div>
 								<div class="addG-righttab1">
 									<p>Disconnected</p>
@@ -1085,7 +1089,7 @@ function getRandomInt(min, max)
   
 				<div id='slider1' class="slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="100" values="[]" ></div>
 -->
-				<div id='slider1' class="slider"></div>
+				<div id='slider1' class="slider" ></div>
 					
 
 
@@ -1098,7 +1102,8 @@ function getRandomInt(min, max)
 
 		</div>	
 		<div class="col-sm-3">
-		<div class="panel panel-primary addG-panelhalfheight" style="margin-top: 42px;">
+		<div class="boxHeader"><span class="word1">Recent </span><span class="word2">Updates</span></div>
+		<div class="panel panel-primary addG-panelhalfheight">
 
 		</div>
 	</div>
@@ -1174,10 +1179,11 @@ function getRandomInt(min, max)
 
 <div class="row">
 	<div class="col-sm-6">
+		<div class="boxHeader"><span class="word1">Quick </span><span class="word2">Journal</span></div>
 		<div class="tile-block addG-tileblock" id="todo_tasks">
 			
-			<div class="addG-tile-header">
-				<span class="addG-justleft"><a href="my-journals.php">Stream Something: A Quick Journal Entry</a></span>
+			<div class="addG-tile-header quickJournalTitle">
+				<span class="addG-justleft quickJournalTitle"><a href="/recentJournals">What's On Your Mind?</a></span>
 				
 			</div>
 			
@@ -1192,17 +1198,10 @@ function getRandomInt(min, max)
 				<input name='status' value='<?php if ($post_status) echo $post_status->status_id;?>' type='hidden'>
 				<input name='visibility' value='<?php if ($post_visibility) echo $post_visibility->visibility_id;?>' type='hidden'>
 				
-		
-				<button type="submit" class="btn btn-green btn-icon">
-						Submit
-						<i class="entypo-check"></i>
-					</button>
-					<br>
-					<br>
-					<br>
-					<br>
-					<br>
-					<br>
+			<div class="quickForm" >
+					<button type="submit" >Submit</button>
+			</div>
+
 				</form>
 			</div>
 			
@@ -1210,28 +1209,8 @@ function getRandomInt(min, max)
 	</div>
 
 	<div class="col-sm-6">
-		<div class="tile-block addG-tileblock" id="haveyouever">
-			
-			<div class="addG-tile-header">
-				<span class="addG-justleft"><a href="arq.php">ArQ</a></span>
-								
-
-					<button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" style="float:right;"> Flag
-							<i class="entypo-flag"></i>
-						</button>
-						
-						
-
-
-
-						<button type="button" class="btn btn-gold btn-icon" style="float:right;">
-						Skip
-						<i class="entypo-forward"></i>
-					</button>
-
-				
-			</div>
-			
+		<div class="boxHeader"><span class="word1">Quick </span><span class="word2">Question</span></div>
+		<div class="tile-block addG-tileblock" id="haveyouever">			
 			<div class="tile-content quick-question">
 				<h3 style="color:#fff; margin-top:0;">Have you ever flown a kite?</h3>
 				<div >
@@ -1253,22 +1232,24 @@ function getRandomInt(min, max)
 							
 						</div>
 					</div>
+
+				   <br>
+				   <br>
 				   
-
-
-
-
-
-				   <br>
-				   <br>
-				   <label>Explain Your Answer (optional)</label>
 				   <br>
 				   <textarea class="form-control" id="field-ta2" placeholder="Explain your answer"></textarea>
-					<button type="button" class="btn btn-green btn-icon">
-						Submit
-						<i class="entypo-check"></i>
-					</button>
-
+					<div class="randomQuestion">
+					   <button type="button" class="n">
+							Submit
+							
+						</button>
+						<button type="button" class="flag" data-toggle="dropdown" style="float:right;"> Flag	
+							</button>
+							<button type="button" class="skip" style="float:right;">
+							Skip
+						</button>
+					</div>
+					
 				</div>		
 			</div>
 			
@@ -1421,7 +1402,7 @@ function getRandomInt(min, max)
 	
 	<script type='text/javascript' src='assets/js/spiderGraph.js'></script>
 	<script type='text/javascript' src='assets/js/dashboard/tracker.js'></script>
-	
+	<link rel="stylesheet" href="assets/css/dashboard.css">
 <div id="myThinker" title="...">
   <p class="validateTips">Submitting Journal Entry</p> 
 </div>

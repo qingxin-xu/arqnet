@@ -7,3 +7,50 @@
 body {
 	
 }
+
+.page-container .main-content {
+  position: relative;
+  float: left;
+  width: 100%;
+  padding: 20px;
+  z-index: 2;
+  background: #222224;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.tile-block.addG-tileblock {
+	border:2px solid #8052cf; 
+}
+.tile-block .tile-content,.addG-tile-header {
+	background:#181818;
+}
+.addG-tileblock,.addG-darkBG {
+	background-color:#181818;
+}
+
+.tile-content textarea {
+	background:#252525;
+	color:#ffffff;
+	border:none;
+}
+
+input[type=submit],button[type=submit],button[type=button] {
+padding:0 12px;
+background: -webkit-linear-gradient(top,  rgba(45, 31, 84, 1) 0%,rgba(54, 37, 105, 1) 47%,rgba(45, 31, 84, 1) 53%);
+background: -o-linear-gradient(top,  rgba(45, 31, 84, 1) 0%,rgba(54, 37, 105, 1) 47%,rgba(45, 31, 84, 1) 53%);
+background: -moz-linear-gradient(top,  rgba(45, 31, 84, 1) 0%,rgba(54, 37, 105, 1) 47%,rgba(45, 31, 84, 1) 53%);
+background: linear-gradient(top,  rgba(45, 31, 84, 1) 0%,rgba(54, 37, 105, 1) 47%,rgba(45, 31, 84, 1) 53%);
+border:1px solid #7f35cf;
+border-radius:3px;
+}
+
+button.skip,button.flag {
+	background: -webkit-linear-gradient(top, rgb(3,3,3) 0%,rgb(23,23,23) 20%,rgb(36,36,36) 40%,rgb(18,18,18) 55%);
+	background: -o-linear-gradient(top, rgb(3,3,3) 0%,rgb(23,23,23) 20%,rgb(36,36,36) 40%,rgb(18,18,18) 55%);
+	background: -moz-linear-gradient(top, rgb(3,3,3) 0%,rgb(23,23,23) 20%,rgb(36,36,36) 40%,rgb(18,18,18) 55%);
+	background: linear-gradient(top, rgb(3,3,3) 0%,rgb(23,23,23) 20%,rgb(36,36,36) 40%,rgb(18,18,18) 55%);
+
+	border:1px solid #323232;
+}
