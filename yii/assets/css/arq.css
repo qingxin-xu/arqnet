@@ -1,3 +1,17 @@
+.question_category,input[type=submit].question_category, button[type=submit].question_category, button[type=button].question_category {
+	background: -webkit-linear-gradient(top, rgb(46,107,48) 0%,rgb(27,92,38) 100%);
+	background: -o-linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	background: -moz-linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	background: linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	color:#FFFFFF;
+	border:1px solid #0b0b0d;
+}
+
+select.question_category option {
+	background:rgb(46,107,48);
+	color:#FFFFFF;
+}
+
 label.makePrivate {
 	margin-left:15px;
     padding-left: 15px;
@@ -47,4 +61,28 @@ label input {
 
 .questionContent,.questionDate {
 	cursor:pointer;
+}
+
+.other_question_category {
+	float:right;
+}
+
+.evenRow,.oddRow {
+	border-bottom: 1px solid #7f53ce;
+	padding:12px 0 0 0;
+}
+.evenRow {
+	background:#181818;
+}
+
+.oddRow {
+	background:#252525;
+}
+
+.categoryCol,.dateCol,.statusCol {
+	color:#6A44A9;
+}
+
+.qa_answer_type,.qa_comment,.qa_question {
+	color:#FFFFFF;
 }

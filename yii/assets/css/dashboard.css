@@ -15,19 +15,7 @@
 	z-index:1100;
 }
 
-.boxHeader {
-	font-size:36px;
-}
 
-.boxHeader .word1 {
-	color:#FFFFFF;
-	font-family: 'Roboto', sans-serif;
-	font-weight:100;
-}
-
-.boxHeader .word2 {
-	color:#6A44A9;
-}
 .randomQuestion {
 	margin:34px 0 0 0;
 }
@@ -41,44 +29,6 @@
 	font-size:21px;
 }
 
-.addG-panelhalfheight {
-	height:441px;
-}
-
-.addG-tileblock, .addG-darkBG {
-	background-color:#262626;
-}
-.panel-primary > .panel-heading {
-	border-color:#3f2e74;
-}
-
-.panel-primary > .panel-heading > .panel-options > .nav-tabs {
-	border-bottom:1px solid #3f2e74;
-}
-
-.panel-primary > .panel-heading > .panel-options > .nav-tabs {
-	padding:5px 0;
-}
-
-.panel-primary > .panel-heading > .panel-options > .nav-tabs > li > a {
-	background: -webkit-linear-gradient(top, rgb(111,107,108) 0%,rgb(48,48,48) 53%,rgb(63,46,116) 100%);
-	background: -o-linear-gradient(top, rgb(111,107,108) 0%,rgb(48,48,48) 53%,rgb(63,46,116) 100%);
-	background: -moz-linear-gradient(top, rgb(111,107,108) 0%,rgb(48,48,48) 53%,rgb(63,46,116) 100%);
-	background: linear-gradient(top, rgb(111,107,108) 0%,rgb(48,48,48) 53%,rgb(63,46,116) 100%);
-	color:#FFFFFF;
-}
-
-.panel-primary > .panel-heading > .panel-options > .nav-tabs > li.active > a {
-	background: -webkit-linear-gradient(top, rgb(60,27,114) 0%,rgb(103,67,163) 36%,rgb(62,28,116) 85%);
-	background: -o-linear-gradient(top, rgb(60,27,114) 0%,rgb(103,67,163) 36%,rgb(62,28,116) 85%);
-	background: -moz-linear-gradient(top, rgb(60,27,114) 0%,rgb(103,67,163) 36%,rgb(62,28,116) 85%);
-	background: linear-gradient(top, rgb(60,27,114) 0%,rgb(103,67,163) 36%,rgb(62,28,116) 85%);
-	color:#FFFFFF;
-}
-
-.tabTitle {
-	padding:7px;
-}
 
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
 	background:#ddd url('/assets/images/dashboard/slider-handle.png') 50% 50% no-repeat;
@@ -128,6 +78,10 @@ box-shadow:0 0 5px #262626;
 #overview-tab > div.addG-aroundslider {
 	border:none;
 	background: -webkit-linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	background: -o-linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	background: -moz-linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	background: linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+
 }
 
 .addG-sliderContainer {

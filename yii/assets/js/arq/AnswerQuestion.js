@@ -323,7 +323,7 @@ var AnswerQuestion = {
 		'<input type="hidden" name="question_category_id" value="{QUESTION_CATEGORY_ID}">',
 
 		'<div class="btn-group" style="float:right;">',
-			'<button id="{QUESTION_CATEGORY_ID}" type="button" class="btn btn-green"  >',
+			'<button id="{QUESTION_CATEGORY_ID}" type="button" class="question_category"  >',
 				'{QUESTION_CATEGORY}',
 			'</button>',
 
@@ -332,17 +332,17 @@ var AnswerQuestion = {
 		'<div class="form-group">',
 			'<h3>{QUESTION_CONTENT}</h3>',
 			'{CUSTOM_FORM_ELEMENTS}',
-			'<div class="form-group">',
+			'<div class="form-group tile-content">',
 				'<label for="field-ta" class="col-sm-3 control-label">Written Answer</label>',
 				'<textarea class="form-control autogrow" id="field-ta" name="user_answer" >{USER_ANSWER}</textarea>',
 			'</div>',
-			'<button type="submit" class="btn btn-green" >',
+			'<button type="submit" >',
 				'Submit Answer',
 			'</button>',
 			'<label class="makePrivate" for="is_private"><input  type="checkbox" name="is_private" />Make comment private</label>',
 			
 			'<div class="btn-group" style="margin-left:15px;float:right;">',
-				'<button type="button" class="btn btn-green dropdown-toggle" data-toggle="dropdown" >',
+				'<button type="button" class="flag" data-toggle="dropdown" >',
 					'Flag',
 				'</button>',
 				'<ul class="dropdown-menu dropdown-danger" role="menu">',
@@ -357,7 +357,7 @@ var AnswerQuestion = {
 			'</div>',
 		
 			'<div class="btn-group" style="float:right;">',
-				'<button id="skip" type="button" class="btn btn-green dropdown-toggle" data-toggle="dropdown" >',
+				'<button id="skip" type="button" class="skip" data-toggle="dropdown" >',
 					'Skip',
 				'</button>',
 			'</div>',
