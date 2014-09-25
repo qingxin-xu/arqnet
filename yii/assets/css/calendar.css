@@ -1,0 +1,100 @@
+.calendar-env .calendar-sidebar {
+	background:#181818;
+	border-right:none;
+}
+
+.ms-ctn .ms-sel-item {
+	background:#252525;
+	color:#666666;
+	border:none;
+}
+
+.ms-ctn .ms-sel-item:hover,
+.ms-ctn .ms-trigger:hover {
+	background:#999999;
+}
+.ms-ctn-focus {
+	border-color:none;
+	box-shadow:none;
+}
+
+.form-control,input[type=text] {
+	background:#252525;
+	border:none;
+}
+
+.ms-ctn .ms-trigger {
+	border-left:none;
+}
+
+.calendar-env .calendar-sidebar .events-list,thead{
+	border-top:none;
+}
+
+button, input, optgroup, select, textarea {
+	color:#666666;
+}
+.calendar-env .calendar-body .fc-content .fc-view table thead tr th {
+	border-bottom:1px solid #363636;
+	background:#252525;
+	color:#666666;
+}
+
+.calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-days  {
+	border-bottom:1px solid #363636;
+}
+.calendar-env .calendar-body .fc-header {
+	border:none;
+}
+
+tr.fc-first.fc-last {
+	border:1px solid #252525;
+	border-bottom:1px solid #363636;
+}
+.calendar-env .calendar-body .fc-content .fc-view table tbody tr td.fc-day {
+	border:1px solid #363636;
+}
+
+.calendar-env .calendar-body .fc-header .fc-button.fc-state-active
+.calendar-env .calendar-body .fc-header .fc-button.fc-state-active {
+	background:#252525;
+	color:#7b7776;
+	border:1px solid #363636;
+}
+
+.calendar-env .calendar-body .fc-header .fc-button
+ {
+	background-color:#181818;
+	color:#7b7776;
+	border:1px solid #363636;
+}
+
+.calendar-env .calendar-body .fc-header .fc-button.fc-state-active {
+	background-color:#252525;
+}
+
+.calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-allday,
+.calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-allday,
+.calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-divider, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-divider
+ {
+	background:#333333;
+}
+
+.calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-allday tbody tr .fc-agenda-axis, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-allday tbody tr .fc-agenda-axis {
+	border-right:#363636;
+}
+
+.calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-slots tr td.fc-agenda-axis, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-slots tr td.fc-agenda-axis, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-slots tr th.fc-agenda-axis, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-slots tr th.fc-agenda-axis
+{
+	border-right:1px solid #666666;
+}
+
+.calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-slots tr td, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-slots tr td, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-slots tr th, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-slots tr td,
+.calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-slots tr th
+{
+	border-bottom:1px solid #363636;
+}
+
+.calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-slots tr.fc-minor td, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-slots tr.fc-minor td, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-slots tr.fc-minor th, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-slots tr.fc-minor th {
+	border-bottom-color:#363636;
+}

@@ -6,14 +6,16 @@ var OtherQuestions = {
 	create:function(questions) {
 		if (!questions) return;
 		var html,
+			index=0,
 			self = this;
 		
 		for (var i in questions) {
 			if (questions[i]) {
-				html = this.generateHTMLFromTemplate(questions[i]);
+				html = this.generateHTMLFromTemplate(questions[i],index);
 				$(this.placeHolder).append(html);
 				this.hookupButton(questions[i]);
 				this.hookupQuestion(questions[i]);
+				index++;
 			}
 		}
 	},
@@ -30,10 +32,15 @@ var OtherQuestions = {
 		this.hookupQuestion(question);
 	},
 	
-	generateHTMLFromTemplate:function(question)
+	generateHTMLFromTemplate:function(question,index)
 	{
 		if (!question) return '';
+		if (!index) index=0;
 		html = this.template;
+		
+		if (index%2 == 0) html = html.replace(/{ROW}/,'evenRow');
+		else html = html.replace(/{ROW}/,'oddRow');
+		
 		html = html.replace(/{CONTENT}/,question.content);
 		html = html.replace(/{QUESTION_CATEGORY}/g,question.category);
 		html = html.replace(/{QUESTION_CATEGORY_ID}/g,"OTHER_"+question.question_category_id);
@@ -101,11 +108,11 @@ var OtherQuestions = {
 	},
 	
 	template:[
-	'<div id="{QUESTION_CATEGORY}" class="addG-innerdiv">',
-		'<p style="cursor:pointer;" title="Click to answer">{CONTENT}</p>',
-		'<div class="btn-group" >',
-		'<button id="{QUESTION_CATEGORY_ID}" type="button" class="btn btn-green"  title="Click to answer a random question from this category">',
+	'<div id="{QUESTION_CATEGORY}" class="{ROW} _addG-innerdiv">',
+		'<button id="{QUESTION_CATEGORY_ID}" type="button" class="other_question_category question_category"  title="Click to answer a random question from this category">',
 			'{QUESTION_CATEGORY}',
 		'</button>',
+		'<p style="cursor:pointer;width:250px;" title="Click to answer">{CONTENT}</p>',
+		'<div class="btn-group" >',
 	'</div>'].join("")
 };

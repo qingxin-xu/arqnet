@@ -20,6 +20,8 @@ var QuestionAnalysis = {
 		status:'ASC'
 	},
 	
+	MCBarColors:['#2ca8fe','#ee65fd','#00bf4b','#fee8ec'],
+	
 	/*
 	 * Use the create method to create a stand alone analysis display
 	 * i.e., not corresponding table of answers exists
@@ -137,11 +139,11 @@ var QuestionAnalysis = {
 		var date_created = '';
 		var buttonTitle = areAnswers?'Delete my answer':'Delete my question';
 		if (question.date_created) date_created = new Date(question.date_created).toDateString();
-		row+='<td class="questionContent" style="width:50%;">'+question.content+'</td>';
-		row+='<td class="centered">'+question.category+'</td>';
-		row+='<td class="questionDate centered">'+date_created+'</td>';
-		row+='<td class="centered">'+question.status+'</td>';
-		row+='<td class="centered"><input title="'+buttonTitle+'" class="deleteButton" type="button" value="Delete" /></td>';
+		row+='<td class="qa_'+rowClass+' questionContent" style="width:50%;">'+question.content+'</td>';
+		row+='<td class="qa_'+rowClass+' centered categoryCol">'+question.category+'</td>';
+		row+='<td class="qa_'+rowClass+' questionDate centered dateCol">'+date_created+'</td>';
+		row+='<td class="qa_'+rowClass+' centered statusCol">'+question.status+'</td>';
+		row+='<td class="qa_'+rowClass+' centered"><button title="'+buttonTitle+'" class="deleteButton" type="button">Delete</></td>';
 		row+='</tr>';
 		return row;
 	},
@@ -178,7 +180,7 @@ var QuestionAnalysis = {
 		
 		
 		if (myAnswer) {
-			html = html.replace(/{YOUR_ANSWER_CONTENT}/,myAnswer.user_answer);
+			html = html.replace(/{YOUR_ANSWER_CONTENT}/,'"'+myAnswer.user_answer+'"');
 			if (type == 'Open Answer') {
 				html = html.replace(/{YOUR_ANSWER_TYPE}/,'');
 			} else if (type == 'Multiple Choice') {
@@ -216,13 +218,13 @@ var QuestionAnalysis = {
 			next = index+1,
 			prev = index-1;
 
-		buttons += '<input id="GOBACK_'+id+'" type="button" value="Back" style="margin:0 8px 0 8px;float:right;" />';
+		buttons += '<input id="GOBACK_'+id+'" type="button" value="Back" class="qa_analysis" style="margin:0 8px 0 8px;float:right;" />';
 		if (this.questions && this.questions[next]) {
-			buttons += '<input id="NEXT_'+id+'" type="button" value="Next" style="margin:0 8px 0 8px;float:right;" />';			
+			buttons += '<input id="NEXT_'+id+'" type="button" value="Next" class="qa_analysis" style="margin:0 8px 0 8px;float:right;" />';			
 		}
 		
 		if (this.questions && this.questions[prev]) {
-			buttons += '<input id="PREV_'+id+'" type="button" value="Previous" style="margin:0 8px 0 8px;float:right;" />';
+			buttons += '<input id="PREV_'+id+'" type="button" value="Previous" class="qa_analysis" style="margin:0 8px 0 8px;float:right;" />';
 
 		}
 		html = html.replace(/{BUTTONS}/,buttons);
@@ -379,11 +381,12 @@ var QuestionAnalysis = {
 		for (var i = 0;i<answers.length;i++) {
 			if (answers[i].user_answer) {
 				var likeID = 'LIKE_'+answers[i].answer_id+id,
+					modulus = i%2==0?'even':'odd',
 					flagID = 'FLAG_'+answers[i].answer_id+id;
 				
-				html+='<tr><td style="width:75%;">'+answers[i].user_answer+'</td>';
-				html+='<td align="right"></td>';
-				html+='<td align="right"><input style="margin:0 8px;" id="'+likeID+'" type="button" value="Like" /><input style="margin:0 8px;"  id="'+flagID+'" type="button" value="Flag" /></td>';
+				html+='<tr><td class="qa_'+modulus+'" style="width:75%;">'+answers[i].user_answer+'</td>';
+				html+='<td class="qa_'+modulus+'" align="right"></td>';
+				html+='<td class="qa_'+modulus+'" align="right"><input class="qa_analysis" style="margin:0 8px;" id="'+likeID+'" type="button" value="Like" /><input class="qa_analysis" style="margin:0 8px;"  id="'+flagID+'" type="button" value="Flag" /></td>';
 			}
 		}
 		return html;
@@ -396,7 +399,7 @@ var QuestionAnalysis = {
 		
 		var question = _question.question,
 			answers = _question.answers,
-			myAnswer = question.myAnswer||[],
+			myAnswer = _question.myAnswer||[],
 			type = question.type_name|| 'Open Answer',
 			placeAt = '#Canvas_'+id;
 		
@@ -427,7 +430,7 @@ var QuestionAnalysis = {
 	                axisLabelPadding: 5				
 				},
 				yaxis:{
-					font:{size:16,family:'sans-serif',color:'rgb(104,72,162)'},
+					font:{size:16,family:'sans-serif',color:'#FFFFFF'},
 	                min: (new Date(year, 0, 1)).getTime(),
 	                //max: (new Date(year, keys.length+1, 1)).getTime(),
 	                tickSize: [1, "month"],
@@ -476,8 +479,9 @@ var QuestionAnalysis = {
 					barWidth:4*12*24*60*60*300,
 					fill:true,
 					align:'center',
-					fillColor:  "#80699B",
-					lineWidth:1,				
+					fillColor:  this.MCBarColors[i],
+					shadow:{color:null},
+					lineWidth:0,				
 				},
 				data:[ [ results[keys[i]].count,(new Date(year,j,day)).getTime() ] ]
 			});
@@ -485,12 +489,13 @@ var QuestionAnalysis = {
 			options['yaxis']['monthNames'].push("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+results[keys[j-1]].choice);
 			j--;
 		}
-		console.log("DATA",placeAt);
+		//console.log("DATA",placeAt);
 		options['yaxis']['monthNames'].push("");
 		options['yaxis']['tickLength']=0;
 		options['xaxis']['show']=false;
 		options['grid'] = {
-			borderWidth:0
+			borderWidth:0,
+			borderColor:null
 		};
 		 return $.plot($(placeAt),data,options);
 	},
@@ -499,11 +504,11 @@ var QuestionAnalysis = {
 		if (!question) return null;
 		if (!question.choices) return null;
 		if (!answers) return null;
-		var myBarColor='blue',
-			otherBarColor='red',
+		var myBarColor='#f067fd',
+			otherBarColor='#985ffc',
 			options = {
 				xaxis:{
-					font:{size:16,family:'sans-serif',color:'rgb(104,72,162)'},
+					font:{size:16,family:'sans-serif',color:'#FFFFFF'},
 					//min:0,/*sorted_set[nWords-1].count-1*/
 					//max:answers.length+2,
 	                axisLabel: 'Quantity',
@@ -514,7 +519,7 @@ var QuestionAnalysis = {
 	                tickLength:0
 				},
 				yaxis:{
-					font:{size:16,family:'sans-serif',color:'rgb(104,72,162)'},
+					font:{size:16,family:'sans-serif',color:'#FFFFFF'},
 	                min: 0,
 	       
 	                axisLabel: 'Count',
@@ -562,11 +567,11 @@ var QuestionAnalysis = {
 				bars: {
 					show:true,
 					horizontal:false,
-					barWidth:0.25,
+					barWidth:1,
 					align:'center',
 					fill:true,
 					fillColor:  barColor,
-					lineWidth:1,				
+					lineWidth:0,				
 				},
 				data:[ [ results[keys[i]].qty,results[keys[i]].count ] ]
 			});
@@ -590,7 +595,7 @@ var QuestionAnalysis = {
 		var yaxis = plot.getYAxes()[0]; // yAxis
 		var offset = plot.getPlotOffset(); // plots offset
 		ctx.font = "18px Verdana"; // set a pretty label font
-		ctx.fillStyle = "black";
+		ctx.fillStyle = "#FFFFFF";
 		
 		$.each(_data,function(index,item) {
 			var data = item.data;
@@ -741,7 +746,7 @@ var QuestionAnalysis = {
 			//'<div style="width:100%;height:50px;"></div>',
 			'<div style="height:400px;width:100%;">',
 			'<div id="{ANALYSIS_PLOT_ID}"  style="width:65%;height:300px;float:left;">',
-				'<h2>{QUESTION_CONTENT}</h2>',
+				'<h2 class="qa_question">{QUESTION_CONTENT}</h2>',
 				'<div id="Tooltip0_{ID}" class="plotTooltip"></div>',
 				'<div id="Tooltip1_{ID}" class="plotTooltip"></div>',
 				'<div id="Tooltip2_{ID}" class="plotTooltip"></div>',
@@ -750,14 +755,14 @@ var QuestionAnalysis = {
 				'<div id="{CANVAS_ID}" style="height:100%;width:100%;"></div>',
 			'</div>',
 			'<div id="{YOUR_ANSWER_ID}"  style="width:30%;height:300px;float:right;">',
-				'<h4>Your Answer:{YOUR_ANSWER_TYPE}</h4>',
-				'<h4>Comment:</h4>',
-				'<h4>{YOUR_ANSWER_CONTENT}</h4>',
+				'<h4>Your Answer:<span class="qa_answer_type">{YOUR_ANSWER_TYPE}</span></h4>',
+				//'<h4>Comment:</h4>',
+				'<h4 class="qa_comment">{YOUR_ANSWER_CONTENT}</h4>',
 			'</div>',
 			'</div>',
 			'<div style="width:85%;height:50px;margin:15px 0 15px 15px;">',
 				'<div style="width:50%;float:left;">',
-					'<a id="{VIEW_COMMENTS_ID}" style="{DISPLAY_COMMENTS};cursor:pointer;">View Comments</a>',
+					'<a id="{VIEW_COMMENTS_ID}" class="qa_view_comments" style="{DISPLAY_COMMENTS};cursor:pointer;">View Comments</a>',
 				'</div>',
 				'<div style="width:50%:float:right;">',
 					'{BUTTONS}',
@@ -784,11 +789,11 @@ var QuestionAnalysis = {
 	          '<table class="table table-striped displayed">',
 				'<thead>',
 				'<tr>',
-					'<th>Question</th>',
-					'<th class="centered sort_category headerSortable">Category</th>',
-					'<th class="centered sort_date_created headerSortable headerSortASC">Date</th>',
-					'<th class="centered sort_status headerSortable">Status</th>',
-					'<th class="centered">Actions</th>',
+					'<th class="qa_header" >Question</th>',
+					'<th class="qa_header centered sort_category headerSortable">Category</th>',
+					'<th class="qa_header centered sort_date_created headerSortable headerSortASC">Date</th>',
+					'<th class="qa_header centered sort_status headerSortable">Status</th>',
+					'<th class="qa_header centered">Actions</th>',
 				'</thead>',
 				'<tbody>',
 				'{ROWS}',

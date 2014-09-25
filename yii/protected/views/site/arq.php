@@ -84,7 +84,7 @@ jQuery(document).ready(function($){
 		.ui-dialog-titlebar-close {
 	  		visibility: hidden;
 		}	
-		button {color:rgb(51,51,51);}
+		/*button {color:rgb(51,51,51);}*/
 	</style>
 <br />
 <!-- 
@@ -94,35 +94,35 @@ jQuery(document).ready(function($){
 </div>
  -->
 <div class="row col-sm-8">
+	<div class="boxHeader"><span class="word1">We've Got Some </span><span class="word2">Questions</span></div>
 	<div class="row">
 		<div class="panel panel-primary" data-collapsed="0">
+			<div class='panel-heading'>
+			<div class='panel-options'>
 			<ul class="nav nav-tabs right-aligned"><!-- available classes "bordered", "right-aligned" -->
 				<li id='AnswerQuestionTab' class="active">
 					<a href="#AnswerQuestionPane" data-toggle="tab">
-					<span class="visible-xs"><i class="entypo-home"></i></span>
-					<span class="hidden-xs">Answer A Question</span>
+						<img src="/assets/images/Arq/answer_question.png" /><span class="tabTitle">Answer A Question</span>
 				</a>
 			</li>
 			<li id='CreateQuestionTab'>
 				<a href="#CreateQuestionPane" data-toggle="tab">
-					<span class="visible-xs"><i class="entypo-user"></i></span>
-					<span class="hidden-xs">Create A Question</span>
+					<img src="/assets/images/Arq/create_question.png" /><span class="tabTitle">Create A Question</span>
 				</a>
 			</li>
 			<li id='ViewQuestionsAskedTab'>
 				<a href="#ViewQuestionsAskedPane" data-toggle="tab">
-					<span class="visible-xs"><i class="entypo-mail"></i></span>
-					<span class="hidden-xs">Questions Asked</span>
+					<img src="/assets/images/Arq/your_questions.png" /><span class="tabTitle">Your Questions</span>
 				</a>
 			</li>
 			<li id='ViewQuestionsAnsweredTab'>
 				<a href="#ViewQuestionsAnsweredPane" data-toggle="tab">
-					<span class="visible-xs"><i class="entypo-cog"></i></span>
-					<span class="hidden-xs">Questions Answered</span>
+					<img src="/assets/images/Arq/your_answers.png" /><span class="tabTitle">Your Answers</span>
 				</a>
 			</li>
 		</ul>
-		
+		</div>
+		</div>
 		<div class="tab-content">
 			<div class="tab-pane active" id="AnswerQuestionPane">
 				<div class='FormPlaceHolder displayed' ></div>
@@ -154,27 +154,11 @@ jQuery(document).ready(function($){
 	
 	</div>	
 	<div class="col-sm-4">
+		<div class="boxHeader" style='margin-left:20px;'><span class="word1">Other </span><span class="word2">Questions</span></div>
 		<div class="panel panel-primary arq-left-margin" data-collapsed="0">
-			<!-- panel head -->
-			<div class="panel-heading">
-				<div class="panel-title addG-panel-title2" id="question_title" style="padding-top: 20px;">Other Questions</div>
-			</div>
-			<!-- panel body -->
-			<div id='OtherQuestions' class="panel-body" style="height: 433px;overflow:scroll;">
-				<!--  
-				<div class="addG-innerdiv">
-					<span class="label label-success">Work</span><br><br>
-					<p>How do you feel about your boss at work?</p>		
-				</div>
-				<div class="addG-innerdiv">
-					<span class="label label-primary">Personal</span><br><br>
-					<p>How do you feel when you see the color blue?</p>		
-				</div>
-				<div class="addG-innerdiv">
-					<span class="label label-secondary">Emotions</span><br><br>
-					<p>How do you feel when someone embarrasses you?</p>		
-				</div>
-				-->
+
+			<div id='OtherQuestions' class="panel-body" style="height: 433px;overflow-x:hidden;overflow-y:scroll;">
+
 			</div>
 		
 		</div>

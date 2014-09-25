@@ -15,6 +15,84 @@
 	z-index:1100;
 }
 
+
+.randomQuestion {
+	margin:34px 0 0 0;
+}
+
+.quickForm {
+	margin:44px 0 0 0;
+}
+
+.quickJournalTitle a {
+	color:#FFFFFF;
+	font-size:21px;
+}
+
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+	background:#ddd url('/assets/images/dashboard/slider-handle.png') 50% 50% no-repeat;
+}
+
+.slider .ui-slider-range {background:none;}
+
+#slider1 .ui-label {
+	display:block;
+	top:-20px;
+	margin-left:-3px;
+}
+
+#slider1 .ui-label {z-index:1100;}
+#slider1 .ui-label a {
+	color:rgb(148, 148, 148);
+}
+		
+#slider1 a {
+background:#ddd url('/assets/images/dashboard/slider-handle.png') 50% 50% repeat-x;
+height:22px;
+width:30px;
+left:50%
+top:-5px;
+border:none;
+box-shadow:0 0 5px #262626;
+}
+
+.addG-sliderContainer > .ui-widget-content a {
+	background:#FFF url('/assets/images/dashboard/polarity-dot.png') 50% 50% repeat-x;
+	height:24px;
+	width:26px;
+	border:none;
+	top:-9px;
+	box-shadow: 0 0 5px 5px #49274a;
+}
+.addG-sliderContainer > .ui-widget-content {
+	background-color:#9860e9;
+	height:3px;
+	box-shadow: 0 0 5px 1px #a07ddb;
+	margin:6px auto 0 auto;
+	border:1px solid #9860e9;
+	width:100%;
+}
+
+/* Dashboard slider polarity graphs */
+#overview-tab > div.addG-aroundslider {
+	border:none;
+	background: -webkit-linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	background: -o-linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	background: -moz-linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	background: linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+
+}
+
+.addG-sliderContainer {
+	height:15px;
+	background:#161616;
+	border-radius:10px;
+	border:1px solid #161616;
+	margin:19px auto 0 auto;
+	width:90%;
+}
+
 /* SLIDE ONE */
 
 #TrackerSwitch {float:right;}

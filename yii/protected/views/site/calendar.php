@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="assets/js/jquery-ui/css/vader/jquery-ui.min.css">
 <link href="assets/js/magicsuggest/magicsuggest-min.css" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/calendar.css">
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src='http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js'></script>
 <script type='text/javascript' src='assets/js/calendarEvents/Events.js'></script>
@@ -21,8 +22,9 @@ jQuery(document).ready(function($){
 		.ui-dialog-titlebar-close {
 	  		visibility: hidden;
 		}	
+		/*
 		button, input, optgroup, select, textarea {color:#333333;}
-		
+		*/
 		input.radio_field {
 			margin:0 7px;
 		}
