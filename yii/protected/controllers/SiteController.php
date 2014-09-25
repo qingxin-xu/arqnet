@@ -1864,18 +1864,67 @@ group by user_id";
 			return $ae_response->ae_response_id;
 		}
 	}
+
+	private function getAEResponse($ae_response_id) {
+		$return = array();
+		$sql = "select user_id, words, sentences, date_created
+from ae_response
+where ae_response_id = $ae_response_id";
+		$obj = Yii::app()->db->createCommand($sql)->queryRow();
+		$return['ae_response_id'] = $ae_response_id;
+		$return['user_id'] = $obj['user_id'];
+		$return['words'] = $obj['words'];
+		$return['sentences'] = $obj['sentences'];
+		$return['date_created'] = $obj['date_created'];
+
+		$sql = "select c.description category,
+  arc.value category_value
+from ae_response_category arc
+join category c on arc.category_id = c.category_id
+where arc.ae_response_id = $ae_response_id";
+		foreach (Yii::app()->db->createCommand($sql)->queryAll() as $obj) {
+			$return[$obj['category']] = $obj['category_value'];
+		}
+		$sql = "select tw.ae_rank,
+  tw.ae_value,
+  tw.count,
+  tw.score
+from top_words tw
+where tw.ae_response_id = $ae_response_id";
+		foreach (Yii::app()->db->createCommand($sql)->queryAll() as $obj) {
+			$i = $obj['ae_rank'];
+			$return['topWords'.$i] = $obj['ae_value'];
+			$return['topWordsCnt'.$i] = $obj['count'];
+			$return['topWordsScore'.$i] = $obj['score'];
+		}
+		$sql = "select tp.ae_rank,
+  tp.ae_value,
+  tp.count,
+  tp.score
+from top_people tp
+where tp.ae_response_id = $ae_response_id";
+		foreach (Yii::app()->db->createCommand($sql)->queryAll() as $obj) {
+			$i = $obj['ae_rank'];
+			$return['topPeople'.$i] = $obj['ae_value'];
+			$return['topPeopleCnt'.$i] = $obj['count'];
+			$return['topPeopleScore'.$i] = $obj['score'];
+		}
+		return $return;
+	}
+
+	private function getDailyAE($user_id) {
+		$ajd = AeJournalDaily::model()->findAllByAttributes(array('user_id'=>$user_id));
+		$sql = "select ae_response_id
+from ae_journal_daily
+where user_id = $user_id
+  and date_created = curdate()";
+		$ajd = Yii::app()->db->createCommand($sql)->queryRow();
+		return $this->getAEResponse($ajd['ae_response_id']);
+	}
 	
 	public function actionTest() {
 		$user_id = Yii::app()->user->Id;
-		$ajd = AeJournalDaily::model()->findAllByAttributes(array('user_id'=>$user_id));
-		$sql = "select group_concat(content) total_content
-from note
-where user_id=$user_id
-  and date_created>=curdate()
-  and is_active=1
-group by user_id";
-		$entries = Yii::app()->db->createCommand($sql)->queryRow();
-		MyStuff::log($entries);
+		MyStuff::log($this->getDailyAE($user_id));
 
 		//$this->getRandomQuestion();
 		// for form testing
