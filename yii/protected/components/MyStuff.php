@@ -42,9 +42,9 @@ class MyStuff {
 		$response = curl_exec($ch);
 		curl_close($ch);
 	
-		MyStuff::log("the response inside curl_request");
-		MyStuff::log($response);
-		MyStuff::log($ch);
+		#MyStuff::log("the response inside curl_request");
+		#MyStuff::log($response);
+		#MyStuff::log($ch);
 		return $response;
 	}
 }

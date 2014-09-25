@@ -1008,6 +1008,7 @@ class SiteController extends Controller
 			$note->title = $title;
 			$note->content = Yii::app()->request->getPost('post_content', '');
 			$note->date_created = new CDbExpression('NOW()');
+			$note->is_active = 1;
 			
 			$note->visibility_id = Yii::app()->request->getPost('visibility');
 			
@@ -1082,7 +1083,6 @@ class SiteController extends Controller
 						
 					$ae_response_id = $this->createAEResponse();
 					$note->ae_response_id = $ae_response_id;
-					$note->save();
 					$ae_response->delete();
 	
 				} else {
@@ -1091,8 +1091,32 @@ class SiteController extends Controller
 					 */
 					$ae_response_id = $this->createAEResponse();
 					$note->ae_response_id = $ae_response_id;
-					$note->save();					
 				}
+
+				$note->save();
+
+				// Cumulative AE records
+				$user_id = Yii::app()->user->Id;
+				$cur_date = new CDbExpression('CURDATE()');
+				$ajd = AeJournalDaily::model()->findAllByAttributes(array('user_id'=>$user_id, 'date_created'=>$cur_date));
+				if (!$ajd) {
+					$ajd = new AeJournalDaily();
+					$ajd->user_id = $user_id;
+					$ajd->date_created = $cur_date;
+				};
+				$sql = "select group_concat(content, ' ') total_content
+from note
+where user_id=$user_id
+  and date_created>=curdate()
+  and is_active=1
+group by user_id";
+				$entries = Yii::app()->db->createCommand($sql)->queryRow();
+				if ($entries) {
+					$ae_response_id = $this->createAEResponse($entries['total_content']);
+					$ajd->ae_response_id = $ae_response_id;
+					$ajd->save();
+				}
+
 			} else {
 				/*
 				 * Status is 'Draft', so if an ae_response exists, delete it
@@ -1210,8 +1234,6 @@ class SiteController extends Controller
 			throw new CHttpException('403', 'Forbidden access.');
 		}
 		
-		#MyStuff::log("CREATE QUESTION");
-		#MyStuff::log($_POST);
 		header('Content-type: application/json');
 		
 		if (!Yii::app()->user->Id>0) {
@@ -1558,8 +1580,6 @@ class SiteController extends Controller
 		$text_msg_login_notifications = Yii::app()->request->getPost('text_notifications', '');
 		if ($text_msg_login_notifications!=$user->text_msg_login_notifications) { $user->text_msg_login_notifications = $text_msg_login_notifications; }
 		
-		#MyStuff::log($_POST);
-		#MyStuff::log('here...');
 		//Yii::app()->end();
 		
 		/* upload user image */
@@ -1578,7 +1598,6 @@ class SiteController extends Controller
 		}
 		
 		$saved = $user->save();
-		#MyStuff::log($user->getErrors());
 		
 		if ($saved) {
 			echo CJSON::encode(array(
@@ -1744,20 +1763,23 @@ class SiteController extends Controller
 		Yii::app()->end();
 	}
 	
-	private function createAEResponse($aer_test_response='') {
-		$content = strip_tags(Yii::app()->request->getPost('stripped_content', ''));
+	private function createAEResponse($content='') {
+		if ($content=='') {
+			$content = strip_tags(Yii::app()->request->getPost('stripped_content', ''));
+		}
 		$publication_date = Yii::app()->request->getPost('publish_date', '');
 		$publication_time = Yii::app()->request->getPost('publish_time', '');
 		//$content = preg_replace('/\+/', '%2B', $content); 
 		//$content = str_replace('&',' ',$content);
 		//$content = urlencode($content);
 		$content = $this->encodeAEContent($content);
-		MyStuff::Log("ENCODED ".$content);
+		//MyStuff::Log("ENCODED ".$content);
 		$post_data = array('content'=>$content);
 		$raw_response = MyStuff::curl_request(Yii::app()->params['analysis_engine_url'], $post_data);
-		if ($aer_test_response!='') {
-			$raw_response = $aer_test_response;
-		}
+
+		//if ($aer_test_response!='') {
+		//	$raw_response = $aer_test_response;
+		//}
 		$raw_response = $this->decodeAEResponse($raw_response);
 		
 		$start = 0;
@@ -1798,7 +1820,7 @@ class SiteController extends Controller
 		/* The analysis should correspond to the publication date */
 		$ae_response->date_created = date('Y-m-d H:i:s',strtotime($publication_date.' '.$publication_time));
 		$ae_response->save();
-		
+
 		if ($ae_response) {
 			$ae_categories = Category::model()->findAllByAttributes(array('category_type'=>'mood'));
 			foreach ($ae_categories as $category) {
@@ -1840,7 +1862,17 @@ class SiteController extends Controller
 	}
 	
 	public function actionTest() {
-		
+		$user_id = Yii::app()->user->Id;
+		$ajd = AeJournalDaily::model()->findAllByAttributes(array('user_id'=>$user_id));
+		$sql = "select group_concat(content) total_content
+from note
+where user_id=$user_id
+  and date_created>=curdate()
+  and is_active=1
+group by user_id";
+		$entries = Yii::app()->db->createCommand($sql)->queryRow();
+		MyStuff::log($entries);
+
 		//$this->getRandomQuestion();
 		// for form testing
     	/*
@@ -3454,8 +3486,6 @@ order by avg_rank desc";
 		}
 		$answer_id = (int)Yii::app()->request->getPost('answer_id', 0);
 		$user_id = Yii::app()->user->Id;
-		//MyStuff::log("user_id: $user_id");
-		//MyStuff::log("answer_id: $answer_id");
 		if ($answer = Answer::model()->findbyPk($answer_id)) {
 			$flag = new AnswerFlag();
 			$flag->answer_id = $answer->answer_id;
