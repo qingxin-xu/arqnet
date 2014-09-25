@@ -98,3 +98,33 @@ tr.fc-first.fc-last {
 .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-slots tr.fc-minor td, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-slots tr.fc-minor td, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-slots tr.fc-minor th, .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaDay .fc-agenda-slots tr.fc-minor th {
 	border-bottom-color:#363636;
 }
+
+.fc-event-time{
+   display : none;
+}
+
+.eventIcon {
+	display:block;
+	background-position:left center;
+	background-repeat:no-repeat;
+	/*height:24px;*/
+	padding:5px 0 0 26px;
+	word-break:break-word;
+	background-size:22px 22px;
+}
+
+.qa_asked {
+	background-image:url('/assets/images/Arq/create_question.png');
+}
+
+.qa_answered {
+	background-image:url('/assets/images/Arq/your_answers.png');
+}
+
+.note {
+	background-image:url('/assets/images/journal/note.png');
+}
+
+.event {
+	background-image:url('/assets/images/dashboard/tracker.png');
+}

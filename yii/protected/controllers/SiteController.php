@@ -410,7 +410,7 @@ class SiteController extends Controller
 		
 		$eventData = array();//$this->getCalendarEventData();
 		$milestones = $this->getMilestoneEvents();
-		$cat = EventCategory::model()->with('eventSubcategories','eventSubcategories.eventDefinitions')->findAll('t.name!=:_name',array(':_name'=>'Milestones'));
+		$cat = EventCategory::model()->with('eventSubcategories','eventSubcategories.eventDefinitions')->findAll('t.name!=:_name and t.name!=:_other',array(':_name'=>'Milestones',':_other'=>'ARQ'));
 		/* We have to unroll the category-subcategory->defintion map
 		 * to get it to render in JSON
 		 * Otherwise we would have to do multiple SQL queries
@@ -1012,6 +1012,35 @@ class SiteController extends Controller
 			
 			$note->visibility_id = Yii::app()->request->getPost('visibility');
 			
+			/* Calendar event */
+			$event_definition = EventDefinition::model()->findByAttributes(array(
+					'parameter'=>'QA: Asked:'
+			));
+			
+			if ($event_definition) {
+				$myValue;
+				if ($title) {
+					$myValue = $title;
+				} else
+				{
+					$myValue = $note->content;
+				}
+				
+				$myValue = substr($myValue,0,15).'...';
+				$cal = new CalendarEvent();
+				$cal->user_id=Yii::app()->user->Id;
+				$cal->start_date = $note->date_created;
+				$cal->all_day=0;
+				$cal->save();
+					
+				/* Event value */
+				$event_value = new EventValue();
+				$event_value->calendar_event_id = $cal->calendar_event_id;
+				$event_value->value=$myValue;
+				$event_value->event_definition_id = $event_definition->event_definition_id;
+				$event_value->save();
+			}
+			
 		}
 		
 		/* This is the logic to determine if 'In Queue' status should be used */
@@ -1248,6 +1277,7 @@ group by user_id";
 			));
 			Yii::app()->end();
 		}
+		$user_id = Yii::app()->user->Id;
 		
 		if(!isset($_POST['content']))
 		{
@@ -1347,29 +1377,27 @@ group by user_id";
 		}
 		
 		$question = Question::model()->findByPk($question->question_id);
-		//Unroll
-		/*
-		$choices = $question->questionChoices;
-		$myChoices = array();
-		foreach($choices as $choice) {
-			array_push($myChoices,array(
-			'question_choice_id'=>$choice->question_choice_id,
-			'content'=>$choice->content,
-			'choice_order'=>$choice->choice_order,
-			'is_active'=>$choice->is_active
-			));
+
+		/* Calendar event */
+		$event_definition = EventDefinition::model()->findByAttributes(array(
+			'parameter'=>'QA: Asked:'
+		));
+		
+		if ($event_definition) {
+			$cal = new CalendarEvent();
+			$cal->user_id=$user_id;
+			$cal->start_date = $question->date_created;
+			$cal->all_day=0;
+			$cal->save();
+			
+			/* Event value */
+			$event_value = new EventValue();
+			$event_value->calendar_event_id = $cal->calendar_event_id;
+			$event_value->value=$question->content;
+			$event_value->event_definition_id = $event_definition->event_definition_id;
+			$event_value->save();			
 		}
-		$myQuestion = array(
-				'question_category_id'=>$questionCategory->question_category_id,
-				'category'=>$questionCategory->name,
-				'type_id'=>$question->question_type_id,
-				'type_name'=>$question->questionType->name,
-				'question_id'=>$question->question_id,
-				'content'=>$question->content,
-				'choices'=>$myChoices,
-				'cachedAnswer'=>null
-		);		
-		*/
+
 		$myQuestion = Question::unroll($question);
 		echo CJSON::encode(array(
 				'success'=>1,
@@ -1509,6 +1537,26 @@ group by user_id";
 				'myAnswer'=>$myAnswer
 			);
 			
+			/* Calendar event */
+			$event_definition = EventDefinition::model()->findByAttributes(array(
+					'parameter'=>'QA: Answered:'
+			));
+			
+			if ($event_definition) {
+				$cal = new CalendarEvent();
+				$cal->user_id=$user_id;
+				$cal->start_date = new CDbExpression('NOW()');
+				$cal->all_day=0;
+				$cal->save();
+					
+				/* Event value */
+				$event_value = new EventValue();
+				$event_value->calendar_event_id = $cal->calendar_event_id;
+				$event_value->value=$question->content;
+				$event_value->event_definition_id = $event_definition->event_definition_id;
+				$event_value->save();
+			}
+			
 			header('Content-type: application/json');
 			echo CJSON::encode(array(
 					'answer_id'=>$answer->answer_id,
@@ -1641,8 +1689,6 @@ group by user_id";
 			Yii::app()->end();
 		}
 		
-		#MyStuff::Log('CAL');
-		#MyStuff::Log($_POST);
 		$cal = new CalendarEvent();
 		$cal->user_id=$user_id;
 		$start = Yii::app()->request->getPost('start', '');
@@ -3116,10 +3162,11 @@ where user_id = $user_id
 				));
 			}
 			array_push($myEvents,array(
+			'subcategory'=>$subcategory->name,
 			'title'=>$title,
 			'start'=>$ce->start_date,
 			'end'=>$ce->end_date,
-			'allDay'=>$ce->all_day,
+			'allDay'=>intval($ce->all_day),
 			'description'=>$description,
 			'editable'=>false
 			));

@@ -471,6 +471,7 @@ var formFactory = {
 	// Title attribute for items of the calendar views
 	_renderTitleTooltip:function (event)
 	{
+		var exclude = ['_no_input_','boolean','QA: Asked:','QA: Answered:','Note:'];
 		//console.log('_render tooltip',event);
 		var html = " title='";
 		
@@ -482,7 +483,8 @@ var formFactory = {
 					if (event.description[i] && event.description[i].type && event.description[i].type=='cap_event')
 						html+= ""+event.description[i].value||' '+"<br>";
 				} else {
-					if (event.description[i].type !='_no_input_')
+					//if (event.description[i].type !='_no_input_')
+					if ($.inArray(event.description[i].type,exclude) ==-1)
 						html += ""+event.description[i].value||' '+"<br>"; 
 				}
 			}				

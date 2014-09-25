@@ -127,3 +127,6 @@ form input[value=Cancel] {
 .boxHeader .word2 {
 	color:#6A44A9;
 }
+.calendar-env .calendar-body .fc-content .fc-view .fc-event.color-agendaDay {
+	background:#4e3a73;
+}
