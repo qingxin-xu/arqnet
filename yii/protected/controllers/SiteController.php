@@ -1912,19 +1912,24 @@ where tp.ae_response_id = $ae_response_id";
 		return $return;
 	}
 
-	private function getDailyAE($user_id) {
+	private function getDailyAE($user_id, $get_date=NULL) {
 		$ajd = AeJournalDaily::model()->findAllByAttributes(array('user_id'=>$user_id));
+		if (!$get_date) {
+			$get_date = "curdate()";
+		}
 		$sql = "select ae_response_id
 from ae_journal_daily
 where user_id = $user_id
-  and date_created = curdate()";
+  and date_created = $get_date";
 		$ajd = Yii::app()->db->createCommand($sql)->queryRow();
-		return $this->getAEResponse($ajd['ae_response_id']);
+		if ($ajd and $ajd['ae_response_id']>0) {
+			return $this->getAEResponse($ajd['ae_response_id']);
+		}
 	}
 	
 	public function actionTest() {
 		$user_id = Yii::app()->user->Id;
-		MyStuff::log($this->getDailyAE($user_id));
+		MyStuff::log($this->getDailyAE($user_id, '2014-09-23'));
 
 		//$this->getRandomQuestion();
 		// for form testing
