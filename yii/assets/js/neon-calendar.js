@@ -9,22 +9,23 @@ var neonCalendar = neonCalendar || {};
 var eventRender = {
 	renderQA_Asked:function(element,event) {
 		if (!element || !event) return;
-		console.log('event',event);
-		element.find('.fc-event-title').addClass('eventIcon qa_asked').html('Asked: '+event.description[0].value);
+		
+		element.find('.fc-content').addClass('eventIcon qa_asked').html('Asked: '+event.description[0].value);
 	},
 	renderQA_Answered:function(element,event) {
 		if (!element || !event) return;
-		element.find('.fc-event-title').addClass('eventIcon qa_answered').html('Answered: '+event.description[0].value);
+		if (!event.description || event.description.length<=0) return;
+		element.find('.fc-content').addClass('eventIcon qa_answered').html('Answered: '+event.description[0].value);
 	},
 	
 	renderNote:function(element,event) {
 		if (!element || !event) return;
-		element.find('.fc-event-title').addClass('eventIcon note').html('Note: '+event.description[0].value);
+		element.find('.fc-content').addClass('eventIcon note').html('Note: '+event.description[0].value);
 	},
 	
 	renderEvent:function(element,event) {
 		if (!element || !event) return;
-		element.find('.fc-event-title').addClass('eventIcon event');
+		element.find('.fc-content').addClass('eventIcon event');
 	}
 	
 };
@@ -124,9 +125,9 @@ function submitCalendarEvent(data,input,appendTo)
 						left: 'title',
 						right: 'month,agendaWeek,agendaDay today prev,next'
 					},
-					
+
 					//defaultView: 'basicWeek',
-					
+					theme:true,
 					editable: true,
 					firstDay: 1,
 					height: 600,
@@ -184,7 +185,7 @@ function submitCalendarEvent(data,input,appendTo)
 							}
 						}
 					},
-					events:function(start,end,callback) {
+					events:function(start,end,timezone,callback) {
 						$.ajax({
 							url:'/calendarActivities',
 							dataType:'json',
@@ -194,12 +195,14 @@ function submitCalendarEvent(data,input,appendTo)
 								if ('success' in d && d['success']==1 && 'events' in d) {
 									$.each(d['events'],function(index,value) {
 										value = $.extend(value,{className:['color-green']});
+										/*
 										console.log('value',value.subcategory);
 										if (!value.end && value.start) {
 											var myD = new Date(value.start);
 											myD.setTime(myD.getTime()+60*60*1000);
 											value.end = myD;
 										}
+										*/
 									});
 									callback(d['events']);
 								} else {
@@ -215,16 +218,15 @@ function submitCalendarEvent(data,input,appendTo)
 					},
 
 					eventRender:function(event,element,view) {
+						
 						if (eventRender && event.subcategory) {
 							if (eventRender['render'+event.subcategory]) eventRender['render'+event.subcategory](element,event);
 							else eventRender.renderEvent(element,event);
 						}
+						
 						if (view.name == 'agendaDay') {
 							console.log('event',event);
-							console.log('event render',element);
-							//$('<img width="22" height="22" src="/assets/images/Arq/create_question.png" />').prependTo(element.find('.fc-event-inner'));
-							
-							//element.find('.fc-event-inner').append('<span>Hi there</span>');
+							console.log('event element',element);
 							element.removeClass('color-green');
 							element.addClass('color-agendaDay');
 						}

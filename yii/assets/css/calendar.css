@@ -34,7 +34,8 @@
 button, input, optgroup, select, textarea {
 	color:#666666;
 }
-.calendar-env .calendar-body .fc-content .fc-view table thead tr th {
+
+th,.calendar-env .calendar-body .fc-content .fc-view table thead tr th {
 	border-bottom:1px solid #363636;
 	background:#252525;
 	color:#666666;
@@ -51,11 +52,13 @@ tr.fc-first.fc-last {
 	border:1px solid #252525;
 	border-bottom:1px solid #363636;
 }
+
+.fc-unthemed th, .fc-unthemed td, .fc-unthemed hr, .fc-unthemed thead, .fc-unthemed tbody, .fc-unthemed .fc-row, .fc-unthemed .fc-popover,
 .calendar-env .calendar-body .fc-content .fc-view table tbody tr td.fc-day {
 	border:1px solid #363636;
 }
 
-.calendar-env .calendar-body .fc-header .fc-button.fc-state-active
+.fc-unthemed .fc-today,.calendar-env .calendar-body .fc-header .fc-button.fc-state-active
 .calendar-env .calendar-body .fc-header .fc-button.fc-state-active {
 	background:#252525;
 	color:#7b7776;
@@ -69,8 +72,20 @@ tr.fc-first.fc-last {
 	border:1px solid #363636;
 }
 
-.calendar-env .calendar-body .fc-header .fc-button.fc-state-active {
+.ui-widget-content,
+button[type=button].ui-button,.calendar-env .calendar-body .fc-header .fc-button.fc-state-active {
 	background-color:#252525;
+	background:#252525;
+	border:1px solid #363636;
+	color:#7b7776;
+}
+
+.ui-state-default .ui-icon {
+	background-color:#666666;
+}
+
+.fc-state-default {
+	text-shadow:none;
 }
 
 .calendar-env .calendar-body .fc-content .fc-view.fc-view-agendaWeek .fc-agenda-allday,
@@ -99,8 +114,34 @@ tr.fc-first.fc-last {
 	border-bottom-color:#363636;
 }
 
+.fc-widget-header {
+	display:none;
+}
+
 .fc-event-time{
    display : none;
+}
+
+.fc-time {
+	display:none;
+}
+
+.fc-event.color-green {
+	background:#00a651;
+	border:1px solid #00a651;
+}
+
+.fc-event.color-agendaDay {
+	background:#4e3a73;
+	border:1px solid #4e3a73;	
+}
+
+.fc-agenda-allday {
+	background:#333333;
+}
+
+hr.ui-widget-header {
+	display:none;
 }
 
 .eventIcon {
@@ -108,7 +149,7 @@ tr.fc-first.fc-last {
 	background-position:left center;
 	background-repeat:no-repeat;
 	/*height:24px;*/
-	padding:5px 0 0 26px;
+	padding:11px 0 0 26px;
 	word-break:break-word;
 	background-size:22px 22px;
 }
