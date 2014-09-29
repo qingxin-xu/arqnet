@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="assets/js/jquery-ui/css/vader/jquery-ui.min.css">
-
+<script src='/assets/js/dashboard/recentActivities.js'></script>
+<script src='/assets/js/arq/AnswerQuestion.js'></script>
 <style type='text/css'>
 #slider1 .ui-label {cursor:pointer;}
 </style>
@@ -52,6 +53,10 @@ var topics_donut_chart,
 	//trackerDates = <?php /*echo json_encode($trackerDates);*/?>,
 	currentValue=0,
 	trackerOffset = 0,
+	initial_question = <?php echo json_encode($randomQuestion);?>,
+	ansThinkingMsg = 'Answering question'
+	ansSuccessMsg = 'Question successfully answered',
+	question_flags = <?php echo json_encode($question_flags); ?>,
 	trackerSelection = {};
 
 /**
@@ -683,6 +688,15 @@ jQuery(document).ready(function($)
 	});
 
 	if (trackerData) setTrackerOptions();
+
+	if (AnswerQuestion && AnswerQuestion.createForm && initial_question) {
+		AnswerQuestion.createForm(initial_question);
+	}
+
+	if (recentActivities && trackerActivities) {
+		recentActivities.display(trackerActivities,'#recentActivities');
+	}
+
 	if (defaultRange>0) 
 	{
 		
@@ -1103,7 +1117,7 @@ function getRandomInt(min, max)
 		</div>	
 		<div class="col-sm-3">
 		<div class="boxHeader"><span class="word1">Recent </span><span class="word2">Updates</span></div>
-		<div class="panel panel-primary addG-panelhalfheight">
+		<div id='recentActivities' class="panel panel-primary addG-panelhalfheight">
 
 		</div>
 	</div>
@@ -1210,8 +1224,10 @@ function getRandomInt(min, max)
 
 	<div class="col-sm-6">
 		<div class="boxHeader"><span class="word1">Quick </span><span class="word2">Question</span></div>
-		<div class="tile-block addG-tileblock" id="haveyouever">			
-			<div class="tile-content quick-question">
+		<div class="tile-block addG-tileblock" id="haveyouever">	
+			<div class='FormPlaceHolder displayed' ></div>		
+			<!--
+			<div class="tile-content quick-question"> 
 				<h3 style="color:#fff; margin-top:0;">Have you ever flown a kite?</h3>
 				<div >
 				  
@@ -1252,7 +1268,7 @@ function getRandomInt(min, max)
 					
 				</div>		
 			</div>
-			
+			-->	
 		</div>
 
 	</div>

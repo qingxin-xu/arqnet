@@ -130,3 +130,20 @@ form input[value=Cancel] {
 .calendar-env .calendar-body .fc-content .fc-view .fc-event.color-agendaDay {
 	background:#4e3a73;
 }
+
+.question_category,input[type=submit].question_category, button[type=submit].question_category, button[type=button].question_category {
+	background: -webkit-linear-gradient(top, rgb(46,107,48) 0%,rgb(27,92,38) 100%);
+	background: -o-linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	background: -moz-linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	background: linear-gradient(top, rgb(55,55,55) 0%,rgb(25,25,25) 45%, rgb(15,15,15) 75%);
+	color:#FFFFFF;
+	border:1px solid #0b0b0d;
+}
+
+.form-group h3 {
+	color:#FFF;
+}
+
+.input-group input {
+	color:#000;
+}

@@ -247,38 +247,7 @@ class SiteController extends Controller
 		$end_date = date('Y-m-d',strtotime($today) - 30*$day);
 		
 		$activities = $this->calendarActivities($end_date,$today,$user_id);
-		/*
-		$responses = $this->getDashboardResponses(30,null,$user_id);
-		$trackerInfo = $this->trackerData($end_date,$today,$user_id);
-		
-		$all_dates = array_merge($trackerInfo{'trackerDates'});
-		
-		foreach ($responses{'avg'} as $r) {
-			if (!in_array($r{'date'},$all_dates)) array_push($all_dates,$r{'date'});
-		}
-		sort($all_dates);
-		
-		//Intervleave tracker data and AE response data
-		$eventData = array();
-		foreach ($all_dates as $eventDate) {
-			if (in_array($eventDate,$_dates)) {
-				//array_push($eventData,$responses{'avg'});
-				foreach ($responses{'avg'} as $r) {
-					if (strcmp($r{'date'},$eventDate)==0) {
-						array_push($eventData,$r);
-						break;
-					}
-				}
-			} else {
-				array_push($eventData,array(
-					'top_categories'=>array(),
-					'top_words'=>array(),
-					'top_people'=>array(),
-					'date'=>$eventDate
-				));
-			}
-		}
-		*/
+
 		$dashboardData = $this->getDashboardData(30,null,$today,$user_id);
 		$event_units = EventUnit::model()->findall();
 		$units = array();
@@ -286,6 +255,17 @@ class SiteController extends Controller
 			array_push($units,$eu->name);	
 		}
 
+		/*
+		 * Question
+		 */
+		
+		$categories = $this->getQuestionCategories();
+		$randomQuestion = null;
+		while(!$randomQuestion) {
+			$randInt = rand(0,count($categories)-1);
+			$randomQuestion = $this->getRandomQuestionByCategory($categories{$randInt});
+		}
+		
 		$this->render('dashboard',
 			array(
 				'range_labels'=>$range_labels,
@@ -305,6 +285,8 @@ class SiteController extends Controller
 				'trackerData'=>$dashboardData{'trackerData'},
 				//'trackerDates'=>$trackerInfo{'trackerDates'},
 				'event_units'=>$units,
+				'randomQuestion'=>$randomQuestion,
+				'question_flags'=>$this->getQuestionFlags(),
 				//'_dates'=>$eventData
 			)
 		);
