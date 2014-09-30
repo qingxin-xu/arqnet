@@ -1,4 +1,9 @@
+<link rel="stylesheet" href="assets/js/jquery-ui/css/vader/jquery-ui.min.css">
 <link rel="stylesheet" href="assets/css/profile.css">
+<script src="/assets/js/jquery.validate.min.js"></script>
+<script src='http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js'></script>
+<script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script type='text/javascript' src='/assets/js/profile/profile.js'></script>
 <script type='text/javascript'>
 	var myProfile = <?php echo json_encode($profile);?>;
 
@@ -8,7 +13,6 @@
 		for (var i in myProfile) {
 			var field = $('[name='+i+']');
 			if (field && field.length>0) {
-				console.log(i,field);
 				if (myProfile[i] != null) {
 					field.val(myProfile[i]);
 				}
@@ -24,6 +28,13 @@
 
 		if (myProfile['relationship_status_id']) {
 			field = $('[name=relationship_status][value='+myProfile['relationship_status_id']+']');
+			if (field && field.length>0) {
+				field.attr('checked',true);
+			}
+		}
+
+		if (myProfile['gender']) {
+			field = $('[name=gender][value='+myProfile['gender']+']');
 			if (field && field.length>0) {
 				field.attr('checked',true);
 			}
@@ -54,15 +65,16 @@
 										<h3>First Name</h3>
 										<input placeHolder='First name' name='first_name'></input>
 										<h3>Gender</h3>
-										<input type='radio' name='gender' value='Female' /><label class='_radio' for='gender'>Female</label>
-										<input type='radio' name='gender' value='Male' /><label class='_radio' for='gender'  >Male</label>
+										<input type='radio' name='gender' value='F' /><label class='_radio' for='gender'>Female</label>
+										<input type='radio' name='gender' value='M' /><label class='_radio' for='gender'  >Male</label>
 										<h3>Birthdate</h3>
 										<input placeHolder='Birthday' name='birthday'></input>
 										<h3>Facebook URL</h3>
 										<input placeHolder='URL' name='facebook_url'></input>
 										<h3>Ethnicity</h3>
 										<input placeHolder='Ethnicity' name='ethnicity'></input>
-										
+										<h3>Email</h3>
+										<input placeHolder='Email' name='email'></input>
 									</div>
 									<div class='form-group'>
 										<input type='submit' value='submit' />
@@ -114,9 +126,9 @@
 										<h4>Interests:</h4>
 										<textarea name='interests'></textarea>
 										<h4>Favorite Books:</h4>
-										<textarea name='books'></textarea>
+										<textarea name='favorite_books'></textarea>
 										<h4>Website/Blog:</h4>
-										<textarea name='blog'></textarea>
+										<textarea name='website'></textarea>
 									</div>
 									<div class='form-group'>
 										<input type='submit' value='submit' />
@@ -125,18 +137,18 @@
 								<div class='col-sm-4'>
 									<div class='form-group'>
 										<h4>Favorite Music:</h4>
-										<textarea name='music'></textarea>
+										<textarea name='favorite_music'></textarea>
 										<h4>Favorite TV:</h4>
-										<textarea name='tv'></textarea>
+										<textarea name='favorite_tv_shows'></textarea>
 									</div>			
 								</div>
 								<div class='col-sm-4'>
 								
 									<div class='form-group'>
 										<h4>Favorite Movies:</h4>
-										<textarea name='movies'></textarea>
+										<textarea name='favorite_movies'></textarea>
 										<h4>Favorite Quotes:</h4>
-										<textarea name='quotes'></textarea>
+										<textarea name='favorite_quotes'></textarea>
 									</div>										
 								</div>
 							</form>
@@ -158,7 +170,9 @@
 	</div>
 	
 
-
+<div id="myThinker" title="...">
+  <p class="validateTips">Submitting Journal Entry</p> 
+</div>
 
 
 	

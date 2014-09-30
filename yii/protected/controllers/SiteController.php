@@ -928,6 +928,152 @@ class SiteController extends Controller
     	}
 	}
 	
+	public function actionUpdateAboutMe()
+	{
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		$userid = Yii::app()->user->Id;
+		if (!$userid) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Unknown User',
+			));
+			Yii::app()->end();
+		}
+		
+		$user = User::model()->findByPk($userid);
+		if (!$user) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Unknown User',
+			));
+			Yii::app()->end();
+		}
+		
+		foreach ($user as $key=>$value) {
+			$fieldValue = Yii::app()->request->getPost($key,'');
+			if ($fieldValue && $value != $fieldValue) {
+				$user->$key = $fieldValue;
+			}
+		}
+					
+		try {
+			$user_inserted = $user->update();
+		} catch (Exception $e) {
+			Yii::app()->end();
+		}
+			
+		if ($user_inserted) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>1,
+					'redirect'=>'/dashboard',
+			));
+			Yii::app()->end();
+		} else {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>0,
+					'error'=>"Unable to update profile at this time",
+			));
+			Yii::app()->end();
+		}		
+	}
+	
+	public function actionUpdateProfile()
+	{
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		$userid = Yii::app()->user->Id;
+		if (!$userid) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Unknown User',
+			));
+			Yii::app()->end();	
+		}
+		
+		$user = User::model()->findByPk($userid);
+		if (!$user) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Unknown User',
+			));
+			Yii::app()->end();			
+		}
+		
+		foreach ($user as $key=>$value) {
+			$fieldValue = Yii::app()->request->getPost($key,'');
+			if ($fieldValue && $value != $fieldValue) {
+				$user->$key = $fieldValue;
+			}
+		}
+		
+		$username_exists = User::model()->countByAttributes(array(
+				'username'=> $user->username
+		));
+			
+		if ($username_exists>1) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>-10,
+					'error'=>'Username already exists',
+			));
+			Yii::app()->end();
+		}
+		
+		$email_exists = User::model()->countByAttributes(array(
+				'email'=> $user->email
+		));
+			
+		if ($email_exists>1) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>0,
+					'error'=>'Email already exists',
+			));
+			Yii::app()->end();
+		}
+		
+		$relationship_status = Yii::app()->request->getPost('relationship_status','');
+		if ($relationship_status) {
+			$user->relationship_status_id = $relationship_status;
+		}
+		
+		$orientation = Yii::app()->request->getPost('orientation','');
+		if ($orientation) {
+			$user->orientation_id = $orientation;
+		} 
+		 
+		try {
+			$user_inserted = $user->update();
+		} catch (Exception $e) {
+			Yii::app()->end();
+		}
+		 
+		if ($user_inserted) {
+				header('Content-type: application/json');
+				echo CJSON::encode(array(
+						'success'=>1,
+						'redirect'=>'/dashboard',
+				));
+				Yii::app()->end();
+		} else {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>0,
+					'error'=>"Unable to update profile at this time",
+			));
+			Yii::app()->end();
+		}
+	}
+	
 	public function actionDeleteJournalEntry()
 	{
 		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
