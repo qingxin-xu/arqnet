@@ -64,6 +64,10 @@
 									<div class='form-group'>
 										<h3>First Name</h3>
 										<input placeHolder='First name' name='first_name'></input>
+										<h3>Password</h3>
+										<input type='password' placeHolder='Enter a new password' name='password' id='password'></input>
+										<h3>Confirm Password</h3>
+										<input type='password' placeHolder='Confrim new password' name='password2' id='password2'></input>
 										<h3>Gender</h3>
 										<input type='radio' name='gender' value='F' /><label class='_radio' for='gender'>Female</label>
 										<input type='radio' name='gender' value='M' /><label class='_radio' for='gender'  >Male</label>

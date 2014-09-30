@@ -4,6 +4,11 @@ $.validator.addMethod("dateFormat",
     },
     "Please enter a date in the format yyyy-mm-dd.");
 
+function clearPasswords()
+{
+	$('input[type=password]').val('');
+}
+
 $(document).ready(function() {
 	
 	var myProfileForm = '#myProfileForm',
@@ -34,7 +39,10 @@ $(document).ready(function() {
 			username:{required:true},
 			orientation:{required:true},
 			gplus_url:{url:true},
-			email:{required:true,email:true}
+			email:{required:true,email:true},
+			password2: {
+				equalTo:'#password'
+			},
 		},
 		submitHandler:function(e) {
 			updateMsg($('.validateTips'),'Updating Profile...');
@@ -47,7 +55,7 @@ $(document).ready(function() {
 				processData:false,
 				contentType:false,
 				success:function(d) {
-					
+					clearPasswords();
 					if (d.success && d.success>0)
 					{	
 						updateMsg($('.validateTips'),'Profile Updated');
@@ -65,6 +73,7 @@ $(document).ready(function() {
 				
 				error:function(err)
 				{
+					clearPasswords();
 					console.log('error',err);
 					updateMsg($('.validateTips'),'Unable to update profile at this time');
 					setTimeout(function() {$('#myThinker').dialog('close');},3000);

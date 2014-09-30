@@ -1010,7 +1010,7 @@ class SiteController extends Controller
 		
 		foreach ($user as $key=>$value) {
 			$fieldValue = Yii::app()->request->getPost($key,'');
-			if ($fieldValue && $value != $fieldValue) {
+			if ($fieldValue && $key != 'password' && $value != $fieldValue) {
 				$user->$key = $fieldValue;
 			}
 		}
@@ -1051,6 +1051,12 @@ class SiteController extends Controller
 			$user->orientation_id = $orientation;
 		} 
 		 
+		// Let's do this at the end
+		$password = Yii::app()->request->getPost('password', '');
+		if ($password!='') {
+			$user->setPassword($password);
+		}
+		
 		try {
 			$user_inserted = $user->update();
 		} catch (Exception $e) {
