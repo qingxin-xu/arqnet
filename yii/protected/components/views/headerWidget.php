@@ -38,7 +38,7 @@
 					
 					<!-- Profile sub-links -->
 					<li>
-						<a href="profile.php">
+						<a href="profile">
 							<i class="entypo-user"></i>
 							Edit Profile
 						</a>

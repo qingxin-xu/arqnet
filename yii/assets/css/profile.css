@@ -1,0 +1,31 @@
+.tab-content {
+	background-color:#181818;
+}
+.form-group h3, .form-group h4 {
+	color:#ffffff;
+}
+
+.form-group input, .form-group textarea {
+	background:#252525;
+	border:2px solid #363636;
+}
+
+label._radio {
+	margin:5px 15px;
+}
+
+input[type=radio] {
+	display:inline-block;
+}
+
+input[type=submit] {
+padding:0 12px;
+background: -webkit-linear-gradient(top,  rgba(45, 31, 84, 1) 0%,rgba(54, 37, 105, 1) 47%,rgba(45, 31, 84, 1) 53%);
+background: -o-linear-gradient(top,  rgba(45, 31, 84, 1) 0%,rgba(54, 37, 105, 1) 47%,rgba(45, 31, 84, 1) 53%);
+background: -moz-linear-gradient(top,  rgba(45, 31, 84, 1) 0%,rgba(54, 37, 105, 1) 47%,rgba(45, 31, 84, 1) 53%);
+background: linear-gradient(top,  rgba(45, 31, 84, 1) 0%,rgba(54, 37, 105, 1) 47%,rgba(45, 31, 84, 1) 53%);
+border:1px solid #7f35cf;
+border-radius:3px;
+color:#FFFFFF;
+
+}

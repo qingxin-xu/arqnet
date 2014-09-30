@@ -334,7 +334,31 @@ class SiteController extends Controller
 	{
 		$this->layout = 'arqLayout2';
 		$this->setPageTitle('Profile');
-		$this->render('profile');
+		$user = User::model()->findByAttributes(
+				array('user_id'=> Yii::app()->user->id));
+		
+		$me = array();
+		if ($user) {
+			foreach ($user as $key=>$value) {
+				if (strcmp('password',$key) != 0 && strcmp('user_id',$key) !=0)
+					$me{$key} = $value;
+			}
+		}
+		$o = Orientation::model()->findAll();
+		$orientations = array();
+		$r = RelationshipStatus::model()->findAll();
+		$relationships = array();
+		foreach ($o as $orientation) {
+			array_push($orientations,array('id'=>$orientation->orientation_id,'description'=>$orientation->description));
+		}
+		foreach ($r as $relationship) {
+			array_push($relationships,array('id'=>$relationship->relationship_status_id,'description'=>$relationship->description));
+		}
+		$this->render('profile',array(
+			'orientations'=>$orientations,
+			'relationships'=>$relationships,
+			'profile'=>$me
+		));
 	}
 	
 	public function actionJournal()
