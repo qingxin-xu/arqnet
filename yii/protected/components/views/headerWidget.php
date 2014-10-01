@@ -1,4 +1,4 @@
-<div class="row">
+<div class="arqHeader row">
 	
 	<!-- Profile Info and Notifications -->
 	<div class="col-md-3 col-sm-8 clearfix">

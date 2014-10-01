@@ -337,13 +337,17 @@ class SiteController extends Controller
 		$user = User::model()->findByAttributes(
 				array('user_id'=> Yii::app()->user->id));
 		
+		$image = '';
+		
 		$me = array();
 		if ($user) {
 			foreach ($user as $key=>$value) {
 				if (strcmp('password',$key) != 0 && strcmp('user_id',$key) !=0)
 					$me{$key} = $value;
 			}
+			$image = Image::model()->findByAttributes(array('image_id'=>$user->image_id));
 		}
+		
 		$o = Orientation::model()->findAll();
 		$orientations = array();
 		$r = RelationshipStatus::model()->findAll();
@@ -357,7 +361,8 @@ class SiteController extends Controller
 		$this->render('profile',array(
 			'orientations'=>$orientations,
 			'relationships'=>$relationships,
-			'profile'=>$me
+			'profile'=>$me,
+			'image'=>$image
 		));
 	}
 	
@@ -1828,6 +1833,66 @@ group by user_id";
 		}
 		
 		Yii::app()->end();
+	}
+	
+	public function actionUpdateUserImage()
+	{
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		$userid = Yii::app()->user->Id;
+		if (!$userid) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Unknown User',
+			));
+			Yii::app()->end();
+		}
+		
+		$user = User::model()->findByPk($userid);
+		if (!$user) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>-5,
+					'error'=>'Unknown User',
+			));
+			Yii::app()->end();
+		}		
+		
+		MyStuff::Log('DIR= '.Yii::app()->params['userImageDir']);
+		/* upload user image */
+		$image_id = 0;
+		if ($_FILES and $_FILES['user_image'] and $_FILES['user_image']['size']>0) {
+			$img = new Image();
+			$img->save();
+			mkdir(Yii::app()->params['userImageDir'].DIRECTORY_SEPARATOR.$img->image_id);
+			$new_filename = Yii::app()->params['userImageDir'].DIRECTORY_SEPARATOR.$img->image_id.DIRECTORY_SEPARATOR.$_FILES['user_image']['name'];
+			$new_relative_filename = Yii::app()->params['relativeUserImageDir'].DIRECTORY_SEPARATOR.$img->image_id.DIRECTORY_SEPARATOR.$_FILES['user_image']['name'];
+			move_uploaded_file($_FILES['user_image']['tmp_name'], $new_filename);
+			$img->path = $new_relative_filename;
+			$img->save();
+			$image_id = $img->image_id;
+			MyStuff::Log("IMAGE ID ".$img->image_id);
+			$user->image_id = $image_id;
+			$user->update();
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>1,
+					'path'=>$img->path
+			));
+			Yii::app()->end();
+			
+		} else {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>-10,
+					'error'=>'No image specified',
+			));
+			Yii::app()->end();
+		}
+		
+		$saved = $user->update();
 	}
 	
 	/*

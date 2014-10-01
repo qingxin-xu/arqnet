@@ -14,6 +14,8 @@ $(document).ready(function() {
 	var myProfileForm = '#myProfileForm',
 		aboutMeForm = '#aboutMeForm',
 		updateProfile = '/updateProfile',
+		imageUploadForm = '#user_image_upload',
+		imageUpload = '/updateUserImage',
 		updateAboutMe = '/updateAboutMe';
 	
 	$('#myThinker').dialog({
@@ -23,6 +25,52 @@ $(document).ready(function() {
 		draggable:true,
 		height:150,
 		width:350,
+	});
+	
+	$(imageUploadForm).validate({
+		rules:{
+			user_image:{required:true}
+		},
+		submitHandler:function(e) {
+			console.log('submit');
+			updateMsg($('.validateTips'),'Updating User Image...');
+			$('#myThinker').dialog('open');
+			$.ajax({
+				url:imageUpload,
+				type:'POST',
+				dataType:'json',
+				data:new FormData($(imageUploadForm)[0]),
+				processData:false,
+				contentType:false,
+				success:function(d) {
+					console.log('d=',d);
+					if (d.success && d.success>0)
+					{	
+						updateMsg($('.validateTips'),'Image Updated');
+						setTimeout(function() {$('#myThinker').dialog('close');},2000);
+						if ('path' in d && d['path']) {
+							$('.profile_header img.img-circle').attr('src',d['path']);
+							$('.dropdown-toggle img.img-circle').attr('src',d['path']);
+						}
+					} else
+					{
+						console.log("ERRROR",d);
+						$(myProfileForm)[0].reset();
+						if (d.error) msg = d.error;
+						else msg = 'Unable to upload image at this time';
+						updateMsg($('.validateTips'),msg);
+						setTimeout(function() {$('#myThinker').dialog('close');},3000);
+					}
+				},
+				
+				error:function(err)
+				{
+					console.log('error',err);
+					updateMsg($('.validateTips'),'Unable to upload image at this time');
+					setTimeout(function() {$('#myThinker').dialog('close');},3000);
+				}
+			});							
+		}
 	});
 	
 	$(myProfileForm).validate({
@@ -124,4 +172,30 @@ $(document).ready(function() {
 		}
 		
 	});
+});
+
+$(function () {
+	/*
+    $('#btn_myFileInput').data('default', $('label[for=btn_myFileInput]').text()).click(function () {
+        $('input[name=note_image]').click();
+        
+    });
+    
+    $('#btn_myFileInput').on('click',function() {
+    	setTimeout(function() {$('#btn_myFileInput').focus();},100);
+    });
+    */
+    $('input[name=user_image]').on('change', function () {
+    	
+        var files = this.files;
+        if (!files.length) {
+            $('label[for=btn_myFileInput]').text($('#btn_myFileInput').data('default'));
+            return;
+        }
+        $('label[for=btn_myFileInput]').empty();
+        for (var i = 0, l = files.length; i < l; i++) {
+            $('label[for=btn_myFileInput]').append(files[i].name + '\n');
+        }
+        $('#btn_myFileInput').focus();
+    });
 });

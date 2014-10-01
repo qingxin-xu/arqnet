@@ -42,7 +42,39 @@
 		
 	});
 </script>
-	<div class="row col-sm-8">
+	<div class='row'>
+					<?php 
+						//$image = '';
+						echo "<div class='profile_header'><div class='profile_header_top'></div><div class='profile_header_bottom'></div>";
+						if ($image)
+						{
+							echo '<img src="'.$image->path.'" alt="" class="img-circle" width="88"/>';
+						} else
+						{
+							echo '<img src="assets/images/thumb-1@2x.png" alt="" class="img-circle"  />';
+						}
+						
+						if (!is_null($profile))
+						{
+							echo "<span class='name'>".$profile{'first_name'}.' '.$profile{'last_name'}."</span>";
+							echo "<div class='photo_change'>";
+							echo 	"<form id='user_image_upload' type='post' enctype='multipart/form-data'>";
+							echo '<span class="btn btn-white btn-file">';
+							echo '<button class="image_upload" type="button" id="btn_myFileInput" style="outline:none;">Select image</button>';	
+							echo '<input type="file" name="user_image" accept="image/*" />';
+							echo '</span>';
+							echo '<label for="btn_myFileInput" style="width:95px;"></label>';
+							
+							echo '<div class="user_image_upload form-group"><input type="submit" value="upload" /></div>';
+							echo '</form>';
+							echo "</div>";
+						} 
+						
+						
+						echo '</div>';
+					?>	
+	</div>
+	<!--  <div class="row col-sm-8">-->
 		
 		<div class="row">
 			
@@ -160,7 +192,7 @@
 					</div>
 					</div>
 			</div>
-		</div>
+		<!--  </div>-->
 
 
 
