@@ -8,8 +8,80 @@ body {
 	
 }
 
+.addG-progress.arq-progress {
+	border:none;
+	height:40px;
+}
+
+.addG-tresh {
+	background-color:transparent;
+	background-image:url('/assets/images/header/progressBarSlider.png');
+	background-repeat:no-repeat;
+	background-size:7px 42px;
+	backround-position:center;
+}
+
+.arqHeader.col-md-1 {
+	width:12%;
+}
+
+.analysisTextWrapper {
+	float:left;
+	margin:10px 0 0 0;
+}
+
+.arqText1 {
+	font-family: 'Roboto', sans-serif;
+	font-weight:100;
+}
+.arqText1,.arqText2 {
+	color:#fff;
+	font-size:16px;
+	font-weight:bold;
+}
+.col-sm-4.clearfix.addG-progresswrap {
+	height:45px;
+}
+
+.col-sm-3.col-sm-4.clearfix.addG-progresswrap {
+	width:42%;
+}
+.progress {
+	background-color:#222224;
+	background-image:url('/assets/images/header/progressBarContainer.png');
+	background-size:339px 43px;
+	background-position:center;	
+	background-repeat:no-repeat;
+}
+
+.progress-bar {
+	position:relative;
+	height:55%;
+	top:9px;
+	left:10px;
+	border-radius:12px 0 0 12px;
+	width:75%;
+}
 .arqHeader {
-	background-color:##222224;
+	background-color:#222224;
+	height:90px;
+}
+
+.arqHeader-logout {
+	width:45%;
+}
+
+.addG-tresh {
+	top:5%;
+	z-index:1001;
+	left:82%;
+}
+
+.progress-bar-success {
+	background-color:transparent;
+	background-image:url('/assets/images/header/progressBarGreen.png');
+	background-size:15px 23px;
+	background-repeat:repeat;
 }
 .page-container .main-content {
   position: relative;

@@ -1,7 +1,7 @@
 <div class="arqHeader row">
 	
 	<!-- Profile Info and Notifications -->
-	<div class="col-md-3 col-sm-8 clearfix">
+	<div class="arqHeader col-md-1 col-sm-8 clearfix">
 		
 		<ul class="user-info pull-left pull-none-xsm">
 		
@@ -52,16 +52,19 @@
 
 	
 	</div>
-		<div class="col-md-3 col-sm-4 clearfix addG-progresswrap">
-			<p style="font-weight:bold">Analysis Power Bar</p>
+		<div class="col-sm-3 col-sm-4 clearfix addG-progresswrap">
+			
+			<div class='analysisTextWrapper'><span class='arqText1'>Analysis </span><span class='arqText2'>Power Bar</span></div>
 			<div class="addG-tresh"></div>
-			<div class="progress addG-progress">
-				<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" style="background-color: #469c07;;width: 75%"></div>
-		</div>
+			<div class="progress addG-progress arq-progress">
+				<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100";width: 75%"></div>
+				
+			</div>
+			
 		</div>
 	
 	<!-- Raw Links -->
-	<div class="col-md-6 col-sm-4 clearfix hidden-xs">
+	<div class="arqHeader-logout col-md-6 col-sm-4 clearfix hidden-xs">
 		
 		<ul class="list-inline links-list pull-right">
 						
