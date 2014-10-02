@@ -1177,7 +1177,7 @@ class SiteController extends Controller
 			
 			/* Calendar event */
 			$event_definition = EventDefinition::model()->findByAttributes(array(
-					'parameter'=>'QA: Asked:'
+					'parameter'=>'Note:'
 			));
 			
 			if ($event_definition) {
@@ -1290,23 +1290,32 @@ class SiteController extends Controller
 				// Cumulative AE records
 				$user_id = Yii::app()->user->Id;
 				$cur_date = new CDbExpression('CURDATE()');
-				$sql = "select ae_journal_daily_id
-from ae_journal_daily
-where user_id = $user_id
-  and date_created = curdate()";
+				/*
+				$sql = "select *
+						from ae_journal_daily
+						where user_id = $user_id
+						  and date_created = curdate()";
 				$ajd = Yii::app()->db->createCommand($sql)->queryRow();
+				*/
+				$ajd = AeJournalDaily::model()->findByAttributes(array(
+					'user_id'=>$user_id,
+					'date_created'=>date('Y-m-d')
+				));
+				
 				if (!$ajd) {
 					$ajd = new AeJournalDaily();
 					$ajd->user_id = $user_id;
 					$ajd->date_created = $cur_date;
 				};
+				
 				$sql = "select group_concat(content, ' ') total_content
-from note
-where user_id=$user_id
-  and date_created>=curdate()
-  and is_active=1
-group by user_id";
+						from note
+						where user_id=$user_id
+						  and date_created>=curdate()
+						  and is_active=1
+						group by user_id";
 				$entries = Yii::app()->db->createCommand($sql)->queryRow();
+	
 				if ($entries) {
 					$ae_response_id = $this->createAEResponse($entries['total_content']);
 					$ajd->ae_response_id = $ae_response_id;
