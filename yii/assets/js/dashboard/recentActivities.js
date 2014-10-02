@@ -52,6 +52,8 @@ var recentActivities = {
 	renderQA_Asked:function(html,activity) {
 		if (!html) return html;
 		if (!activity) return html;
+		if (!activity.description) return html;
+		if (activity.description.length<=0) return html;
 		var value = activity.description[0].value;
 		if (value.length>19) value = value.substring(0,19)+'...';
 		html = html.replace(/{EVENT}/,'qa_asked');
@@ -62,6 +64,8 @@ var recentActivities = {
 	renderQA_Answered:function(html,activity) {
 		if (!html) return html;
 		if (!activity) return html;
+		if (!activity.description) return html;
+		if (activity.description.length<=0) return html;
 
 		html = html.replace(/{EVENT}/,'qa_answered');
 		if (activity.description.length>0) {
@@ -78,6 +82,12 @@ var recentActivities = {
 		if (!html) return html;
 		if (!activity) return html;
 		html = html.replace(/{EVENT}/,'note');
+		if (activity.description.length>0) {
+			var value = activity.description[0].value;
+			if (value.length>19) value = value.substring(0,19)+'...';
+			html = html.replace(/{ACTIVITY}/,'Note: '+value);
+		} else 
+			html = html.replace(/{ACTIVITY}/,'Wrote in diary');
 		return html;
 	},
 	

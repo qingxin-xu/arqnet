@@ -3378,7 +3378,7 @@ where user_id = $user_id
 
 		#MyStuff::Log('CALENAER ACTIVITIES '.$start_date.' '.$end_date);
 		$myEvents = array();
-		$calendarEvents = CalendarEvent::model()->findAll('t.user_id=:_user_id and t.start_date<=date(:end_date) and t.start_date>=date(:start_date)',array(':_user_id'=>$user_id,':start_date'=>$start_date,':end_date'=>$end_date));
+		$calendarEvents = CalendarEvent::model()->findAll(array('order'=>'t.start_date DESC','condition'=>'t.user_id=:_user_id and date(t.start_date)<=date(:end_date) and date(t.start_date)>=date(:start_date)','params'=>array(':_user_id'=>$user_id,':start_date'=>$start_date,':end_date'=>$end_date)));
 		foreach ($calendarEvents as $ce)
 		{
 			$eventValues = $eventValues = EventValue::model()->with('calendarEvent')->findAll('t.calendar_event_id=:_id',array(':_id'=>$ce->calendar_event_id));
