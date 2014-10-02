@@ -2086,6 +2086,7 @@ group by user_id";
 		$ae_response = new AeResponse();
 		$ae_response->words = (int)$ae_data['words'];
 		$ae_response->sentences = (int)$ae_data['sentences'];
+		$ae_response->hits = (int)$ae_data['hits'];
 		$ae_response->response_ts = $ae_data['timestamp'];
 		$ae_response->json_response = $raw_response;
 		$ae_response->user_id = Yii::app()->user->id;
@@ -2136,7 +2137,7 @@ group by user_id";
 
 	private function getAEResponse($ae_response_id) {
 		$return = array();
-		$sql = "select user_id, words, sentences, date_created
+		$sql = "select user_id, words, sentences, hits, date_created
 from ae_response
 where ae_response_id = $ae_response_id";
 		$obj = Yii::app()->db->createCommand($sql)->queryRow();
@@ -2144,6 +2145,7 @@ where ae_response_id = $ae_response_id";
 		$return['user_id'] = $obj['user_id'];
 		$return['words'] = $obj['words'];
 		$return['sentences'] = $obj['sentences'];
+		$return['hits'] = $obj['hits'];
 		$return['date_created'] = $obj['date_created'];
 
 		$sql = "select c.description category,

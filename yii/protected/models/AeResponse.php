@@ -8,6 +8,7 @@
  * @property integer $user_id
  * @property integer $words
  * @property integer $sentences
+ * @property integer $hits
  * @property string $json_response
  * @property string $response_ts
  * @property string $date_created
@@ -39,11 +40,11 @@ class AeResponse extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('user_id, words, sentences, is_active', 'numerical', 'integerOnly'=>true),
+			array('user_id, words, sentences, hits, is_active', 'numerical', 'integerOnly'=>true),
 			array('json_response, response_ts, date_created, date_modified', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('ae_response_id, user_id, words, sentences, json_response, response_ts, date_created, date_modified, is_active, source', 'safe', 'on'=>'search'),
+			array('ae_response_id, user_id, words, sentences, hits, json_response, response_ts, date_created, date_modified, is_active, source', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -73,6 +74,7 @@ class AeResponse extends CActiveRecord
 			'user_id' => 'User',
 			'words' => 'Words',
 			'sentences' => 'Sentences',
+			'hits' => 'Hits',
 			'json_response' => 'Json Response',
 			'response_ts' => 'Response Ts',
 			'date_created' => 'Date Created',
@@ -104,6 +106,7 @@ class AeResponse extends CActiveRecord
 		$criteria->compare('user_id',$this->user_id);
 		$criteria->compare('words',$this->words);
 		$criteria->compare('sentences',$this->sentences);
+		$criteria->compare('hits',$this->hits);
 		$criteria->compare('json_response',$this->json_response,true);
 		$criteria->compare('response_ts',$this->response_ts,true);
 		$criteria->compare('date_created',$this->date_created,true);
