@@ -47,4 +47,19 @@ class MyStuff {
 		#MyStuff::log($ch);
 		return $response;
 	}
+
+	function get_sql_date($type='curdate') {
+		$valid_types = array(
+			'curdate()' => 1,
+			'now()' => 1,
+			);
+		if ($valid_types[strtolower($type)]) {
+			$sql = "select $type get_date";
+			$date = Yii::app()->db->createCommand($sql)->queryRow();
+			return $date['get_date'];
+		} else {
+			return false;
+		}
+	}
+
 }

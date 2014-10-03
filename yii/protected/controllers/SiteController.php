@@ -1118,7 +1118,10 @@ class SiteController extends Controller
 		NoteCategory::model()->deleteAllByAttributes($note_array);
 		//NoteStatus::model()->deleteAllByAttributes($note_array);
 		//NoteVisibility::model()->deleteAllByAttributes($note_array);
+		$note_date_created = $note->date_created;
 		$note->delete();
+
+		$this->runAEJournalDaily($note_date_created);
 		
 		echo CJSON::encode(array(
 				'success'=>1,
@@ -1286,41 +1289,7 @@ class SiteController extends Controller
 				}
 
 				$note->save();
-
-				// Cumulative AE records
-				$user_id = Yii::app()->user->Id;
-				$cur_date = new CDbExpression('CURDATE()');
-				/*
-				$sql = "select *
-						from ae_journal_daily
-						where user_id = $user_id
-						  and date_created = curdate()";
-				$ajd = Yii::app()->db->createCommand($sql)->queryRow();
-				*/
-				$ajd = AeJournalDaily::model()->findByAttributes(array(
-					'user_id'=>$user_id,
-					'date_created'=>date('Y-m-d')
-				));
-				
-				if (!$ajd) {
-					$ajd = new AeJournalDaily();
-					$ajd->user_id = $user_id;
-					$ajd->date_created = $cur_date;
-				};
-				
-				$sql = "select group_concat(content, ' ') total_content
-						from note
-						where user_id=$user_id
-						  and date_created>=curdate()
-						  and is_active=1
-						group by user_id";
-				$entries = Yii::app()->db->createCommand($sql)->queryRow();
-	
-				if ($entries) {
-					$ae_response_id = $this->createAEResponse($entries['total_content']);
-					$ajd->ae_response_id = $ae_response_id;
-					$ajd->save();
-				}
+				$this->runAEJournalDaily($note->date_created);
 
 			} else {
 				/*
@@ -1432,6 +1401,45 @@ class SiteController extends Controller
 		));
 		Yii::app()->end();
 	    	
+	}
+
+	private function runAEJournalDaily($get_date=NULL) {
+
+		$user_id = Yii::app()->user->Id;
+
+		if (!$get_date) {
+			$get_date = MyStuff::get_sql_date('curdate()');
+		} else {
+			$get_date = left($get_date, 10);
+		}
+
+		$ajd = AeJournalDaily::model()->findByAttributes(array(
+			'user_id'=>$user_id,
+			'date_created'=>$get_date,
+		));
+
+		if (!$ajd) {
+			$ajd = new AeJournalDaily();
+			$ajd->user_id = $user_id;
+			$ajd->date_created = $get_date;
+		};
+
+		$sql = "select group_concat(content, ' ') total_content
+				from note
+				where user_id=$user_id
+				  and date_created>='$get_date'
+				  and date_created<date_add('$get_date', interval 1 day)
+				  and publish_date is not null
+				  and is_active=1
+				group by user_id";
+		$entries = Yii::app()->db->createCommand($sql)->queryRow();
+	
+		if ($entries) {
+			$ae_response_id = $this->createAEResponse($entries['total_content']);
+			$ajd->ae_response_id = $ae_response_id;
+			$ajd->save();
+		}
+
 	}
 	
 	public function actionCreateQuestion() {
@@ -2208,8 +2216,12 @@ where user_id = $user_id
 	}
 	
 	public function actionTest() {
-		$user_id = Yii::app()->user->Id;
-		MyStuff::log($this->getDailyAE($user_id, '2014-09-23'));
+		$this->runAEJournalDaily('2014-09-24');
+		// $ajd->ae_journal_daily_id;
+
+		// Re-run active journal entries for the day
+
+		//MyStuff::log($this->getDailyAE($user_id, '2014-09-23'));
 
 		//$this->getRandomQuestion();
 		// for form testing
