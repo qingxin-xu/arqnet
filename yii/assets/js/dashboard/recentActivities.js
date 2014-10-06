@@ -1,6 +1,6 @@
 var recentActivities = {
 	exclude:['_no_input_','boolean'],
-	display:function(activities,placeAt) {
+	display:function(activities,placeAt,includeOnly) {
 		if (!activities || !activities.length || activities.length<=0) {
 			return;
 		}
@@ -9,6 +9,10 @@ var recentActivities = {
 		var eventHTML;
 		for (var i = 0;i<activities.length;i++)
 		{
+			if (includeOnly && includeOnly.length && includeOnly.length>0) {
+				if ($.inArray(activities[i].subcategory,includeOnly)<0) {continue;}
+			}
+			
 			eventHTML = this.template;
 			if (activities[i].subcategory && this['render'+activities[i].subcategory]) {
 				eventHTML = this['render'+activities[i].subcategory](eventHTML,activities[i]);

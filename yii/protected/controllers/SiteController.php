@@ -4,7 +4,7 @@ class SiteController extends Controller
 {
 	var $flagThreshold = 10;
 	var $defaultQuestionStatus = 'Submitted';
-	
+	var $RECENTPOSTCOUNT=10;
 	var $AEEncodings = array(
 		'$'=>'ARQDSARQ',
 		'!'=>'ARQWMARQ',
@@ -788,7 +788,30 @@ class SiteController extends Controller
 	{
 		$this->layout = 'arqLayout2';
 		$this->setPageTitle('My Journals');
-		$this->render('my-journals');
+		$user_id = Yii::app()->user->Id;
+		$today = date('Y-m-d');
+		$day = 24*3600;
+		$yesterday = date('Y-m-d',strtotime($today) - $day);
+		$end_date = date('Y-m-d',strtotime($today) - 30*$day);
+		
+		$noteVisibility = NoteVisibility::model()->findAll();
+		$nv = array();
+		foreach ($noteVisibility as $noteViz) {
+			array_push($nv,array(
+				'id'=>$noteViz->visibility_id,
+				'name'=>$noteViz->name
+			));
+		}
+		
+		$activities = $this->calendarActivities($end_date,$today,$user_id);
+		$journalDates = $this->getJournalDates();
+		$renderNotes = $this->journalPager(0,null);
+		$this->render('my-journals',array(
+			'activities'=>$activities,
+			'note_visibility'=>$noteVisibility,
+			'journalDates'=>$journalDates,
+			'renderNotes'=>$renderNotes
+		));
 	}
 	
 	public function actionForgotPassword()
@@ -2051,6 +2074,81 @@ class SiteController extends Controller
 				'event_date'=>$cal->event_date,
 		));
 		Yii::app()->end();
+	}
+	
+	private function journalPager($offset,$limit) {
+		if (!$offset) $offset = 0;
+		if (!$limit) $limit = $this->RECENTPOSTCOUNT;
+		$user_id = Yii::app()->user->id;
+		if (!$user_id) return array();
+		
+		$count = Note::model()->countByAttributes(array('user_id'=>$user_id));
+		$criteria = new CDbCriteria(
+			array(
+				'condition'=>'user_id='.$user_id,
+				'limit'=>$limit,
+				'offset'=>$offset
+			)
+		);
+		$notes = Note::model()->findAll($criteria);
+
+		$results = array('count'=>$count,'nData'=>$limit,'offset'=>$offset,'data'=>array());
+		MyStuff::Log('RESULST');
+		MyStuff::Log($notes);
+		foreach ($notes as $note) {
+			$entry = array(
+				'id'=>$note->note_id,
+				'title'=>$note->title,
+				'content'=>$note->content,
+				'visibility'=>$note->noteVisibility->name,
+				'date_created'=>$note->date_created
+			);
+			array_push($results['data'],$entry);
+		}
+		return $results;
+	}
+	
+	private function getJournalDates() {
+		$user_id = Yii::app()->user->id;
+		if (!$user_id) {
+			return array();
+		}
+		$dateHash = array();
+		$dates = Note::model()->findAll(array(
+        	'condition'=>"user_id=$user_id",
+			'order'=>'publish_date DESC'
+        ));
+		
+		foreach ($dates as $key => $value) {
+			$time = strtotime($value->publish_date);
+			$year = date('Y',$time);
+			$month = date('m',$time);
+			$day = date('d',$time);
+			if (!array_key_exists($year,$dateHash)) {
+				$dateHash[$year] = array();
+				$dateHash[$year][$month] = array();
+				$dateHash[$year][$month][$day] = 1;
+			} else {
+				if (!array_key_exists($month,$dateHash[$year])) {
+					$dateHash[$year][$month] = array();
+					//array_push($dateHash[$year][$month],$day);
+					$dateHash[$year][$month][$day] = 1;
+				} else {
+					/*
+					if (!in_array($day,$dateHash[$year][$month])) {
+						array_push($dateHash[$year][$month],$day);
+					}
+					*/
+					if (!array_key_exists($day,$dateHash[$year][$month])) {
+						$dateHash[$year][$month][$day] = 1;
+					} else {
+						$dateHash[$year][$month][$day] = $dateHash[$year][$month][$day] + 1;
+					}
+				}
+			}
+		}
+		MyStuff::Log($dateHash);
+		return $dateHash;
 	}
 	
 	private function createAEResponse($content='') {
