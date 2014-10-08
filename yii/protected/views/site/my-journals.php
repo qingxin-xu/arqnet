@@ -128,10 +128,30 @@
  	
 </script>
  </script>
+ 
+<ol class="breadcrumb bc-3">
+	<li>
+		<a href="dashboard"><i class="entypo-home"></i>Home</a>
+	</li>
+	<li>		
+		<a href="journal">Journal</a>
+	</li>
+	<li>
+		<a href='/recentJournals'>Journal Home</a>
+	</li>
+	<li class="active">	
+		<strong>My Journals</strong>
+	</li>
+</ol>
 <div class="row">
 	<div class='row col-sm-9'>
 		<div style='height:52px;width:90%;'>
-			<div style='float:left;' class="boxHeader"><span class="word1">Recent </span><span class="word2">Journals</span></div>
+			<div style='float:left;' class="boxHeader">
+				<!--
+				<span class="word1">Recent </span>
+				-->  
+				<span class="word2">Journal</span>
+			</div>
 			<div style='float:right;margin:26px 0 0 0;'><button class='myJournals_new' onclick='window.location.href="/journal"' type='button'>Create New Entry</button></div>
 		</div>
 		<div class='myJournalsContainer'  id='myJournals'>You have no journal entries</div>

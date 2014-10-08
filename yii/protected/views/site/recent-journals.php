@@ -154,18 +154,19 @@ jQuery(document).ready(function($){
 </script>
 
 <ol class="breadcrumb bc-3">
-						<li>
-				<a href="dashboard"><i class="entypo-home"></i>Home</a>
-			</li>
-					<li>
-			
-							<a href="journal">Journal</a>
-					</li>
-				<li class="active">
-			
-							<strong>My Journals</strong>
-					</li>
-					</ol>
+	<li>
+		<a href="dashboard"><i class="entypo-home"></i>Home</a>
+	</li>
+	<li>		
+		<a href="journal">Journal</a>
+	</li>
+	<li>		
+		<a href="myJournals">My Journals</a>
+	</li>
+	<li class="active">	
+		<strong>Journal Home</strong>
+	</li>
+</ol>
 								<a style="float:right; width:20%;" href="journal" class="btn btn-success btn-icon btn-block">
 			Compose Journal
 			<i class="entypo-pencil"></i>
