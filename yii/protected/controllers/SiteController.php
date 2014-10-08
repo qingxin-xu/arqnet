@@ -4,7 +4,7 @@ class SiteController extends Controller
 {
 	var $flagThreshold = 10;
 	var $defaultQuestionStatus = 'Submitted';
-	var $RECENTPOSTCOUNT=10;
+	var $RECENTPOSTCOUNT=5;
 	var $AEEncodings = array(
 		'$'=>'ARQDSARQ',
 		'!'=>'ARQWMARQ',
@@ -812,6 +812,72 @@ class SiteController extends Controller
 			'journalDates'=>$journalDates,
 			'renderNotes'=>$renderNotes
 		));
+	}
+	
+	public function actionGetMyJournals()
+	{
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		$user_id = Yii::app()->user->Id;
+		header('Content-type: application/json');
+		
+		if (!$user_id) {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'error'=>'Unknow user',
+			));
+			Yii::app()->end();			
+		}
+		$offset = Yii::app()->request->getPost('offset', '');
+		$limit = Yii::app()->request->getPost('limit','');
+		if (!$offset || !$limit) {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'error'=>'Unknow range of entries to retrieve',
+			));
+			Yii::app()->end();			
+		}
+		$results = $this->journalPager($offset,$limit);
+		echo CJSON::encode(array(
+				'success'=>1,
+				'entries'=>$results
+		));
+		Yii::app()->end();
+		
+		
+	}
+	
+	public function actionGetMyJournalsByDate() 
+	{
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		$user_id = Yii::app()->user->Id;
+		header('Content-type: application/json');
+		
+		if (!$user_id) {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'error'=>'Unknow user',
+			));
+			Yii::app()->end();
+		}
+		$offset = Yii::app()->request->getPost('offset', '');
+		$limit = Yii::app()->request->getPost('limit','');
+
+		$dateObj = array(
+			'year'=>Yii::app()->request->getPost('year', ''),
+			'month'=>Yii::app()->request->getPost('month', ''),
+			'day'=>Yii::app()->request->getPost('day', '')
+		);
+		
+		$results = $this->getMyJournalsByDate($dateObj,$offset,$limit);
+		echo CJSON::encode(array(
+				'success'=>1,
+				'entries'=>$results
+		));
+		Yii::app()->end();
 	}
 	
 	public function actionForgotPassword()
@@ -2076,36 +2142,87 @@ class SiteController extends Controller
 		Yii::app()->end();
 	}
 	
+	private function getMyJournalsByDate($dateObj,$offset,$limit) {
+		if (!$offset) $offset = 0;
+		if (!$limit) $limit = $this->RECENTPOSTCOUNT;
+		$user_id = Yii::app()->user->id;
+		if (!$user_id) return array();	
+
+		if (!$dateObj['year']) $year = date('Y');
+		else $year = $dateObj['year'];
+		if (!$dateObj['month']) $month = date('m');
+		else $month = $dateObj['month'];
+		
+		$note_status = NoteStatus::model()->findByAttributes(array('name'=>'Published'));
+		$condition = 'user_id = '.$user_id.' and status_id='.$note_status->status_id;
+		
+		if ($dateObj['day']) {
+			$condition = $condition." and date(publish_date) = date('".$year."-".$month."-".$dateObj['day']."') ";
+		} else {
+			$condition = $condition." and extract(year from publish_date)='".$year."'";
+			$condition = $condition." and extract(month from publish_date)='".$month."'";
+		}
+		
+		$count = Note::model()->count($condition);
+		
+		$criteria = new CDbCriteria(
+			array(
+				'condition'=>$condition,
+				'limit'=>$limit,
+				'offset'=>$offset,
+				'order'=>'publish_date DESC, publish_time DESC'
+			)
+		);
+		$notes = Note::model()->findAll($criteria);
+		$results = array('count'=>$count,'nData'=>count($notes),'offset'=>$offset,'data'=>array());
+		$results['data'] = $this->unrollNotes($notes);
+		return $results;
+	}
+	
 	private function journalPager($offset,$limit) {
 		if (!$offset) $offset = 0;
 		if (!$limit) $limit = $this->RECENTPOSTCOUNT;
 		$user_id = Yii::app()->user->id;
 		if (!$user_id) return array();
 		
-		$count = Note::model()->countByAttributes(array('user_id'=>$user_id));
+		$note_status = NoteStatus::model()->findByAttributes(array('name'=>'Published'));
+		$condition = 'user_id='.$user_id.' and status_id='.$note_status->status_id;
+		$count = Note::model()->findAll($condition);//countByAttributes(array('user_id'=>$user_id));
 		$criteria = new CDbCriteria(
 			array(
-				'condition'=>'user_id='.$user_id,
+				'condition'=>'user_id='.$user_id.' and status_id='.$note_status->status_id,
 				'limit'=>$limit,
-				'offset'=>$offset
+				'offset'=>$offset,
+				'order'=>'publish_date DESC, publish_time DESC'
 			)
 		);
 		$notes = Note::model()->findAll($criteria);
-
-		$results = array('count'=>$count,'nData'=>$limit,'offset'=>$offset,'data'=>array());
-		MyStuff::Log('RESULST');
-		MyStuff::Log($notes);
-		foreach ($notes as $note) {
-			$entry = array(
-				'id'=>$note->note_id,
-				'title'=>$note->title,
-				'content'=>$note->content,
-				'visibility'=>$note->noteVisibility->name,
-				'date_created'=>$note->date_created
-			);
-			array_push($results['data'],$entry);
-		}
+		
+		$results = array('count'=>$count,'nData'=>count($notes),'offset'=>$offset,'data'=>array());
+		$results['data'] = $this->unrollNotes($notes);
 		return $results;
+	}
+	
+	private function unrollNotes($notes) {
+		$data = array();
+		foreach ($notes as $note) {
+			$visibility = 'Unknown';
+			if ($note->noteVisibility) {
+				$visibility = $note->noteVisibility->name;
+			}
+			$entry = array(
+					'id'=>$note->note_id,
+					'title'=>$note->title,
+					'content'=>$note->content,
+					'visibility'=>$visibility,
+					'date_created'=>$note->date_created,
+					'publish_date'=>$note->publish_date,
+					'publish_time'=>$note->publish_time,
+					'status'=>$note->noteStatus->name
+			);
+			array_push($data,$entry);
+		}	
+		return $data;	
 	}
 	
 	private function getJournalDates() {
@@ -2113,9 +2230,13 @@ class SiteController extends Controller
 		if (!$user_id) {
 			return array();
 		}
+		
+		$note_status = NoteStatus::model()->findByAttributes(array('name'=>'Published'));
+		$condition = 'user_id = '.$user_id.' and status_id='.$note_status->status_id;
+		
 		$dateHash = array();
 		$dates = Note::model()->findAll(array(
-        	'condition'=>"user_id=$user_id",
+        	'condition'=>$condition,
 			'order'=>'publish_date DESC'
         ));
 		

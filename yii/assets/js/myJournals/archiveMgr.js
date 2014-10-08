@@ -26,12 +26,37 @@ var archiveMgr = {
 	renderArchive:function(placeHolder) {
 		if (!this.archive) {return;}
 		
+		var self = this;
+		
 	    $(placeHolder).tree({
 	        data: this.archive
 	    });
 	    
 	    $(placeHolder).tree().bind('tree.click',function(e) {
 	    	console.log('select',e.node.year,e.node.month);
+	    	self.query = {
+	    		year:e.node.year||'',
+	    		month:e.node.month||''
+	    	};
+	    	self.getData({data:self.query},function(entries) {
+	    		self.currentPage = 1;
+	    		self.display(entries);
+	    		self.entries = entries.data;
+	    		self.nEntries = entries.count||0;
+	    		
+	    		$('.currentPage').html('Current Page: '+1);
+				$('button.next').unbind('click');
+
+				$('button.previous').unbind('click');
+				$('button.next').on('click',function(e) {
+					console.log('click',self);
+					self.nextPage();
+				});
+
+				$('button.previous').on('click',function(e) {
+					self.previousPage();
+				});
+	    	});
 	    });
 	}
 }

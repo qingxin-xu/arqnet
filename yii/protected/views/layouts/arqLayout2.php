@@ -112,7 +112,7 @@ function updateMsg( description,t ) {
 				
 			</li>
 			<li>
-				<a href="/recentJournals">
+				<a href="/myJournals">
 					<i class="entypo-newspaper"></i>
 					<span>JOURNAL</span>
 				</a>

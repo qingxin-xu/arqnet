@@ -141,7 +141,7 @@ color:#FFFFFF;
 }
 
 button.skip,button.flag,button.deleteButton,input.qa_analysis,
-form input[value=Cancel],button.image_upload {
+form input[value=Cancel],button.image_upload,button.next,button.previous,button.edit,button.myJournals_new {
 	background: -webkit-linear-gradient(top, rgb(3,3,3) 0%,rgb(23,23,23) 20%,rgb(36,36,36) 40%,rgb(18,18,18) 55%);
 	background: -o-linear-gradient(top, rgb(3,3,3) 0%,rgb(23,23,23) 20%,rgb(36,36,36) 40%,rgb(18,18,18) 55%);
 	background: -moz-linear-gradient(top, rgb(3,3,3) 0%,rgb(23,23,23) 20%,rgb(36,36,36) 40%,rgb(18,18,18) 55%);
@@ -193,13 +193,13 @@ form input[value=Cancel],button.image_upload {
 	font-size:36px;
 }
 
-.boxHeader .word1 {
+.boxHeader .word1{
 	color:#FFFFFF;
 	font-family: 'Roboto', sans-serif;
 	font-weight:100;
 }
 
-.boxHeader .word2 {
+.boxHeader .word2,.journalEntryTitle  {
 	color:#6A44A9;
 }
 .calendar-env .calendar-body .fc-content .fc-view .fc-event.color-agendaDay {

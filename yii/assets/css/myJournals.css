@@ -1,3 +1,4 @@
+
 .dropdown-menu {
 	position:relative;
 	min-width:100%;
@@ -5,4 +6,44 @@
 
 .datepicker-days table {
 	min-width:100%;
+}
+/*
+.myJournalsContainer {
+	height:550px;
+	overflow:scroll;
+}
+*/
+
+.journalEntryWrapper {
+	background:#181818;
+	width:95%;
+	padding:0 0 0 15px;
+}
+
+.journalEntryDateTimeWrapper {
+	line-height:18px;
+	margin:0;
+	font-size:9px;
+}
+
+.journalEntryDate {
+	margin:0 7px 0 0;
+}
+
+.journalEntryContent {
+	font-size:16px;
+	line-height:32px;
+	margin:15px 0;
+}
+
+button.edit {
+	margin:15px 0;
+}
+
+.myJournalsPager {
+	margin:15px 0;
+}
+
+button.next {
+	margin:0 7px;
 }

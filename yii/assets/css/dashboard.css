@@ -71,6 +71,12 @@ box-shadow:0 0 5px #262626;
 	box-shadow: 0 0 5px 1px #a07ddb;
 	margin:6px auto 0 auto;
 	border:1px solid #9860e9;
+	/*
+	background:none;
+	background-image:url('/assets/images/dashboard/overview_purple.png');
+	background-size:12px 16px;
+	background-repeat:repeat;
+	*/
 	width:100%;
 }
 
@@ -94,8 +100,8 @@ box-shadow:0 0 5px #262626;
 }
 
 /* recent activities */
-#recentActivities {
-	overflow:scroll;
+#recentActivities,#previousPosts {
+	overflow-y:scroll;
 }
 
 .eventWrapper {
