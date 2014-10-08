@@ -410,7 +410,10 @@ function setTopPeopleView(response)
 		else if (countA>countB) return -1;
 		else return 0;
 	});
-	
+	/* Remove prepended '+' */
+	$.each(topPeople,function(index,item) {
+		item.word = item.word.replace(/\+/,'');
+	});
 	if (topPeople && topPeople.length && topPeople.length>0) generateTopicBarGraph(topPeople,'toppeople-tab');
 	else $('#toppeople-tab').empty();
 		
