@@ -2198,7 +2198,7 @@ class SiteController extends Controller
 		);
 		$notes = Note::model()->findAll($criteria);
 		
-		$results = array('count'=>$count,'nData'=>count($notes),'offset'=>$offset,'data'=>array());
+		$results = array('count'=>count($count),'nData'=>count($notes),'offset'=>$offset,'data'=>array());
 		$results['data'] = $this->unrollNotes($notes);
 		return $results;
 	}
