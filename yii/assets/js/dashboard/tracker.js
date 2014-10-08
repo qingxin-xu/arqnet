@@ -192,6 +192,9 @@ var Tracker = {
           			min: 0,
           			max: this.plotMax
           		},
+          		xaxis:{
+          			min:0
+          		}
           	});
           	
 		},

@@ -120,17 +120,15 @@ function initializeMainSlider(range,dateRangeAverages)
 	maxStep = increments;
 	
 	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width() - trackerOffset;
-	//console.log('PADDING MAX',$('#trackers-tab').width(),$('#trackerChart').width(),paddingMax);
-	//$('#slider1').slider('option',{paddingMin:50,paddingMax:100,step:increments,min:minValue,max:maxValue,values:sliderValues});
 	$('#slider1').slider('option',{
 		paddingMin:trackerOffset+42+Tracker.trackerPlot.getPlotOffset().left-8,
 		paddingMax:paddingMax,//$('#trackers-tab').width()-$('#trackerChart').width()+20,
-		step:values.length>1?values[1]-values[0]:null,
+		step:values.length>1?values[1]-values[0]:0,
 		animate:true,
-		min:values[0],
-		max:values[values.length-1],
+		min:values.length>1?values[0]:0,
+		max:values.length>1?values[values.length-1]:0.1,
 		values:values,
-		create:function(event,ui) {$('#slider1').slider('value',values[values.length-1]);}/*,
+		create:function(event,ui) {/*$('#slider1').slider('value',values[values.length-1]);*/}/*,
 		hooks: {drawOverlay: [Tracker.drawOverlayLine]}*/
 	});
 	$('#slider1').slider({

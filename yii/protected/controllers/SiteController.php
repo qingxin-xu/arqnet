@@ -2,9 +2,20 @@
 
 class SiteController extends Controller
 {
+	/* How many times a question can be flagged before it is taken out of the pool of questions */
 	var $flagThreshold = 10;
 	var $defaultQuestionStatus = 'Submitted';
+	/* for journal pagers, how many journals to request at a time */
 	var $RECENTPOSTCOUNT=5;
+	
+	/* 
+	 * The default range of dates to show on the dashboard slider
+	 */
+	var $dashboardRangeDefault = 1;
+	/* 
+	 * probably should be deprecated 
+	 * These were used for encoding top people before sending to AE
+	 */
 	var $AEEncodings = array(
 		'$'=>'ARQDSARQ',
 		'!'=>'ARQWMARQ',
@@ -237,7 +248,7 @@ class SiteController extends Controller
 		//$responseCount = count($_dates);
 		$date_ranges = array();
 		$range_labels = array();
-		$default_range = 3;
+		$default_range = $this->dashboardRangeDefault;
 		$range_labels = array(1,3,7,15,30);
 		$date_ranges = array(1,3,7,15,30);
 
