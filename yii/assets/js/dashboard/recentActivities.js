@@ -39,12 +39,16 @@ var recentActivities = {
 	setDateTime:function(html,activity) {
 		if (!html) return;
 		if (!activity) return;
+		if (!activity.start) return;
 		var myD,
 			_date = '',
-			_time = '';
+			_time = '',
+			inputDate = activity.start.replace(/\s/,'T'),
+			tzOffset = new Date().getTimezoneOffset()*60*1000;
 		
-		if (activity.start) {
-			myD = new Date(activity.start);
+		if (inputDate) {
+			myD = new Date(inputDate);
+			myD.setTime(myD.getTime()+tzOffset);
 			_date = myD.toLocaleDateString();
 			_time = myD.toLocaleTimeString('en-us',{minute:'2-digit',hour:'2-digit'});
 		}

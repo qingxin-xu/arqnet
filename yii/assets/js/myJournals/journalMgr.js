@@ -44,12 +44,16 @@ var journalMgr = {
 	displayDate:function(html,datum) {
 		if (!html) return;
 		if (!datum) return;
+		if (!datum.publish_date) return;
 		var myD,
 			_date = '',
-			_time = '';
-		
-		if (datum.publish_date) {
-			myD = new Date(datum.publish_date);
+			_time = '',
+			inputDate = datum.publish_date.replace(/\s/,'T'),
+			tzOffset = new Date().getTimezoneOffset()*60*1000;
+			
+		if (inputDate) {
+			myD = new Date(inputDate);
+			myD.setTime(myD.getTime()+tzOffset);
 			_date = myD.toLocaleDateString();
 			//_time = myD.toLocaleTimeString('en-us',{minute:'2-digit',hour:'2-digit'});
 		}
