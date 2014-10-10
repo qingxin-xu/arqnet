@@ -48,7 +48,7 @@ class MyStuff {
 		return $response;
 	}
 
-	function get_sql_date($type='curdate') {
+	function get_sql_date($type='curdate()') {
 		$valid_types = array(
 			'curdate()' => 1,
 			'now()' => 1,

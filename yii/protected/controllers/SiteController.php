@@ -396,7 +396,7 @@ class SiteController extends Controller
 		$this->layout = 'arqLayout2';
 		$this->setPageTitle('Journal');
 		$topics = Category::model()->findAllByAttributes(
-					array('category_type'=>'topic')
+					array('category_type'=>'mood')
 				);
 		$this->render('journal',
 			array(
@@ -1389,6 +1389,7 @@ class SiteController extends Controller
 				}
 
 				$note->save();
+				$note->refresh();
 				$this->runAEJournalDaily($note->date_created);
 
 			} else {
@@ -1510,7 +1511,7 @@ class SiteController extends Controller
 		if (!$get_date) {
 			$get_date = MyStuff::get_sql_date('curdate()');
 		} else {
-			$get_date = left($get_date, 10);
+			$get_date = substr($get_date, 0,10);
 		}
 
 		$ajd = AeJournalDaily::model()->findByAttributes(array(
