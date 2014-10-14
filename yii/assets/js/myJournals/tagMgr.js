@@ -9,7 +9,7 @@ var tagMgr = {
 			console.log(i);
 			var tagHTML = this.tagTemplate;
 			tagHTML = tagHTML.replace(/{TAG_NAME}/,i);
-			tagHTML = tagHTML.replace(/{CONTENT}/,i+'('+taggedNotes[i]+')');
+			tagHTML = tagHTML.replace(/{CONTENT}/,i+' ('+taggedNotes[i]+')');
 			html += tagHTML;
 		}
 		if (html) {

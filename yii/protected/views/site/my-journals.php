@@ -1,8 +1,8 @@
  <link href="/assets/css/glDatePicker.default.css" rel="stylesheet" type="text/css">
  <link rel="stylesheet" href="/assets/js/jquery-ui/css/vader/jquery-ui.min.css">
  <link rel="stylesheet" href="/assets/css/dashboard.css">
- <link rel="stylesheet" href="/assets/css/myJournals.css">
  <link rel="stylesheet" href="/assets/css/jqtree.css">
+ <link rel="stylesheet" href="/assets/css/myJournals.css">
  <script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
 <script src='/assets/js/dashboard/recentActivities.js'></script>
 <script src="/assets/js/tree.jquery.js"></script>
@@ -137,7 +137,6 @@
 				journalMgr.previousPage();
 			});
 		}
-
  	});
  	
 </script>
@@ -179,7 +178,7 @@
 		<div class="boxHeader"><span class="word1">Previous </span><span class="word2">Posts</span></div>
 		<div id='previousPosts' class="panel panel-primary addG-panelhalfheight"></div>
 		<div class="boxHeader"><span class="word2">Calendar</span></div>
-		<div class='input-group' style='width:100%;'><input style='width:100%;' type='text' id='mydate' class="form-control datepicker" /></div>
+		<div class='calendar input-group' style='width:100%;'><input style='width:100%;' type='text' id='mydate' class="form-control datepicker" /></div>
 		<div class="boxHeader"><span class="word1">Journal </span><span class="word2">Archive</span></div>
 		<div id='journalArchive' >
 			<div id='treePH' style='height:100%;'></div>

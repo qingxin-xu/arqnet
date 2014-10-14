@@ -53,3 +53,42 @@ button.next {
 	line-height:24px;
 	color:#FFFFFF;
 }
+
+/* Tree - journal archive */
+ul.jqtree-tree .jqtree-toggler,
+.jqtree-tree .jqtree-title {
+	color:#FFFFFF;
+}
+
+ul.jqtree-tree li.jqtree-selected > .jqtree-element, ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
+	background-color:#181818;
+	background:#181818;
+}
+
+/* The calendar */
+.calendar.input-group .datepicker.dropdown-menu {
+	background-color:#181818;
+	border:none;
+}
+
+.day {
+	color:#ffffff;
+}
+
+div.datepicker table tr td.disabled, div.datepicker table tr td.disabled:hover {
+	color:#999999;
+}
+
+div.datepicker table tr td.disabled:hover {
+	background:none;
+	color:#999999;
+}
+
+.datepicker-days  th {
+	color:#666666;
+}
+div.datepicker table tr td.day:hover,div.datepicker table tr th.prev:hover,
+div.datepicker table tr th.next:hover,div.datepicker table tr th.switch:hover {
+	background:#252525;
+	color:#999999;
+}
