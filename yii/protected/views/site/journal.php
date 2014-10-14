@@ -160,6 +160,7 @@ jQuery(document).ready(function($){
 					</div>
 					<div style='margin:10px 0;'>
 					<?php 
+					
 					if ($note_status) {
 						$selection = -1;
 						if (is_object($edit_journal)) { $selection = $edit_journal->noteStatus->status_id; }
@@ -172,7 +173,12 @@ jQuery(document).ready(function($){
 								/*
 								if ($selection == $ns->status_id) echo 'selected ';
 								*/
-								if (strcmp($ns->name,'Published') == 0) echo 'selected ';
+								if ($edit_journal) {
+									if (strcmp($ns->name,$edit_journal->noteStatus->name)==0)
+										echo 'selected';
+								} else {
+									if (strcmp($ns->name,'Published') == 0) echo 'selected ';
+								}
 								echo ">".$ns->name."</option>";
 								
 						}
