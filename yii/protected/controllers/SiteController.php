@@ -821,7 +821,8 @@ class SiteController extends Controller
 			'activities'=>$activities,
 			'note_visibility'=>$noteVisibility,
 			'journalDates'=>$journalDates,
-			'renderNotes'=>$renderNotes
+			'renderNotes'=>$renderNotes,
+			'taggedNotes'=>$this->getMyTaggedJournals()
 		));
 	}
 	
@@ -857,6 +858,34 @@ class SiteController extends Controller
 		Yii::app()->end();
 		
 		
+	}
+	
+	public function actionGetMyJournalsByTag()
+	{
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		$user_id = Yii::app()->user->Id;
+		header('Content-type: application/json');
+		
+		if (!$user_id) {
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'error'=>'Unknow user',
+			));
+			Yii::app()->end();
+		}
+		$offset = Yii::app()->request->getPost('offset', '');
+		$limit = Yii::app()->request->getPost('limit','');
+		
+		$tag = Yii::app()->request->getPost('tag', '');
+		
+		$results = $this->getMyJournalsByTag($tag,$offset,$limit);
+		echo CJSON::encode(array(
+				'success'=>1,
+				'entries'=>$results
+		));
+		Yii::app()->end();		
 	}
 	
 	public function actionGetMyJournalsByDate() 
@@ -2152,6 +2181,82 @@ class SiteController extends Controller
 				'event_date'=>$cal->event_date,
 		));
 		Yii::app()->end();
+	}
+	
+	private function getMyTaggedJournals()
+	{
+		$user_id = Yii::app()->user->id;
+		if (!$user_id) return array();
+
+		$note_status = NoteStatus::model()->findByAttributes(array('name'=>'Published'));
+		$condition = 'user_id = '.$user_id.' and status_id='.$note_status->status_id;
+		
+		$tagHash = array();
+		$notes = Note::model()->with('tags')->findAll(array(
+				'condition'=>$condition,
+				'order'=>'publish_date DESC'
+		));
+		
+		foreach ($notes as $note) {
+			foreach ($note->tags as $tag) {
+				if (!array_key_exists($tag->tag,$tagHash)) {
+					$tagHash[$tag->tag] = 1;
+				} else {
+					$tagHash[$tag->tag]++;
+				}
+			}
+		}
+		return $tagHash;
+	}
+	
+	private function getMyJournalsByTag($tag,$offset,$limit) {
+		$user_id = Yii::app()->user->id;
+		if (!$user_id) return array();
+		if (!$tag) return array();
+		if (!$offset) $offset = 0;
+		if (!$limit) $limit = $this->RECENTPOSTCOUNT;
+		
+		$note_status = NoteStatus::model()->findByAttributes(array('name'=>'Published'));
+		$condition = 'user_id = '.$user_id.' and status_id='.$note_status->status_id;
+		/*
+		$count = Note::model()->with(array(
+			'tags'=>array(
+				'condition'=>"tag='".$tag."'"
+		)
+		))->count(array(
+			'condition'=>$condition
+		)
+		);
+		*/
+		$notes = Note::model()->with(array(
+			'tags'=>array(
+				'condition'=>"tag='".$tag."'"
+		)
+		))->findAll(array(
+			'condition'=>$condition,
+			'order'=>'publish_date DESC'
+			/*,
+			'limit'=>$limit,
+			'offset'=>$offset*/
+		)
+		);
+		/*
+		 * I can't get limit and offset to work when using a MANY_MANY relation
+		 * so I am currently applying that rule post query
+		 */
+		$paredNotes = array();
+		$start = $offset;
+		$end = $offset+$limit;
+		$counter = 0;
+		foreach ($notes as $note) {
+			if ($counter>=$start && $counter<$end) {
+				array_push($paredNotes,$note);
+			}
+			$counter++;
+		}
+		$results = array('limit'=>$limit,'count'=>count($notes),'nData'=>count($paredNotes),'offset'=>$offset,'data'=>array());
+		$results['data'] = $this->unrollNotes($paredNotes);
+		return $results;
 	}
 	
 	private function getMyJournalsByDate($dateObj,$offset,$limit) {

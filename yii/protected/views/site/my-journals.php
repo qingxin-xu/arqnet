@@ -9,11 +9,13 @@
 <script type='text/javascript' src='/assets/js/myJournals/journalMgr.js'></script>
 <script type='text/javascript' src='/assets/js/myJournals/calendarMgr.js'></script>
 <script type='text/javascript' src='/assets/js/myJournals/archiveMgr.js'></script>
+<script type='text/javascript' src='/assets/js/myJournals/tagMgr.js'></script>
 <script type='text/javascript'>
 	var activities = <?php echo(json_encode($activities));?>,
 		journalDates = <?php echo json_encode($journalDates);?>,
 		notes = <?php echo json_encode($renderNotes);?>,
 		noteViz = <?php echo json_encode($note_visibility);?>,
+		taggedNotes = <?php echo json_encode($taggedNotes);?>,
 		myJournals,
 		calendarJournals,
 		treeJournals,
@@ -106,7 +108,19 @@
 			treeJournals.createArchvie();
 			treeJournals.renderArchive('#treePH');
 		}
-
+		
+		if (journalMgr && 'taggedNotes' in window) {
+			
+			tagJournals = $.extend({},journalMgr);
+			tagJournals = $.extend(tagJournals,tagMgr,{
+				nEntries:0,
+				pagingService:'/getMyJournalsByTag',
+				entries:[],
+				placeholder:'#myJournals'
+			});
+			tagJournals.renderTags('#journalTags');
+		}
+		
 		if (journalMgr && notes) {
 			myJournals = $.extend(journalMgr,{
 				nEntries:notes&&notes.count?notes.count:0,
@@ -171,7 +185,7 @@
 			<div id='treePH' style='height:100%;'></div>
 		</div>
 		<div class="boxHeader"><span class="word2">Tags</span></div>
-		<div id='journalTags'>
+		<div id='journalTags' class='boxHeader'>
 			None
 		</div>
 	</div>

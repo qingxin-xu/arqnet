@@ -74,7 +74,8 @@ class Note extends CActiveRecord
 			'noteCategories'=>array(self::HAS_MANY, 'NoteCategory', 'note_id'),
 			'noteStatus'=>array(self::BELONGS_TO,'NoteStatus','status_id'),
 			'noteVisibility'=>array(self::BELONGS_TO,'NoteVisibility','visibility_id'),
-			'AeResponse'=>array(self::BELONGS_TO,'AeResponse','ae_response_id')
+			'AeResponse'=>array(self::BELONGS_TO,'AeResponse','ae_response_id'),
+			'tags'=>array(self::MANY_MANY,'Tags','note_tag(note_id,tag_id)')
 		);
 	}
 

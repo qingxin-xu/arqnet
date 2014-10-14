@@ -7,13 +7,14 @@ button {
 	border:none;
 	background:transparent;
 }
+/*
 select {
 	border:none;
 	background:transparent;
 	border:1px solid rgb(224,224,224);
 	border-radius:3px;
 }
-
+*/
 label[for='status'] {
 	margin:0 33px 0 0;
 }
@@ -44,8 +45,7 @@ jQuery(document).ready(function($){
 });
 </script>
 
-<h1 class="margin-bottom">Add New Journal</h1>
-			<ol class="breadcrumb 2">
+			<ol class="breadcrumb bc-3">
 						<li>
 				<a href="dashboard"><i class="entypo-home"></i>Home</a>
 			</li>
@@ -58,6 +58,8 @@ jQuery(document).ready(function($){
 							<strong>New Journal</strong>
 					</li>
 					</ol>
+<div class='boxHeader'><span class='word2'>Add New Journal</span></div>
+
 			
 <br />
 
@@ -80,13 +82,14 @@ jQuery(document).ready(function($){
 }
 </style>
 
-<form method="post" role="form" id="journalForm" enctype="multipart/form-data">
+
+<form  method="post" role="form" id="journalForm" enctype="multipart/form-data">
 	<input type='hidden' name='journal_id' value='<?php if ($edit_journal) echo $edit_journal->note_id; ?>' />
 	<!-- Title and Publish Buttons -->	<div class="row">
 		<div class="col-sm-2 post-save-changes">
-			<button type="submit" class="btn btn-green btn-lg btn-block btn-icon">
+			<button type="submit" class="">
 				<?php if ($edit_journal) echo 'Save';else echo 'Create';?>
-				<i class="entypo-check"></i>
+				
 			</button>
 		</div>
 		
@@ -99,7 +102,7 @@ jQuery(document).ready(function($){
 	
 	<!-- WYSIWYG - Content Editor -->	<div class="row">
 		<div class="col-sm-12">
-			<textarea class="form-control wysihtml5" rows="18" data-stylesheet-url="assets/css/wysihtml5-color.css" name="post_content" id="post_content">
+			<textarea placeholder="Type your entry here" class="form-control wysihtml5" rows="18" data-stylesheet-url="assets/css/wysihtml5-color.css" name="post_content" id="post_content">
 <?php 
 				if ($edit_journal) {echo $edit_journal->content;}
 				
@@ -274,7 +277,9 @@ jQuery(document).ready(function($){
 		
 	</div>
 	
-</form><!-- Footer -->
+</form>
+
+<!-- Footer -->
 <footer class="main">
 	
 		

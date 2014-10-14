@@ -44,6 +44,7 @@ class Tags extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'noteTags' => array(self::HAS_MANY, 'NoteTag', 'tag_id'),
+			'notes'=>array(self::MANY_MANY,'Note','note_tag(note_id,tag_id)')
 		);
 	}
 

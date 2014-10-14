@@ -11,6 +11,7 @@ var journalMgr = {
 		if (!entries) return;
 		console.log('display',entries);
 		if (!entries.data || !entries.data.length || entries.data.length<=0) return;
+		console.log('here',this.placeholder);
 		if (!this.placeholder && !placeholder) return;
 		if (placeholder) this.placeholder = placeholder;
 		
@@ -132,6 +133,7 @@ var journalMgr = {
 			dataType:'json',
 			data:params.data,
 			success:function(response) {
+				console.log('response',response);
 				if ('success' in response && response['success']==1) {
 					if (response['entries']) {
 						if (callback) {

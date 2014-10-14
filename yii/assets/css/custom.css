@@ -101,10 +101,14 @@ body {
 .tile-block .tile-content,.addG-tile-header {
 	background:#181818;
 }
-.addG-tileblock,.addG-darkBG {
+.addG-tileblock,.addG-darkBG,textarea.wysihtml5,input.input-lg {
 	background-color:#181818;
 }
 
+input.input-lg.form-control,textarea.wysihtml5.form-control {
+	border:none;
+	color:#FFFFFF;
+}
 .tile-content textarea,.mc,.qty,.qa_odd {
 	background:#252525;
 	color:#ffffff;
@@ -221,4 +225,29 @@ form input[value=Cancel],button.image_upload,button.next,button.previous,button.
 
 .input-group input {
 	color:#000;
+}
+
+.form-control,input[type=text],.input-group-addon {
+	background:#252525;
+	border:none;
+}
+
+.input-group-addon:not(:first-child),.input-group-addon {
+	border-left:1px solid #181818;
+}
+
+input.datepicker,input.bootstrap-timepicker {
+	color:rgb(148,148,148);
+}
+
+select {
+	border:1px solid #252525;
+	background:transparent;
+	/*border:1px solid rgb(224,224,224);*/
+	border-radius:3px;
+}
+
+.btn-white,.btn-white:hover {
+	border-color:#181818;
+	background-color:#181818;
 }
