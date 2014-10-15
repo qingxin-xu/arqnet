@@ -59,6 +59,10 @@ var topics_donut_chart,
 	question_flags = <?php echo json_encode($question_flags); ?>,
 	trackerSelection = {};
 
+	var morris_formatter = function(y,data) {
+		var value = parseFloat(parseFloat(y).toFixed(2))*100;
+		return value+'%';
+	};
 /**
  * Set the slider range, values, redraw tabs
  */
@@ -265,7 +269,7 @@ function drawDonutChart(chart,response)
 	if (!chart) {
 		topics_donut_chart = Morris.Donut({
 			element: 'topics-tab',
-
+			formatter:function(y,data) {return morris_formatter(y,data);},
 			data:chartData,
 			colors: ['#707f9b', '#455064', '#242d3c','#A2B1CD','#AEB9CD']
 		});
@@ -831,7 +835,7 @@ jQuery(document).ready(function($)
 			{
 				topics_donut_chart = Morris.Donut({
 					element: 'topics-tab',
-	
+					formatter:function(y,data) {return morris_formatter(y,data);},
 					data:chartData,
 					colors: ['#707f9b', '#455064', '#242d3c','#A2B1CD','#AEB9CD']
 				});
