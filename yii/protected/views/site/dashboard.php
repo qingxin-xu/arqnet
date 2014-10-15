@@ -57,7 +57,9 @@ var topics_donut_chart,
 	ansThinkingMsg = 'Answering question'
 	ansSuccessMsg = 'Question successfully answered',
 	question_flags = <?php echo json_encode($question_flags); ?>,
-	trackerSelection = {};
+	trackerSelection = {},
+	morric_topic_colors=['#9c68f9','#33aefb','#e668fa','#fcec4e','#24de55'],
+	morris_donut_label_color='#ffffff';
 
 	var morris_formatter = function(y,data) {
 		var value = parseFloat(parseFloat(y).toFixed(2))*100;
@@ -268,10 +270,11 @@ function drawDonutChart(chart,response)
 	
 	if (!chart) {
 		topics_donut_chart = Morris.Donut({
+			labelColor:morris_donut_label_color,
 			element: 'topics-tab',
 			formatter:function(y,data) {return morris_formatter(y,data);},
 			data:chartData,
-			colors: ['#707f9b', '#455064', '#242d3c','#A2B1CD','#AEB9CD']
+			colors: morric_topic_colors//['#707f9b', '#455064', '#242d3c','#A2B1CD','#AEB9CD']
 		});
 	} else {
 		chart.setData(chartData);
@@ -835,9 +838,10 @@ jQuery(document).ready(function($)
 			{
 				topics_donut_chart = Morris.Donut({
 					element: 'topics-tab',
+					labelColor:morris_donut_label_color,
 					formatter:function(y,data) {return morris_formatter(y,data);},
 					data:chartData,
-					colors: ['#707f9b', '#455064', '#242d3c','#A2B1CD','#AEB9CD']
+					colors: morric_topic_colors//['#707f9b', '#455064', '#242d3c','#A2B1CD','#AEB9CD']
 				});
 			} else topics_donut_chart = null;
 		} else topics_donut_chart = null;
