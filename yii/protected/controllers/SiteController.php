@@ -397,10 +397,22 @@ class SiteController extends Controller
 		$this->setPageTitle('Journal');
 		$topics = Category::model()->findAllByAttributes(
 					array('category_type'=>'mood')
-				);
+		);
+		
+		/* pare down topic model objects to those defined in this.dashboard_topics */
+		$journal_topics = array();
+		foreach ($topics as $topic) {
+			foreach ($this->dashboard_topics as $dbtopic) {
+				if (strcmp($topic->description,$dbtopic) == 0) {
+					array_push($journal_topics,$topic);
+					continue;
+				}
+			}
+		}
+		
 		$this->render('journal',
 			array(
-				'category_topics' => $topics,
+				'category_topics' => $journal_topics,
 				'note_status'=>NoteStatus::model()->findAll('t.name!=:_name',array(':_name'=>'In Queue')),
 				'note_visibility'=>NoteVisibility::model()->findAll(),
 				'edit_journal'=>$edit_journal,
