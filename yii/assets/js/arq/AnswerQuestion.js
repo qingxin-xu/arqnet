@@ -13,6 +13,21 @@ var AnswerQuestion = {
 	currentQuestionType:null,
 	currentQuestion:null,
 	
+	/*
+	 * To keep track of what question categories have been answered
+	 */
+	answeredQuestions:{},
+	
+	/*
+	 * To keep track of what question categories have been skipped
+	 */
+	skippedQuestions:{},
+	
+	/*
+	 * Categories that should be excluded when generating a new question
+	 */
+	excludeCategories:[],
+	
 	createForm:function(question) {
 		if (!question) return;
 		var type = question.type_name;
@@ -100,8 +115,21 @@ var AnswerQuestion = {
 	
 	submitForm:function(e) {
 		updateMsg($('.validateTips'),ansThinkingMsg);
-		
+		var self = this;
 		$('#myThinker').dialog('open');
+		
+		if (!self.answeredQuestions[self.currentQuestion.category]) {
+			self.answeredQuestions[self.currentQuestion.category] = 1;
+		} else 
+		{
+			self.answeredQuestions[self.currentQuestion.category]++;
+		}
+		
+		if (self.answeredQuestion[self.currentQuestion.category]>=2) {
+			self.excludeCategories.push(self.currentQuestion.category);
+		}
+		$('input[name=exclude_categories').val(self.excludeCategories);
+		$('input[name=category_count]').val(self.answeredQuestions[self.currentQuestion.category]);
 		
 		$.ajax({
 			url:this.service,
@@ -113,8 +141,7 @@ var AnswerQuestion = {
 			success:function(d) {
 				
 				if (d.success && d.success>0)
-				{		
-					console.log('d',d);
+				{							
 					$("#answerQuestion")[0].reset();
 					updateMsg($('.validateTips'),ansSuccessMsg);
 					setTimeout(function() {
@@ -182,6 +209,11 @@ var AnswerQuestion = {
 	
 	skipQuestion:function() {
 		if (!this.currentQuestion) return;
+		if (!this.skippedQuestions[this.currentQuestion.category]) {
+			this.skippedQuestions[this.currentQuestion.category] = 1;
+		} else {
+			this.skippedQuestions[this.currentQuestion.category]++;
+		}
 		updateMsg($('.validateTips'),'Getting new question...');
 		var self = this;
 		$('#myThinker').dialog('open');
@@ -321,7 +353,8 @@ var AnswerQuestion = {
 		'<input type="hidden" name="question_id" value="{QUESTION_ID}">',
 		'<input type="hidden" name="question_type_id" value="{QUESTION_TYPE_ID}">',
 		'<input type="hidden" name="question_category_id" value="{QUESTION_CATEGORY_ID}">',
-
+		'<input type="hidden" name="category_count" value="">',
+		'<input type="hidden" name="exclude_categories[]" value="">',
 		'<div class="btn-group" style="float:right;">',
 			'<button id="{QUESTION_CATEGORY_ID}" type="button" class="question_category"  >',
 				'{QUESTION_CATEGORY}',
@@ -333,7 +366,7 @@ var AnswerQuestion = {
 			'<h3>{QUESTION_CONTENT}</h3>',
 			'{CUSTOM_FORM_ELEMENTS}',
 			'<div class="form-group tile-content">',
-				'<label for="field-ta" class="col-sm-3 control-label">Written Answer</label>',
+				//'<label for="field-ta" class="col-sm-3 control-label">Written Answer</label>',
 				'<textarea class="form-control autogrow" id="field-ta" name="user_answer" >{USER_ANSWER}</textarea>',
 			'</div>',
 			'<button type="submit" >',

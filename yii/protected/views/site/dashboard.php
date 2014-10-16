@@ -1235,49 +1235,7 @@ function getRandomInt(min, max)
 		<div class="boxHeader"><span class="word1">Quick </span><span class="word2">Question</span></div>
 		<div class="tile-block addG-tileblock" id="haveyouever">	
 			<div class='FormPlaceHolder displayed' ></div>		
-			<!--
-			<div class="tile-content quick-question"> 
-				<h3 style="color:#fff; margin-top:0;">Have you ever flown a kite?</h3>
-				<div >
-				  
-				   <div class="form-group">
-												
-						<div class="col-sm-5">
-							<span class="radio radio-replace" style="margin-bottom:10px;">
-								<input type="radio" id="rd-1" name="radio1" checked>
-								<label>Yup sure have</label>
-							</span>
-			
-							
-							<span class="radio radio-replace">
-								<input type="radio" id="rd-3" name="radio1" style="margin-bottom:10px;">
-								<label>No But I want to</label>
-							</span>
-							
-							
-						</div>
-					</div>
 
-				   <br>
-				   <br>
-				   
-				   <br>
-				   <textarea class="form-control" id="field-ta2" placeholder="Explain your answer"></textarea>
-					<div class="randomQuestion">
-					   <button type="button" class="n">
-							Submit
-							
-						</button>
-						<button type="button" class="flag" data-toggle="dropdown" style="float:right;"> Flag	
-							</button>
-							<button type="button" class="skip" style="float:right;">
-							Skip
-						</button>
-					</div>
-					
-				</div>		
-			</div>
-			-->	
 		</div>
 
 	</div>
