@@ -117,7 +117,7 @@ var AnswerQuestion = {
 		updateMsg($('.validateTips'),ansThinkingMsg);
 		var self = this;
 		$('#myThinker').dialog('open');
-		
+		/*
 		if (!self.answeredQuestions[self.currentQuestion.category]) {
 			self.answeredQuestions[self.currentQuestion.category] = 1;
 		} else 
@@ -130,7 +130,7 @@ var AnswerQuestion = {
 		}
 		$('input[name=exclude_categories').val(self.excludeCategories);
 		$('input[name=category_count]').val(self.answeredQuestions[self.currentQuestion.category]);
-		
+		*/
 		$.ajax({
 			url:this.service,
 			type:'POST',
