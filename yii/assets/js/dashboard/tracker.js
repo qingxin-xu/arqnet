@@ -190,10 +190,12 @@ var Tracker = {
           		},
           		yaxis: {
           			min: 0,
-          			max: this.plotMax
+          			max: this.plotMax,
+          			ticks:[]
           		},
           		xaxis:{
-          			min:0
+          			min:0,
+          			ticks:[]
           		}
           	});
           	
