@@ -1217,7 +1217,7 @@ function getRandomInt(min, max)
 				<textarea style='display:none;' type='hidden' name='stripped_content'></textarea>
 				<textarea name='post_content' class="form-control wysihtml5" rows="5" data-stylesheet-url="assets/css/wysihtml5-color.css" placeholder="Enter your quick journal entry here"></textarea>
 				<input name='publish_date' type="hidden" class="form-control datepicker" value="<?php echo date('D, d M Y');?>" data-format="D, dd MM yyyy">
-				<input name='publish_time' type="hidden"  value="<?php echo date('h:i a'); ?>" >
+				<input name='publish_time' type="hidden"  value="<?php if ($current_time) echo $current_time;else echo date('h:i a'); ?>" >
 				<input name='status' value='<?php if ($post_status) echo $post_status->status_id;?>' type='hidden'>
 				<input name='visibility' value='<?php if ($post_visibility) echo $post_visibility->visibility_id;?>' type='hidden'>
 				

@@ -256,6 +256,7 @@ class SiteController extends Controller
 		$day = 24*3600;
 		$yesterday = date('Y-m-d',strtotime($today) - $day);
 		$end_date = date('Y-m-d',strtotime($today) - 30*$day);
+		$current_time = date('h:i a');
 		
 		$activities = $this->calendarActivities($end_date,$today,$user_id);
 
@@ -298,6 +299,7 @@ class SiteController extends Controller
 				'event_units'=>$units,
 				'randomQuestion'=>$randomQuestion,
 				'question_flags'=>$this->getQuestionFlags(),
+				'current_time'=>$current_time
 				//'_dates'=>$eventData
 			)
 		);
@@ -1787,6 +1789,8 @@ class SiteController extends Controller
 			));
 			Yii::app()->end();
 		}
+		
+		$exclude_categories = Yii::app()->request->getPost('exclude_categories', array());
 		
 		if (strcmp($question_type->name,'Multiple Choice') == 0) {
 			$question_choice_id = Yii::app()->request->getPost('question_choice_id','');
@@ -3507,6 +3511,14 @@ where user_id = $user_id
 			array_push($types,array('question_status_id'=>$c->question_status_id,'name'=>$c->name));
 		}
 		return $types;
+	}
+	
+	/*
+	 * Generate a random question, but not from on of the categories in the
+	 * specified excluded list
+	 */
+	private function getRandomQuestionByIncludedCategories($excluded) {
+		$categories = Category::model()->findAll($condition);
 	}
 	
 	/*
