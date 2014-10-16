@@ -59,7 +59,9 @@ var topics_donut_chart,
 	question_flags = <?php echo json_encode($question_flags); ?>,
 	trackerSelection = {},
 	morric_topic_colors=['#9c68f9','#33aefb','#e668fa','#fcec4e','#24de55'],
-	morris_donut_label_color='#ffffff';
+	morris_donut_label_color='#ffffff',
+	//What time it is at the server
+	server_time = new Date(<?php echo "'".date('Y-m-d')." ";; if ($current_time) echo $current_time;else echo date('h:i a'); echo "'";?>);
 
 	var morris_formatter = function(y,data) {
 		var value = parseFloat(parseFloat(y).toFixed(2))*100;

@@ -1,4 +1,9 @@
-var myForm = myForm || {};
+var myForm = myForm || {},
+	/*
+	 * We will use this to determine how much time has elapsed since the page was loaded;
+	 * and then get an accurate time for publish_time
+	 */
+	loadTime = new Date(); 
 /* THe current date, with no time component (i.e., midnight) */
 function getCurrentDate()
 {
@@ -60,8 +65,14 @@ function quickEntry()
 	updateMsg($('.validateTips'),'Creating Journal Entry');
 	$('#myThinker').dialog('open');
 	
+	var now = new Date(),
+		elapsedTime = now.getTime() - loadTime.getTime(),
+		publish_time = server_time;
+	
+		publish_time.setTime(publish_time.getTime()+elapsedTime);
+		
 	$('input[name=publish_date]').datepicker('setValue',new Date());
-	$('input[name=publish_time]').timepicker('setTime',new Date());
+	$('input[name=publish_time]').timepicker('setTime',publish_time);
 	
 	var formData = new FormData($('#quickEntry')[0]);
 
