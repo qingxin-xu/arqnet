@@ -18,16 +18,6 @@ var AnswerQuestion = {
 	 */
 	answeredQuestions:{},
 	
-	/*
-	 * To keep track of what question categories have been skipped
-	 */
-	skippedQuestions:{},
-	
-	/*
-	 * Categories that should be excluded when generating a new question
-	 */
-	excludeCategories:[],
-	
 	createForm:function(question) {
 		if (!question) return;
 		var type = question.type_name;
@@ -117,7 +107,7 @@ var AnswerQuestion = {
 		updateMsg($('.validateTips'),ansThinkingMsg);
 		var self = this;
 		$('#myThinker').dialog('open');
-		/*
+		
 		if (!self.answeredQuestions[self.currentQuestion.category]) {
 			self.answeredQuestions[self.currentQuestion.category] = 1;
 		} else 
@@ -125,12 +115,8 @@ var AnswerQuestion = {
 			self.answeredQuestions[self.currentQuestion.category]++;
 		}
 		
-		if (self.answeredQuestion[self.currentQuestion.category]>=2) {
-			self.excludeCategories.push(self.currentQuestion.category);
-		}
-		$('input[name=exclude_categories').val(self.excludeCategories);
 		$('input[name=category_count]').val(self.answeredQuestions[self.currentQuestion.category]);
-		*/
+		
 		$.ajax({
 			url:this.service,
 			type:'POST',
@@ -142,6 +128,9 @@ var AnswerQuestion = {
 				
 				if (d.success && d.success>0)
 				{							
+					if (self.answeredQuestions[self.currentQuestion.category] >=2) {
+						delete self.answeredQuestions[self.currentQuestion.category];
+					}
 					$("#answerQuestion")[0].reset();
 					updateMsg($('.validateTips'),ansSuccessMsg);
 					setTimeout(function() {
@@ -211,11 +200,7 @@ var AnswerQuestion = {
 	
 	skipQuestion:function() {
 		if (!this.currentQuestion) return;
-		if (!this.skippedQuestions[this.currentQuestion.category]) {
-			this.skippedQuestions[this.currentQuestion.category] = 1;
-		} else {
-			this.skippedQuestions[this.currentQuestion.category]++;
-		}
+	
 		updateMsg($('.validateTips'),'Getting new question...');
 		var self = this;
 		$('#myThinker').dialog('open');
@@ -356,7 +341,6 @@ var AnswerQuestion = {
 		'<input type="hidden" name="question_type_id" value="{QUESTION_TYPE_ID}">',
 		'<input type="hidden" name="question_category_id" value="{QUESTION_CATEGORY_ID}">',
 		'<input type="hidden" name="category_count" value="">',
-		'<input type="hidden" name="exclude_categories[]" value="">',
 		'<div class="btn-group" style="float:right;">',
 			'<button id="{QUESTION_CATEGORY_ID}" type="button" class="question_category"  >',
 				'{QUESTION_CATEGORY}',

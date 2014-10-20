@@ -1790,8 +1790,6 @@ class SiteController extends Controller
 			Yii::app()->end();
 		}
 		
-		$exclude_categories = Yii::app()->request->getPost('exclude_categories', array());
-		
 		if (strcmp($question_type->name,'Multiple Choice') == 0) {
 			$question_choice_id = Yii::app()->request->getPost('question_choice_id','');
 			if (!$question_choice_id) {
@@ -1841,7 +1839,18 @@ class SiteController extends Controller
 	
 		if ($answer->save()) {
 			$answeredQuestion = Question::unroll($question);
-			$newQuestion = $this->getRandomQuestionByCategory(array('question_category_id'=>$question->question_category_id));
+			$newQuestion = null;
+			$category_count = Yii::app()->request->getPost('category_count',0);
+			if ($category_count<2) {
+				$newQuestion = $this->getRandomQuestionByCategory(array('question_category_id'=>$question->question_category_id));
+			} else {
+				$categories = $this->getQuestionCategories();
+				while(!$newQuestion) {
+					$randInt = rand(0,count($categories)-1);
+					$newQuestion = $this->getRandomQuestionByCategory($categories{$randInt});
+				}
+			}
+			
 			$answers = array();
 			$myAnswer = null;
 			
