@@ -1725,7 +1725,7 @@ class SiteController extends Controller
 		$myQuestion = Question::unroll($question);
 		echo CJSON::encode(array(
 				'success'=>1,
-				'question'=>array('question'=>$myQuestion,'myAnswer'=>null,'answers'=>[])
+				'question'=>array('question'=>$myQuestion,'myAnswer'=>array(),'answers'=>[])
 		));
 		Yii::app()->end();
 	}
