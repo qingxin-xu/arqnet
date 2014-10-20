@@ -37,7 +37,6 @@ var QuestionAnalysis = {
 	display:function(placeHolder,questions,areAnswers) {
 		this.areAnswers = areAnswers;
 		this.id = Math.floor((Math.random() * 10000000) + 1);
-		
 		if (!placeHolder) return;
 		this.placeHolder = placeHolder;
 		if (!questions || !questions.length || questions.length<=0) {
@@ -51,13 +50,13 @@ var QuestionAnalysis = {
 		if (!this.questions) 
 		{
 			this.questions = questions;
-			this.sort('date_created',false);
+			this.sort(this.sortParameter||'date_created',false);
 		}
 		
 		
 		for (var i = 0;i<questions.length;i++)
 		{
-			rows+=this.createRow(questions[i].question,i,areAnswers);
+			rows+=this.createRow(questions[i],i,areAnswers);
 		}
 		html = html.replace(/{ROWS}/,rows);
 		
@@ -96,6 +95,8 @@ var QuestionAnalysis = {
 			});
 		});
 		
+		this.hookupSorting(placeHolder);
+		/*
 		for (var i in this.sortable) {
 			$(placeHolder+' th.sort_'+i).click({property:i},function(e) {
 				if (self.sortable[e.data.property] == 'ASC') {
@@ -107,13 +108,43 @@ var QuestionAnalysis = {
 				self._toggleSortClass(e.data.property);
 			});
 		}
-
+		*/
+		
 		this.mainDisplay = $(placeHolder+' table');
 	},
 
-	add:function(placeHolder,question) {
-		if (!placeHolder) return;
+	hookupSorting:function(placeHolder) {
+		var self = this;
+		for (var i in this.sortable) {
+			$(placeHolder+' th.sort_'+i).click({property:i},function(e) {
+				if (self.sortable[e.data.property] == 'ASC') {
+					self.sortable[e.data.property] = 'DESC';
+				} else {
+					self.sortable[e.data.property] = 'ASC';
+				}
+				self.sort(e.data.property,true);
+				self._toggleSortClass(e.data.property);
+			});
+		}		
+	},
+	
+	replace:function(question) {
 		if (!question) return;
+		if (!this.questions) return;
+		for (var i = 0;i<this.questions.length;i++) {
+			if (question.question.question_id == this.questions[i].question.question_id) {
+				this.questions[i] = $.extend(this.questions[i],question);
+				this.display(this.placeHolder,this.questions,true);
+			}
+		}
+	},
+	
+	add:function(question) {
+		if (!question) return;
+		if (!this.questions) this.questions = [];
+		this.questions.push(question);
+		this.display(this.placeHolder,this.questions,true);
+		this.sort(this.sortParameter||'date_created',true);
 	},
 	
 	remove:function(placeHolder,question) {
@@ -131,7 +162,9 @@ var QuestionAnalysis = {
 		this.questions.splice(index,1);
 	},
 	
-	createRow:function(question,index,areAnswers) {
+	createRow:function(questionObj,index,areAnswers) {
+		if (!questionObj) return '';
+		var question = questionObj.question;
 		if (!question) return '';
 		if (index==null) index = 1;
 		var rowClass = index%2==0?'even':'odd';
@@ -672,26 +705,48 @@ var QuestionAnalysis = {
 	},
 	
 	sort:function(property,redraw) {
-		
 		if (!this.questions) return;
 		if (!property) return;
+		if (property.match(/\./)) {
+			return this.deepSort(property,redraw);
+		}
 		if (!this.sortable[property]) return;
 		var self = this;
 		if (this.sortable[property] == 'DESC') {
 			this.questions.sort(function(a,b) {
-				if (!a.question[property]) return 1;
-				if (!b.question[property]) return -1;
-				if (a.question[property] > b.question[property]) return 1;
-				else if (a.question[property] == b.question[property]) return 0;
-				else return -1;
+				if (property.match(/\./)) {
+					var tmp = property.split(/\./);
+					var p1 = tmp[0],p2=tmp[1];
+					if (!a.question.p1.p2) return 1;
+					if (!b.question.p1.p2) return -1;
+					if (a.question.p1.p2 > b.question.p1.p2) return 1;
+					else if (a.question.p1.p2 == b.question.p1.p2) return 0;
+					else return -1;
+				} else {
+					if (!a.question[property]) return 1;
+					if (!b.question[property]) return -1;
+					if (a.question[property] > b.question[property]) return 1;
+					else if (a.question[property] == b.question[property]) return 0;
+					else return -1;
+				}
 			});
 		} else {
 			this.questions.sort(function(a,b) {
-				if (!a.question[property]) return -1;
-				if (!b.question[property]) return 1;
-				if (a.question[property] > b.question[property]) return -1;
-				else if (a.question[property] == b.question[property]) return 0;
-				else return 1;
+				if (property.match(/\./)) {
+					var tmp = property.split(/\./);
+					var p1 = tmp[0],p2=tmp[1];
+					if (!a.question.p1.p2) return -1;
+					if (!b.question.p1.p2) return 1;
+					if (a.question.p1.p2 > b.question.p1.p2) return -1;
+					else if (a.question.p1.p2 == b.question.p1.p2) return 0;
+					else return 1;
+				} else {
+					if (!a.question[property]) return -1;
+					if (!b.question[property]) return 1;
+					if (a.question[property] > b.question[property]) return -1;
+					else if (a.question[property] == b.question[property]) return 0;
+					else return 1;
+				}
 			});			
 		}
 		if (redraw) {
@@ -699,11 +754,46 @@ var QuestionAnalysis = {
 		}
 	},
 	
+	deepSort:function(property,redraw) {
+		
+		var tmp = property.split(/\./),
+			p1 = tmp[0],p2=tmp[1];
+		
+		if (!p1) return;
+		if (!p2) return;
+
+		var self = this;
+		if (this.sortable[property] == 'DESC') {
+			this.questions.sort(function(a,b) {
+				if (!a[p1][p2]) return 1;
+				if (!b[p1][p2]) return -1;
+				if (a[p1][p2] > b[p1][p2]) return 1;
+				else if (a[p1][p2] == b[p1][p2]) return 0;
+				else return -1;
+			});
+		} else {
+			console.log("ASC");
+			this.questions.sort(function(a,b) {
+				if (!a[p1][p2]) return -1;
+				if (!b[p1][p2]) return 1;
+				if (a[p1][p2] > b[p1][p2]) return -1;
+				else if (a[p1][p2] == b[p1][p2]) return 0;
+				else return 1;
+			});			
+		}
+		if (redraw) {
+			this.display(this.placeHolder,this.questions,this.areAnswers);
+		}		
+	},
+	
 	_toggleSortClass:function(property) {
 		if (!property) return;
-		if (!this.sortable[property]) return;
+		var index = property;
+		if (index.match(/DOT/) )  index = index.replace(/DOT/,'.');
+	
+		if (!this.sortable[index]) return;
 		
-		if (this.sortable[property] == 'ASC') {
+		if (this.sortable[index] == 'ASC') {
 			$(this.placeHolder+' th.sort_'+property).removeClass('headerSortDESC');
 			$(this.placeHolder+' th.sort_'+property).addClass('headerSortASC');
 		} else {
@@ -712,7 +802,7 @@ var QuestionAnalysis = {
 		}
 		
 		for (var i in this.sortable) {
-			if (i != property) {
+			if (i != index) {
 				$(this.placeHolder+' th.sort_'+i).removeClass('headerSortDESC');
 				$(this.placeHolder+' th.sort_'+i).removeClass('headerSortASC');
 				this.sortable[i] = 'ASC';

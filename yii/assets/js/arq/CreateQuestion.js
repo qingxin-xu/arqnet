@@ -74,7 +74,6 @@ var CreateQuestion = {
 			$(this.formSelector).validate({
 				rules:rules,
 				submitHandler:function(e) {
-					console.log('submit');
 					self.submitForm(e);
 				}
 			});
@@ -94,12 +93,14 @@ var CreateQuestion = {
 				processData:false,
 				contentType:false,
 				success:function(d) {
-					console.log('success',d);
 					$('#myThinker').dialog('close');
 					if (d.success && d.success>0)
 					{					
 						if (d.question) {
 							self.newQuestion = d.question;
+							if (askedQuestions && askedQuestions.add) {
+								askedQuestions.add(d['question']);
+							}
 							$('#createQuestionSuccess').dialog('open');
 						}
 						self.reset();

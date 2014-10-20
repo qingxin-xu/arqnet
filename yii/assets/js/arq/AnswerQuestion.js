@@ -159,6 +159,8 @@ var AnswerQuestion = {
 								//analysis.mainDisplay = '.FormPlaceHolder';//('#ViewQuestionsAskedPane',questions_asked);
 								analysis.create('.FormPlaceHolder','#AnswerQuestionPane');
 								analysis.displayAnswerAnalysis('#AnswerQuestionPane',d['response'],-1);
+								answeredQuestions.add(d['response']);
+								askedQuestions.replace(d['response']);
 							}
 						}
 					},1000);							

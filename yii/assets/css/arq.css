@@ -87,3 +87,7 @@ label input {
 .qa_answer_type,.qa_comment,.qa_question {
 	color:#FFFFFF;
 }
+
+.col-sm-4 {
+	z-index:-1;
+}

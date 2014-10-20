@@ -4,6 +4,8 @@
 <script type='text/javascript' src='assets/js/arq/OtherQuestions.js'></script>
 <script type='text/javascript' src='assets/js/arq/CreateQuestion.js'></script>
 <script type='text/javascript' src='assets/js/arq/QuestionAnalysis.js'></script>
+<script type='text/javascript' src='assets/js/arq/AnsweredQuestions.js'></script>
+
 <script type="text/javascript">
 
 var categories = <?php echo json_encode($categories); ?>,
@@ -47,7 +49,7 @@ jQuery(document).ready(function($){
         	  $('#AnswerQuestionTab').addClass('active');
         	  $('#AnswerQuestionPane').addClass('active');
         	  if (CreateQuestion.newQuestion) {
-            	  AnswerQuestion.createForm(CreateQuestion.newQuestion);
+            	  AnswerQuestion.createForm(CreateQuestion.newQuestion.question);
         	  }
           },
           No:function() {$( this ).dialog( "close" );}
@@ -74,7 +76,9 @@ jQuery(document).ready(function($){
 	if (QuestionAnalysis && QuestionAnalysis.display) {
 		askedQuestions = $.extend({},QuestionAnalysis);
 		askedQuestions.display('#ViewQuestionsAskedPane',questions_asked);
+		
 		answeredQuestions = $.extend({},QuestionAnalysis);
+		answeredQuestions = $.extend(answeredQuestions,AnsweredQuestions);
 		answeredQuestions.display('#ViewQuestionsAnsweredPane',answered_questions,true);
 	}
 });
