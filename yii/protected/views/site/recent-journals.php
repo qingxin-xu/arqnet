@@ -349,9 +349,9 @@ jQuery(document).ready(function($){
 <div id="confirmationForm" title="Delete Entry?">
   <p class="confirmationMsg">Are you sure you want to delete this entry?</p>
 </div>
-<div id="msgDialog" title="Error">
+<div id="msgDialog" title="...">
   <p class="dialog_msg">Deleting entry</p>
 </div>
-<div id="myErrorMsg" title="Error">
+<div id="myErrorMsg" title="...">
   <p class="myErrorMsg_msg">There was an error deleting this task</p>
 </div>

@@ -1,6 +1,11 @@
 var recentActivities = {
+	/* 
+	 * These types of event do not have values, such as 'period started'
+	 * So this will tell the render method below to use a description instead
+	 */
 	exclude:['_no_input_','boolean'],
 	display:function(activities,placeAt,includeOnly) {
+		var self = this;
 		if (!activities || !activities.length || activities.length<=0) {
 			return;
 		}
@@ -24,16 +29,50 @@ var recentActivities = {
 		}
 		$(placeAt).html(html);
 		/*
-		$('.eventWrapper').each(function(index,item) {
-			var h = $(this).find('.activity').height();
-			if (h) {
-				h = h+10;
-				console.log('H',h);
-				$(this).css('height',h+'px');
-			} else {console.log("NO H");}
+		 * Hook up click event
+		 */
+		$.each(activities,function(index,a) {
+			if (a.description.length>0) {
+				$(placeAt+' #ACTIVITY_'+a.description[0].id).click({activity:a},function(e) {
+					console.log('ACTIVITY',e.data.activity);
+					var activity = e.data.activity;
+					if (activity.subcategory && self[activity.subcategory+'Action']) {
+						self[activity.subcategory+'Action'](activity);
+					}
+				});
+			}
 		});
-		*/
+	},
+	
+	/*
+	 * Action to occur when an event is clicked
+	 */
+	eventAction:function(activity) {
 		
+	},
+	
+	/*
+	 * Action to occur when an asked question is clicked
+	 */
+	QA_AskedAction:function(activity) {
+		
+	},
+	
+	/*
+	 * Action to occur when an answered question is clicked
+	 */
+	QA_AnsweredAction:function(activity) {
+		
+	},
+	
+	/*
+	 * Action to occur when a note event is clicked
+	 */
+	NoteAction:function(activity) {
+		if (!activity) return;
+		if (!activity.description || activity.description.length<=0) return;
+		if (!activity.description[0].note_id) return;
+		window.open('/journal?journal_id='+activity.description[0].note_id);
 	},
 	
 	setDateTime:function(html,activity) {
@@ -66,6 +105,7 @@ var recentActivities = {
 		if (value.length>19) value = value.substring(0,19)+'...';
 		html = html.replace(/{EVENT}/,'qa_asked');
 		html = html.replace(/{ACTIVITY}/,'Asked: '+value);
+		html = this.setID(html,activity.description[0]);
 		return html;
 	},
 	
@@ -81,9 +121,18 @@ var recentActivities = {
 			
 			if (value.length>19) value = value.substring(0,19)+'...';
 			html = html.replace(/{ACTIVITY}/,'Answered: '+value);
+			html = this.setID(html,activity.description[0]);
 		} else 
 			html = html.replace(/{ACTIVITY}/,'Answered an unspecified question');
 		return html;
+	},
+	
+	setID:function(html,desc) {
+		if (!html) return '';
+		if (!desc) return html;
+		if (!desc.id) return html;
+		var newHTML = html.replace(/{ACTIVITY_ID}/,'ACTIVITY_'+desc.id);
+		return newHTML;
 	},
 	
 	renderNote:function(html,activity) {
@@ -94,6 +143,7 @@ var recentActivities = {
 			var value = activity.description[0].value;
 			if (value.length>19) value = value.substring(0,19)+'...';
 			html = html.replace(/{ACTIVITY}/,'Note: '+value);
+			html = this.setID(html,activity.description[0]);
 		} else 
 			html = html.replace(/{ACTIVITY}/,'Wrote in diary');
 		return html;
@@ -104,6 +154,9 @@ var recentActivities = {
 		if (!activity) return html;
 		html = html.replace(/{EVENT}/,'event');
 		var description = '';
+		if (activity.description.length>0) {
+			html = this.setID(html,activity.description[0]);
+		}
 		for (var i =0;i<activity.description.length;i++)
 		{
 			if ($.inArray(activity.description[i].type,this.exclude) >=0) {
@@ -113,12 +166,13 @@ var recentActivities = {
 			}
 			description+='<p>'+activity.description[i].value+'</p>';
 		}
+
 		html = html.replace(/{ACTIVITY}/,description);
 		return html;
 	},
 	
 	template:[
-	          '<div class="eventWrapper {EVENT} eventIcon" style="height:75px;">',
+	          '<div class="eventWrapper {EVENT} eventIcon" id="{ACTIVITY_ID}" style="height:75px;">',
 	          	'<div class="activity" style="float:left;">{ACTIVITY}<div style="clear:both;"></div></div>',
 	          	'<div class="date" style="float:right;">',
 	          		'<div>{DATE}</div>',

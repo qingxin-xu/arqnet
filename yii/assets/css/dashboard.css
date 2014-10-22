@@ -126,6 +126,7 @@ div.activity {
 	overflow:hidden;
 	word-break:break-word;
 	margin:15px 0 0 7px;
+	cursor:pointer;
 }
 
 div.date {

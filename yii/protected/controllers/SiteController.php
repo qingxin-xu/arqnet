@@ -1261,6 +1261,7 @@ class SiteController extends Controller
 		NoteCategory::model()->deleteAllByAttributes($note_array);
 		//NoteStatus::model()->deleteAllByAttributes($note_array);
 		//NoteVisibility::model()->deleteAllByAttributes($note_array);
+		EventNote::model()->deleteAllByAttributes($note_array);
 		$note_date_created = $note->date_created;
 		$note->delete();
 
@@ -1278,6 +1279,7 @@ class SiteController extends Controller
 			throw new CHttpException('403', 'Forbidden access.');
 		}
 
+		$calEvent = '';
 		$title = Yii::app()->request->getPost('post_title', '');
 
 		$note_id = Yii::app()->request->getPost('journal_id', 0);
@@ -1302,6 +1304,17 @@ class SiteController extends Controller
 			if ($note->visibility_id != Yii::app()->request->getPost('visibility')) {
 				$note->visibility_id = Yii::app()->request->getPost('visibility');
 			}
+			/*
+			 * change start date in event for this note
+			 * we get the calendar event here, and update it below
+			 * once we know the new publish date/time
+			 */
+			$eventNote = EventNote::model()->findByAttributes(array('note_id'=>$note_id));
+			if ($eventNote) {
+				$calEvent = CalendarEvent::model()->with(array(
+					'eventValues'=>array('condition'=>'eventValues.event_value_id ='.$eventNote->event_value_id)
+				))->findAll();
+			} 
 		} else {
 			// Create
 			$note = new Note();
@@ -1348,6 +1361,15 @@ class SiteController extends Controller
 				$event_value->value=$myValue;
 				$event_value->event_definition_id = $event_definition->event_definition_id;
 				$event_value->save();
+				
+				/* Event note */
+				$note->save();
+				$note->refresh();
+				$event_note = new EventNote();
+				$event_note->note_id = $note->note_id;
+				$event_note->event_value_id = $event_value->event_value_id;
+				$event_note->save();
+				
 			}
 			
 		}
@@ -1380,6 +1402,14 @@ class SiteController extends Controller
 			}
 		}
 		
+		/* 
+		 * If we are doing an update the publish date/time may have changed
+		 */
+		if ($calEvent) {
+			$start_date = date('Y-m-d H:i:s',$publish_datetime);
+			$calEvent[0]->start_date = $start_date;
+			$calEvent[0]->save();
+		}
 		/*
 		 * Once we know the status of this note, we can decide if we need to:
 		 * 
@@ -1421,6 +1451,7 @@ class SiteController extends Controller
 						
 					$ae_response_id = $this->createAEResponse();
 					$note->ae_response_id = $ae_response_id;
+					$note->save();
 					$ae_response->delete();
 	
 				} else {
@@ -1719,7 +1750,14 @@ class SiteController extends Controller
 			$event_value->calendar_event_id = $cal->calendar_event_id;
 			$event_value->value=$question->content;
 			$event_value->event_definition_id = $event_definition->event_definition_id;
-			$event_value->save();			
+			$event_value->save();		
+
+			/* Event Question */
+			$event_question = new EventQuestion();
+			$event_question->question_id = $question->question_id;
+			$event_question->event_value_id = $event_value->event_value_id;
+			$event_question->type='asked';
+			$event_question->save();
 		}
 
 		$myQuestion = Question::unroll($question);
@@ -1890,6 +1928,13 @@ class SiteController extends Controller
 				$event_value->value=$question->content;
 				$event_value->event_definition_id = $event_definition->event_definition_id;
 				$event_value->save();
+				
+				/* Event Question */
+				$event_question = new EventQuestion();
+				$event_question->question_id = $question->question_id;
+				$event_question->event_value_id = $event_value->event_value_id;
+				$event_question->type='answered';
+				$event_question->save();
 			}
 			
 			header('Content-type: application/json');
@@ -3762,7 +3807,7 @@ where user_id = $user_id
 		$calendarEvents = CalendarEvent::model()->findAll(array('order'=>'t.start_date DESC','condition'=>'t.user_id=:_user_id and date(t.start_date)<=date(:end_date) and date(t.start_date)>=date(:start_date)','params'=>array(':_user_id'=>$user_id,':start_date'=>$start_date,':end_date'=>$end_date)));
 		foreach ($calendarEvents as $ce)
 		{
-			$eventValues = $eventValues = EventValue::model()->with('calendarEvent')->findAll('t.calendar_event_id=:_id',array(':_id'=>$ce->calendar_event_id));
+			$eventValues = $eventValues = EventValue::model()->with('calendarEvent','eventNote','eventQuestion')->findAll('t.calendar_event_id=:_id',array(':_id'=>$ce->calendar_event_id));
 			$description = array();
 			foreach ($eventValues as $ev)
 			{
@@ -3770,11 +3815,18 @@ where user_id = $user_id
 				$subcategory = EventSubcategory::model()->findByPk($eventDefn->event_subcategory_id);
 		
 				$title = $subcategory->name;
-				array_push($description,array(
+				$d = array(
 				'id'=>$ev->event_value_id,
 				'value'=>$ev->value,
 				'type'=>$eventDefn->parameter
-				));
+				);
+				if ($ev->eventNote) {
+					$d['note_id'] = $ev->eventNote->note_id;
+				} else if ($ev->eventQuestion) {
+					$d['question_id'] = $ev->eventQuestion->question_id;
+					$d['question_type'] = $ev->eventQuestion->type;
+				}
+				array_push($description,$d);
 			}
 			array_push($myEvents,array(
 			'subcategory'=>$subcategory->name,

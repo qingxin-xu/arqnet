@@ -49,6 +49,8 @@ class EventValue extends CActiveRecord
 		return array(
 			'calendarEvent' => array(self::BELONGS_TO, 'CalendarEvent', 'calendar_event_id'),
 			'eventDefinition' => array(self::BELONGS_TO, 'EventDefinition', 'event_definition_id'),
+			'eventNote'=>array(self::HAS_ONE,'EventNote','event_value_id'),
+			'eventQuestion'=>array(self::HAS_ONE,'EventQuestion','event_value_id')
 		);
 	}
 
