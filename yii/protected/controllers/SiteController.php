@@ -501,7 +501,7 @@ class SiteController extends Controller
 		}
 		
 		$cap_date = Yii::app()->request->getPost('cap_date', '');
-		/* This is obsolete because of the new fullcalendar plugin we are now using */
+		/* This is obsolete because of the new fullcalendar plugin we are now using 
 		if ($cap_date) {
 			$cap_date = DateTime::createFromFormat('Y-m-d\TH:i:s.uZ',$cap_date);
 			$cap_date = $cap_date->format('Y-m-d');
