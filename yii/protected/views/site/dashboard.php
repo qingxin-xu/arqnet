@@ -687,7 +687,22 @@ function updateMsg( description,t ) {
 
 jQuery(document).ready(function($) 
 {
-	
+
+	$("[name=trackerSwitchCheckbox]").bootstrapSwitch({
+		onSwitchChange:function(event,state) {
+			console.log("SWITCH",event,state);
+			if (state) {
+				//$('.TrackerSwitchLabel').html('View Chart Options');
+				slideTrackerRight();
+			} else {
+				//$('.TrackerSwitchLabel').html('View Spider Graph');
+				slideTrackerLeft();
+			}
+		},
+		onText:'Spider Graph',
+		offText:'Chart Options',//'View Spider Graph',
+		size:'small'
+	});
 	$('#myThinker').dialog({
 		autoOpen:false,
 		closeOnEscape: false,
@@ -861,59 +876,6 @@ jQuery(document).ready(function($)
 
 		//$('.TrackSubCategories').find('input');
 	}
-	/*Bar chart tab trackers
-	$(".bar-tracker").sparkline([5,7,7,8,6], {
-		type: 'bar',
-		barColor: '#8060BB',
-		height: '288px',
-		barWidth: 62,
-		barSpacing: 12
-	});	
-	*/
-	/*
-		datatable
-	jQuery(window).load(function(){
-		var width = $('.slidewrapper').width()
-		$('.addG-bottomslider').width(width-100);
-
-
-		$("#table-2").dataTable({
-			"sPaginationType": "bootstrap",
-			"sDom": "t<'row'<'col-xs-1 col-left'i><'col-xs-6 col-right'p>>",
-			"bStateSave": false,
-			"iDisplayLength": 8,
-			"aoColumns": [
-				{ "bSortable": false },
-				null
-			]
-		});
-		
-		$(".dataTables_wrapper select").select2({
-			minimumResultsForSearch: -1
-		});
-		
-		// Highlighted rows
-		$("#table-2 tbody input[type=checkbox]").each(function(i, el)
-		{
-			var $this = $(el),
-				$p = $this.closest('tr');
-			
-			$(el).on('change', function()
-			{
-				var is_checked = $this.is(':checked');
-				
-				$p[is_checked ? 'addClass' : 'removeClass']('highlight');
-			});
-		});
-		
-		// Replace Checboxes
-		$(".pagination a").click(function(ev)
-		{
-			replaceCheckboxes();
-		});
-		
-	});
-	*/
 
 });
 
@@ -1064,12 +1026,13 @@ function getRandomInt(min, max)
 						</div>
 						<div class="tab-pane" id="trackers" >	
 							<div id='TrackerSwitch' style='float:left;'>
-							<div class='slideOne' style='display:inline-block;'>
-								<input type="checkbox" value="None" id="slideOne" name="trackerSwitchCheckbox" />
+							<div class='_slideOne' style='display:inline-block;'>
+								
 								<label for="slideOne"></label>
 								
-							</div>					
-							<div class='TrackerSwitchLabel' style='display:inline-block;float:left;'>View Spider Graph</div>
+							</div>		
+							<input type="checkbox" value="None"  name="trackerSwitchCheckbox" />			
+							<!--  <div class='TrackerSwitchLabel' style='display:inline-block;float:left;'>View Spider Graph</div>-->
 							</div>	
 							<div id="trackers-tab" class="addG-justleft" style="overflow:hidden;height: 350px;width:300%;">
 
@@ -1376,8 +1339,10 @@ function getRandomInt(min, max)
 		</div>
 	</div>
 	<link rel="stylesheet" href="assets/js/wysihtml5/bootstrap-wysihtml5.css">
+	<link rel="stylesheet" href="assets/css/bootstrap-switch/bootstrap-switch.css">
 	<script type='text/javascript' src='assets/js/jquery.dataTables.min.js'></script>
 	<script type='text/javascript' src='assets/js/dataTables.bootstrap.js'></script>
+	<script type='text/javascript' src='assets/js/bootstrap-switch/bootstrap-switch.min.js'></script>
 	<script src="/assets/js/jquery.validate.min.js"></script>
 	<script src='http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js'></script>
 	<script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>

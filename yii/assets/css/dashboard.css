@@ -305,3 +305,23 @@ input[type="checkbox"] {
 .FormPlaceHolder {
 	background:#181818;
 }
+
+#TrackerSwitch {
+	margin:15px;
+}
+.bootstrap-switch {
+	border-color:rgb(84,84,84);
+}
+
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary,
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-default, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-default {
+	background-color:#181818;
+	color:#ffffff;
+}
+.bootstrap-switch .bootstrap-switch-container {
+	width:152%;
+}
+
+.bootstrap-switch .bootstrap-switch-label {
+	background-color:#252525;
+}
