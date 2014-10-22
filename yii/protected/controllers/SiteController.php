@@ -501,6 +501,7 @@ class SiteController extends Controller
 		}
 		
 		$cap_date = Yii::app()->request->getPost('cap_date', '');
+		/* This is obsolete because of the new fullcalendar plugin we are now using */
 		if ($cap_date) {
 			$cap_date = DateTime::createFromFormat('Y-m-d\TH:i:s.uZ',$cap_date);
 			$cap_date = $cap_date->format('Y-m-d');
@@ -511,7 +512,14 @@ class SiteController extends Controller
 			));
 			Yii::app()->end();			
 		}
-		
+		*/
+		if (!$cap_date) {
+			echo CJSON::encode(array(
+					'success'=>-2,
+					'msg'=>'Ending date not specified'
+			));
+			Yii::app()->end();			
+		}
 		$defn_label = Yii::app()->request->getPost('label', '');
 
 		if (!$defn_label) {
