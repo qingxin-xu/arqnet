@@ -1849,17 +1849,17 @@ class SiteController extends Controller
 				$answer->question_choice_id = (int)$question_choice_id;
 			}
 		} else if (strcmp($question_type->name,'Quantitative') == 0) {
-			$qty = Yii::app()->request->getPost('quantitative_value','');
-			if (!$qty) {
+			$qty = Yii::app()->request->getPost('quantitative_value',0);
+			if (strcmp($qty,'')==0) {
 				echo CJSON::encode(array(
 						'success'=>-25,
 						'error'=>'A quantity is required',
 				));
 				Yii::app()->end();				
 			}
-			if ($answer->quantitative_value != (int)$qty) {
-				$answer->quantitative_value = (int)$qty;
-			}
+
+			$answer->quantitative_value = (int)$qty;
+			
 		} else {
 			if (!$user_answer) {
 				header('Content-type: application/json');
