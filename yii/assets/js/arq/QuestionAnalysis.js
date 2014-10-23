@@ -297,7 +297,7 @@ var QuestionAnalysis = {
 		
 	},
 	
-	buttonReturn:'Return',
+	buttonReturn:'Back To Summary',
 	buttonNext:'Next',
 	buttonPrev:'Previous',
 	setButtons:function(next,prev,id) {
