@@ -144,7 +144,7 @@ var AnswerQuestion = {
 						
 						if ('response' in d && d['response']) {
 							if (QuestionAnalysis ) {
-								var analysis = $.extend({},QuestionAnalysis);
+								var analysis = $.extend({},QuestionAnalysis,{buttonReturn:'Next'});
 								//analysis.mainDisplay = '.FormPlaceHolder';//('#ViewQuestionsAskedPane',questions_asked);
 								analysis.create('.FormPlaceHolder','#AnswerQuestionPane');
 								analysis.displayAnswerAnalysis('#AnswerQuestionPane',d['response'],-1);

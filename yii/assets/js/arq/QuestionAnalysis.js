@@ -251,15 +251,7 @@ var QuestionAnalysis = {
 			next = index+1,
 			prev = index-1;
 
-		buttons += '<input id="GOBACK_'+id+'" type="button" value="Back" class="qa_analysis" style="margin:0 8px 0 8px;float:right;" />';
-		if (this.questions && this.questions[next]) {
-			buttons += '<input id="NEXT_'+id+'" type="button" value="Next" class="qa_analysis" style="margin:0 8px 0 8px;float:right;" />';			
-		}
-		
-		if (this.questions && this.questions[prev]) {
-			buttons += '<input id="PREV_'+id+'" type="button" value="Previous" class="qa_analysis" style="margin:0 8px 0 8px;float:right;" />';
-
-		}
+		buttons += this.setButtons(next,prev,id);
 		html = html.replace(/{BUTTONS}/,buttons);
 		
 		$(placeHolder).append(html);
@@ -268,6 +260,7 @@ var QuestionAnalysis = {
 			self.showAnswerComments(id);
 		});
 		
+		/*
 		$('#GOBACK_'+id).click(function() {
 			self.goBack(id);
 		});
@@ -283,6 +276,8 @@ var QuestionAnalysis = {
 				self.displayAnswerAnalysis(placeHolder, self.questions[prev], prev);
 			});
 		}
+		*/
+		this.hookupButtons(next, prev, id,placeHolder);
 		
 		this.analysisPages[id] = {plot:1};
 		
@@ -300,6 +295,41 @@ var QuestionAnalysis = {
 		});
 		
 		
+	},
+	
+	buttonReturn:'Return',
+	buttonNext:'Next',
+	buttonPrev:'Previous',
+	setButtons:function(next,prev,id) {
+		var buttons = '<input id="GOBACK_'+id+'" type="button" value="'+this.buttonReturn+'" class="qa_analysis" style="margin:0 8px 0 8px;float:right;" />';
+		if (this.questions && this.questions[next]) {
+			buttons += '<input id="NEXT_'+id+'" type="button" value="'+this.buttonNext+'" class="qa_analysis" style="margin:0 8px 0 8px;float:right;" />';			
+		}
+		
+		if (this.questions && this.questions[prev]) {
+			buttons += '<input id="PREV_'+id+'" type="button" value="'+this.buttonPrev+'" class="qa_analysis" style="margin:0 8px 0 8px;float:right;" />';
+
+		}		
+		return buttons;
+	},
+	
+	hookupButtons:function(next,prev,id,placeHolder) {
+		var self = this;
+		$('#GOBACK_'+id).click(function() {
+			self.goBack(id);
+		});
+		
+		if (this.questions && this.questions[next]) {
+			$('#NEXT_'+id).click(function() {
+				self.displayAnswerAnalysis(placeHolder, self.questions[next], next);
+			});
+		}
+		
+		if (this.questions && this.questions[prev]) {
+			$('#PREV_'+id).click(function() {
+				self.displayAnswerAnalysis(placeHolder, self.questions[prev], prev);
+			});
+		}		
 	},
 	
 	_displayAnalysis:function(id) {
