@@ -4,7 +4,9 @@
  <link rel="stylesheet" href="/assets/css/jqtree.css">
  <link rel="stylesheet" href="/assets/css/myJournals.css">
  <script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
+<!--  
 <script src='/assets/js/dashboard/recentActivities.js'></script>
+-->
 <script src="/assets/js/tree.jquery.js"></script>
 <script type='text/javascript' src='/assets/js/myJournals/journalMgr.js'></script>
 <script type='text/javascript' src='/assets/js/myJournals/calendarMgr.js'></script>
@@ -93,10 +95,11 @@
 	 		$('.dropdown-menu ').css('left',0);
 		},500);
 
+		/*
 		if (recentActivities && activities) {
 			recentActivities.display(activities,'#previousPosts',['Note']);
 		}
-
+		*/
 		if (archiveMgr) {
 			treeJournals = $.extend({},journalMgr);
 			treeJournals = $.extend(treeJournals,archiveMgr,{
@@ -175,8 +178,10 @@
 		</div>
 	</div>
 	<div class='row col-sm-3'>
+		<!--  
 		<div class="boxHeader"><span class="word1">Previous </span><span class="word2">Posts</span></div>
 		<div id='previousPosts' class="panel panel-primary addG-panelhalfheight"></div>
+		-->
 		<div class="boxHeader"><span class="word2">Calendar</span></div>
 		<div class='calendar input-group' style='width:100%;'><input style='width:100%;' type='text' id='mydate' class="form-control datepicker" /></div>
 		<div class="boxHeader"><span class="word1">Journal </span><span class="word2">Archive</span></div>
