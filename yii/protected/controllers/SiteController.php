@@ -1271,9 +1271,10 @@ class SiteController extends Controller
 		//NoteVisibility::model()->deleteAllByAttributes($note_array);
 		EventNote::model()->deleteAllByAttributes($note_array);
 		$note_date_created = $note->date_created;
+		$note_publish_date = $note->publish_date;
 		$note->delete();
-
-		$this->runAEJournalDaily($note_date_created);
+		
+		$this->runAEJournalDaily($note_publish_date);
 		
 		echo CJSON::encode(array(
 				'success'=>1,
@@ -1290,6 +1291,9 @@ class SiteController extends Controller
 		$calEvent = '';
 		$title = Yii::app()->request->getPost('post_title', '');
 
+		$old_status_id = '';
+		$old_publish_date = '';
+		
 		$note_id = Yii::app()->request->getPost('journal_id', 0);
 		if ($note_id>0) {
 			//Do update
@@ -1297,6 +1301,10 @@ class SiteController extends Controller
 			 * TODO: implement auto save
 			 */
 			$note = Note::model()->findByPk($note_id);
+			
+			$old_status_id = $note->status_id;
+			$old_publish_date = $note->publish_date;
+			
 			if ($note->title != $title) {
 				$note->title = $title;
 			}
@@ -1472,8 +1480,16 @@ class SiteController extends Controller
 
 				$note->save();
 				$note->refresh();
-				$this->runAEJournalDaily($note->date_created);
-
+				
+				$this->runAEJournalDaily(date('Y-m-d',strtotime($note->publish_date)));
+				/*
+				 * Scrub analysis on old publish date if it is different than
+				 * the new publish date
+				 */
+				
+				if ($old_publish_date && strcmp($note->publish_date,$old_publish_date) != 0) {
+					$this->runAEJournalDaily($old_publish_date);
+				}
 			} else {
 				/*
 				 * Status is 'Draft', so if an ae_response exists, delete it
@@ -1491,6 +1507,13 @@ class SiteController extends Controller
 					$note->ae_response_id = NULL;
 					$note->save();
 					$ae_response->delete();					
+				}
+				/*
+				 * We must rerun for the original publish date to remove
+				 * the contribution from this journal that is now a draft
+				 */
+				if ($old_publish_date) {
+					$this->runAEJournalDaily($old_publish_date);
 				}
 			}
 		}
@@ -1589,7 +1612,7 @@ class SiteController extends Controller
 	private function runAEJournalDaily($get_date=NULL) {
 
 		$user_id = Yii::app()->user->Id;
-
+		$draft_status = NoteStatus::model()->findByAttributes(array('name'=>'Published'));
 		if (!$get_date) {
 			$get_date = MyStuff::get_sql_date('curdate()');
 		} else {
@@ -1606,13 +1629,15 @@ class SiteController extends Controller
 			$ajd->user_id = $user_id;
 			$ajd->date_created = $get_date;
 		};
-
+		$myPublishDate = date('Y-m-d',strtotime($get_date));
+	
 		$sql = "select group_concat(content, ' ') total_content
 				from note
 				where user_id=$user_id
-				  and date_created>='$get_date'
-				  and date_created<date_add('$get_date', interval 1 day)
-				  and publish_date is not null
+				and status_id='$draft_status->status_id'
+					and publish_date is not null
+				  and publish_date>='$myPublishDate'
+				  and publish_date<date_add('$myPublishDate', interval 1 day)
 				  and is_active=1
 				group by user_id";
 		$entries = Yii::app()->db->createCommand($sql)->queryRow();
@@ -4091,7 +4116,7 @@ order by avg_rank desc";
 			    c.display_name,
 			    c.category_type,
 			    avg(arc.value) value
-			  from ae_response ar
+			  from ae_journal_daily ar
 			  join ae_response_category arc on ar.ae_response_id = arc.ae_response_id
 			  join category c on arc.category_id = c.category_id
 			  where ar.user_id = $user_id
@@ -4113,7 +4138,7 @@ order by avg_rank desc";
 				from date_dim dd
 				left join (
 				  select date(ar.date_created) date_created, tp.ae_value person, sum(tp.count) person_count
-				  from ae_response ar
+				  from ae_journal_daily ar
 				  join top_people tp on ar.ae_response_id = tp.ae_response_id
 				  where ar.user_id = $user_id
 				    and ar.is_active = 1
@@ -4136,7 +4161,7 @@ order by avg_rank desc";
 				from date_dim dd
 				left join (
 				  select date(ar.date_created) date_created, tw.ae_value word, sum(tw.count) word_count
-				  from ae_response ar
+				  from ae_journal_daily ar
 				  join top_words tw on ar.ae_response_id = tw.ae_response_id
 				  where ar.user_id = $user_id
 				    and ar.is_active = 1

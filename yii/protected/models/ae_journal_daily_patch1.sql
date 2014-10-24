@@ -1,0 +1,1 @@
+alter table ae_journal_daily add column is_active tinyint(4) DEFAULT '1';
