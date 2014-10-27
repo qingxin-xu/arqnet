@@ -251,3 +251,15 @@ select {
 	border-color:#181818;
 	background-color:#181818;
 }
+
+.nav-tabs > li > a {
+	margin-right:0;
+}
+
+.nav-tabs > li:first-child > a {
+	margin-left:0;
+}
+
+.panel-heading > .panel-options > .nav-tabs > li {
+	margin-right:0;
+}
