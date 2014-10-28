@@ -213,7 +213,9 @@ var QuestionAnalysis = {
 		
 		
 		if (myAnswer) {
-			html = html.replace(/{YOUR_ANSWER_CONTENT}/,'"'+myAnswer.user_answer+'"');
+			var user_answer = '';
+			if (myAnswer.user_answer) user_answer = '"'+myAnswer.user_answer+'"';
+			html = html.replace(/{YOUR_ANSWER_CONTENT}/,user_answer);
 			if (type == 'Open Answer') {
 				html = html.replace(/{YOUR_ANSWER_TYPE}/,'');
 			} else if (type == 'Multiple Choice') {
