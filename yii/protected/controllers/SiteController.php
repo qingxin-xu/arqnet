@@ -1646,6 +1646,8 @@ class SiteController extends Controller
 			$ae_response_id = $this->createAEResponse($entries['total_content']);
 			$ajd->ae_response_id = $ae_response_id;
 			$ajd->save();
+		} else {
+			$ajd->delete();
 		}
 
 	}
