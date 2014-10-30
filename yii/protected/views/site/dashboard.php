@@ -690,7 +690,6 @@ jQuery(document).ready(function($)
 
 	$("[name=trackerSwitchCheckbox]").bootstrapSwitch({
 		onSwitchChange:function(event,state) {
-			console.log("SWITCH",event,state);
 			if (state) {
 				//$('.TrackerSwitchLabel').html('View Chart Options');
 				slideTrackerRight();
@@ -699,8 +698,8 @@ jQuery(document).ready(function($)
 				slideTrackerLeft();
 			}
 		},
-		onText:'Spider Graph',
-		offText:'Chart Options',//'View Spider Graph',
+		onText:'On',
+		offText:'Off',//'View Spider Graph',
 		size:'small'
 	});
 	$('#myThinker').dialog({
@@ -1032,7 +1031,7 @@ function getRandomInt(min, max)
 								
 							</div>		
 							<input type="checkbox" value="None"  name="trackerSwitchCheckbox" />			
-							<!--  <div class='TrackerSwitchLabel' style='display:inline-block;float:left;'>View Spider Graph</div>-->
+							<div class='TrackerSwitchLabel' style='display:inline-block;float:left;'>Mood Graph</div>
 							</div>	
 							<div id="trackers-tab" class="addG-justleft" style="overflow:hidden;height: 350px;width:300%;">
 
