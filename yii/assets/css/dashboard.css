@@ -102,6 +102,7 @@ box-shadow:0 0 5px #262626;
 /* recent activities */
 #recentActivities,#previousPosts {
 	overflow-y:scroll;
+	padding:15px 0 0 0;
 }
 
 .eventWrapper {
@@ -115,17 +116,19 @@ box-shadow:0 0 5px #262626;
 	padding:2px 0 0 26px;
 	word-break:break-word;
 	background-size:24px 24px;
-	margin:15px 5px 25px 5px;
+	margin:0 5px 0 0;
 }
 
 div.activity {
+	white-space: nowrap; 
 	line-height:24px;
-	width:160px;
-	height:65px;
+	/*width:7em;*/
+	width:60%;
+	/*height:65px;*/
 	text-overflow:ellipsis;
 	overflow:hidden;
-	word-break:break-word;
-	margin:15px 0 0 7px;
+	/*word-break:break-word;*/
+	margin:23px 0 0 7px;
 	cursor:pointer;
 }
 
@@ -159,7 +162,7 @@ input[name=trackerSwitchCheckbox] {visibility:hidden;}
 .TrackerSwitchLabel {
 	float:left;
 	display:inline-block;
-	margin:17px 0 0 0;
+	margin:6px 0 0 0;
 }
 .slideOne {
 	width: 50px;
@@ -324,4 +327,12 @@ input[type="checkbox"] {
 
 .bootstrap-switch .bootstrap-switch-label {
 	background-color:#252525;
+}
+
+.event_even {
+	background-color:#1f1f1f;
+}
+
+.event_odd {
+	background-color:#282828;
 }

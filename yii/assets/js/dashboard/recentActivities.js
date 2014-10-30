@@ -25,6 +25,8 @@ var recentActivities = {
 				eventHTML = this['renderEvent'](eventHTML,activities[i]);
 			}
 			eventHTML = this.setDateTime(eventHTML,activities[i]);
+			if (i%2==0) eventHTML = eventHTML.replace(/{ROW}/,'event_even');
+			else eventHTML = eventHTML.replace(/{ROW}/,'event_odd');
 			html += eventHTML;
 		}
 		$(placeAt).html(html);
@@ -172,7 +174,7 @@ var recentActivities = {
 	},
 	
 	template:[
-	          '<div class="eventWrapper {EVENT} eventIcon" id="{ACTIVITY_ID}" style="height:75px;">',
+	          '<div class="eventWrapper {EVENT} eventIcon {ROW}" id="{ACTIVITY_ID}" style="height:75px;">',
 	          	'<div class="activity" style="float:left;">{ACTIVITY}<div style="clear:both;"></div></div>',
 	          	'<div class="date" style="float:right;">',
 	          		'<div>{DATE}</div>',
