@@ -103,7 +103,7 @@ jQuery(document).ready(function($){
 		<div class="panel panel-primary" data-collapsed="0">
 			<div class='panel-heading'>
 			<div class='panel-options'>
-			<ul class="nav nav-tabs right-aligned"><!-- available classes "bordered", "right-aligned" -->
+			<ul class="nav nav-tabs left-aligned"><!-- available classes "bordered", "right-aligned" -->
 				<li id='AnswerQuestionTab' class="active">
 					<a href="#AnswerQuestionPane" data-toggle="tab">
 						<img src="/assets/images/Arq/answer_question.png" /><span class="tabTitle">Answer A Question</span>
@@ -146,7 +146,7 @@ jQuery(document).ready(function($){
 			<div class="tab-pane" id="ViewQuestionsAskedPane" style="max-height: 433px;overflow:scroll;">
 				<?php /*$this->widget('QuestionsAsked');*/ ?>
 			</div>
-			<div class="tab-pane" id="ViewQuestionsAnsweredPane">
+			<div class="tab-pane" id="ViewQuestionsAnsweredPane" style="max-height: 433px;overflow:scroll;">
 				<?php /*$this->widget('QuestionsAnswered')*/?>
 			</div>
 		</div>

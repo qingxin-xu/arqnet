@@ -913,7 +913,7 @@ var QuestionAnalysis = {
 				'<tr>',
 					'<th class="qa_header" >Question</th>',
 					'<th class="qa_header centered sort_category headerSortable">Category</th>',
-					'<th class="qa_header centered sort_date_created headerSortable headerSortASC">Date</th>',
+					'<th class="qa_header centered sort_date_created headerSortable headerSortASC">Created On</th>',
 					'<th class="qa_header centered sort_status headerSortable">Status</th>',
 					'<th class="qa_header centered">Actions</th>',
 				'</thead>',
