@@ -162,6 +162,26 @@ var QuestionAnalysis = {
 		this.questions.splice(index,1);
 	},
 	
+	setDateTime:function(dateString) {
+		if (!dateString) return '';
+
+		var myD,
+			_date = '',
+			_time = '',
+			inputDate = dateString.replace(/\s/,'T'),
+			tzOffset = new Date().getTimezoneOffset()*60*1000;
+		
+		if (inputDate) {
+			myD = new Date(inputDate);
+			myD.setTime(myD.getTime()+tzOffset);
+			_date = myD.toLocaleDateString();
+			_time = myD.toLocaleTimeString('en-us',{minute:'2-digit',hour:'2-digit'});
+			return new Date(_date).toDateString();
+		} else return '';
+		
+		
+	},
+	
 	createRow:function(questionObj,index,areAnswers) {
 		if (!questionObj) return '';
 		var question = questionObj.question;
@@ -171,7 +191,7 @@ var QuestionAnalysis = {
 		var row = '<tr class="rowClass rowNumber'+index+'" >';
 		var date_created = '';
 		var buttonTitle = areAnswers?'Delete my answer':'Delete my question';
-		if (question.date_created) date_created = new Date(question.date_created).toDateString();
+		if (question.date_created) date_created = this.setDateTime(question.date_created);
 		row+='<td class="qa_'+rowClass+' questionContent" style="width:50%;">'+question.content+'</td>';
 		row+='<td class="qa_'+rowClass+' centered categoryCol">'+question.category+'</td>';
 		row+='<td class="qa_'+rowClass+' questionDate centered dateCol">'+date_created+'</td>';

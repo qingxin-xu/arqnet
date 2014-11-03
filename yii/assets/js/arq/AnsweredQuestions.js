@@ -8,7 +8,7 @@ var AnsweredQuestions = {
 			'myAnswer.date_created':'DESC',
 			status:'ASC'
 		},
-		
+
 		createRow:function(questionObj,index,areAnswers) {
 			if (!questionObj) return '';
 			var question = questionObj.question;
@@ -19,7 +19,7 @@ var AnsweredQuestions = {
 			var row = '<tr class="rowClass rowNumber'+index+'" >';
 			var date_created = '';
 			var buttonTitle = areAnswers?'Delete my answer':'Delete my question';
-			if (myAnswer.date_created) date_created = new Date(myAnswer.date_created).toDateString();
+			if (myAnswer.date_created) date_created = this.setDateTime(myAnswer.date_created);
 			row+='<td class="qa_'+rowClass+' questionContent" style="width:50%;">'+question.content+'</td>';
 			row+='<td class="qa_'+rowClass+' centered categoryCol">'+question.category+'</td>';
 			row+='<td class="qa_'+rowClass+' questionDate centered dateCol">'+date_created+'</td>';
