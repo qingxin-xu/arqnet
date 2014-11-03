@@ -105,6 +105,7 @@ var OtherQuestions = {
 		if (!question) return;
 		if (!AnswerQuestion || !AnswerQuestion.createForm) return;
 		AnswerQuestion.createForm(question);
+		$('a[href=#AnswerQuestionPane]').tab('show');
 	},
 	
 	template:[
