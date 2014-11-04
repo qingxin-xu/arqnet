@@ -193,8 +193,12 @@ form input[value=Cancel],button.image_upload,button.next,button.previous,button.
 	padding:7px;
 }
 
+.allcaps {
+	text-transform:uppercase;
+}
 .boxHeader {
-	font-size:36px;
+	font-size:23px;
+	text-transform:uppercase;
 }
 
 .boxHeader .word1{
@@ -262,4 +266,33 @@ select {
 
 .panel-heading > .panel-options > .nav-tabs > li {
 	margin-right:0;
+}
+
+.panel-primary > .panel-heading > .panel-options > .nav-tabs > li > a {
+	font-size:10px;
+}
+
+a.logout {
+	color:#aaabae;
+}
+
+.pagination.dashboard a{
+	background-color:#161616;
+	border:none;
+	color:#aaabae;
+}
+
+.pagination.dashboard li.active a{
+	color:#FFFFFF;
+}
+
+.pagination > li > a:hover,
+.pagination > li > span:hover,
+.pagination > li > a:focus,
+.pagination > li > span:focus {
+  background-color: #252525;
+}
+
+.addG-tile-header.quickJournalTitle {
+	padding-top:34px;
 }

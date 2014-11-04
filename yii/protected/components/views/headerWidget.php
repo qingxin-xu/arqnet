@@ -54,7 +54,7 @@
 	</div>
 		<div class="col-sm-3 col-sm-4 clearfix addG-progresswrap">
 			
-			<div class='analysisTextWrapper'><span class='arqText1'>Analysis </span><span class='arqText2'>Power Bar</span></div>
+			<div class='allcaps analysisTextWrapper'><span class='arqText1'>Analysis </span><span class='arqText2'>Power Bar</span></div>
 			<div class="addG-tresh"></div>
 			<div class="progress addG-progress arq-progress">
 				<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100";width: 75%"></div>
@@ -72,7 +72,7 @@
 			<li class="sep"></li>
 			
 			<li>
-				<a href="/logout">
+				<a class='allcaps logout' href="/logout">
 					Log Out <i class="entypo-logout right"></i>
 				</a>
 			</li>

@@ -106,22 +106,22 @@ jQuery(document).ready(function($){
 			<ul class="nav nav-tabs left-aligned"><!-- available classes "bordered", "right-aligned" -->
 				<li id='AnswerQuestionTab' class="active">
 					<a href="#AnswerQuestionPane" data-toggle="tab">
-						<img src="/assets/images/Arq/answer_question.png" /><span class="tabTitle">Answer A Question</span>
+						<img src="/assets/images/Arq/answer_question.png" /><span class="allcaps tabTitle">Answer A Question</span>
 				</a>
 			</li>
 			<li id='CreateQuestionTab'>
 				<a href="#CreateQuestionPane" data-toggle="tab">
-					<img src="/assets/images/Arq/create_question.png" /><span class="tabTitle">Create A Question</span>
+					<img src="/assets/images/Arq/create_question.png" /><span class="allcaps tabTitle">Create A Question</span>
 				</a>
 			</li>
 			<li id='ViewQuestionsAskedTab'>
 				<a href="#ViewQuestionsAskedPane" data-toggle="tab">
-					<img src="/assets/images/Arq/your_questions.png" /><span class="tabTitle">Your Questions</span>
+					<img src="/assets/images/Arq/your_questions.png" /><span class="allcaps tabTitle">Your Questions</span>
 				</a>
 			</li>
 			<li id='ViewQuestionsAnsweredTab'>
 				<a href="#ViewQuestionsAnsweredPane" data-toggle="tab">
-					<img src="/assets/images/Arq/your_answers.png" /><span class="tabTitle">Your Answers</span>
+					<img src="/assets/images/Arq/your_answers.png" /><span class="allcaps tabTitle">Your Answers</span>
 				</a>
 			</li>
 		</ul>

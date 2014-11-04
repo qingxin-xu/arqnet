@@ -897,12 +897,12 @@ function getRandomInt(min, max)
 				
 				<div class="panel-options" style="float:left;">
 					<ul class="nav nav-tabs">
-						<li class="active"><a href="#overview" data-toggle="tab"><img src="/assets/images/dashboard/overview.png" /><span class="tabTitle">Overview</span></a></li>
-						<li class=""><a href="#mood" data-toggle="tab"><img src="/assets/images/dashboard/mood.png" /><span class="tabTitle">Mood</span></a></li>
-						<li class=""><a href="#topics" data-toggle="tab"><img src="/assets/images/dashboard/topics.png" /><span class="tabTitle">Topics</span></a></li>
-						<li class=""><a href="#trackers" data-toggle="tab"><img src="/assets/images/dashboard/tracker.png" /><span class="tabTitle">Trackers</span></a></li>
-						<li class=""><a href="#topwords" data-toggle="tab"><img src="/assets/images/dashboard/top-words.png" /><span class="tabTitle">Top Words</span></a></li>
-						<li class=""><a href="#toppeople" data-toggle="tab"><img src="/assets/images/dashboard/top-people.png" /><span class="tabTitle">Top People</span></a></li>
+						<li class="active"><a href="#overview" data-toggle="tab"><img src="/assets/images/dashboard/overview.png" /><span class="allcaps tabTitle">Overview</span></a></li>
+						<li class=""><a href="#mood" data-toggle="tab"><img src="/assets/images/dashboard/mood.png" /><span class="allcaps tabTitle">Mood</span></a></li>
+						<li class=""><a href="#topics" data-toggle="tab"><img src="/assets/images/dashboard/topics.png" /><span class="allcaps tabTitle">Topics</span></a></li>
+						<li class=""><a href="#trackers" data-toggle="tab"><img src="/assets/images/dashboard/tracker.png" /><span class="allcaps tabTitle">Trackers</span></a></li>
+						<li class=""><a href="#topwords" data-toggle="tab"><img src="/assets/images/dashboard/top-words.png" /><span class="allcaps tabTitle">Top Words</span></a></li>
+						<li class=""><a href="#toppeople" data-toggle="tab"><img src="/assets/images/dashboard/top-people.png" /><span class="allcaps tabTitle">Top People</span></a></li>
 					</ul>
 				</div>
 			</div>
@@ -913,7 +913,7 @@ function getRandomInt(min, max)
 						<div class="tab-pane active" id="overview">							
 							<div id="overview-tab" class="" style="height: 300px">
 								<div class="addG-lefttab1">
-									<p>Thinking</p>
+									<p class='allcaps'>Thinking</p>
 								</div>
 								<div class="addG-aroundslider">
 									<div class="addG-sliderContainer">
@@ -921,11 +921,11 @@ function getRandomInt(min, max)
 									</div>
 								</div>
 								<div class="addG-righttab1">
-									<p>Feeling</p>
+									<p class='allcaps'>Feeling</p>
 								</div>
 								<div style="clear:both;"></div>
 								<div class="addG-lefttab1">
-									<p>Reality</p>
+									<p class='allcaps'>Reality</p>
 								</div>
 								<div class="addG-aroundslider">
 									<div class="addG-sliderContainer">
@@ -933,11 +933,11 @@ function getRandomInt(min, max)
 									</div>
 								</div>
 								<div class="addG-righttab1">
-									<p>Abstract</p>
+									<p class='allcaps'>Abstract</p>
 								</div>
 								<div style="clear:both;"></div>
 								<div class="addG-lefttab1">
-									<p>Negative</p>
+									<p class='allcaps'>Negative</p>
 								</div>
 								<div class="addG-aroundslider">
 									<div class="addG-sliderContainer">
@@ -945,11 +945,11 @@ function getRandomInt(min, max)
 									</div>
 								</div>
 								<div class="addG-righttab1">
-									<p>Positive</p>
+									<p class='allcaps'>Positive</p>
 								</div>
 								<div style="clear:both;"></div>
 								<div class="addG-lefttab1">
-									<p>Proactive</p>
+									<p class='allcaps'>Proactive</p>
 								</div>
 								<div class="addG-aroundslider">
 									<div class="addG-sliderContainer">
@@ -957,11 +957,11 @@ function getRandomInt(min, max)
 									</div>
 								</div>
 								<div class="addG-righttab1">
-									<p>Passive</p>
+									<p class='allcaps'>Passive</p>
 								</div>
 								<div style="clear:both;"></div>
 								<div class="addG-lefttab1">
-									<p>Connected</p>
+									<p class='allcaps'>Connected</p>
 								</div>
 								<div class="addG-aroundslider">
 									<div class="addG-sliderContainer">
@@ -969,7 +969,7 @@ function getRandomInt(min, max)
 									</div>
 								</div>
 								<div class="addG-righttab1">
-									<p>Disconnected</p>
+									<p class='allcaps'>Disconnected</p>
 								</div>
 							</div>
 						</div>
@@ -1107,8 +1107,8 @@ function getRandomInt(min, max)
 		<div class="form-group">
 						<!-- <label class="col-sm-3 control-label">Date Range Inline</label> -->
 						
-<ul class="pagination">
-							<li class="disabled"><a href="javascript:decrementRange()"><i class="entypo-left-open-mini"></i></a></li>
+<ul class="pagination dashboard">
+							<li ><a href="javascript:decrementRange()"><i class="entypo-left-open-mini"></i></a></li>
 <!--  
 							<li class='range1 <?php if ($default_range ==1) echo 'active';?>'><a href="javascript:changeRange(1);">1</a></li>
 							<li class="range3 <?php if ($default_range ==3) echo 'active';?>"><a href="javascript:changeRange(3)">3</a></li>
@@ -1125,7 +1125,7 @@ function getRandomInt(min, max)
 								}
 							?>
 						
-							<li class="disabled"><a href="javascript:incrementRange()"><i class="entypo-right-open-mini"></i></a></li>
+							<li ><a href="javascript:incrementRange()"><i class="entypo-right-open-mini"></i></a></li>
 							<li><a href='javascript:viewCustomRangeSelect()'>Custom</a>
 						</ul>
 
