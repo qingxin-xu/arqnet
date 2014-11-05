@@ -189,7 +189,7 @@ function generateTopicBarGraph(sorted_set,placeAt,maxWords) {
 		data = [],
 		options = {
 			xaxis:{
-				font:{size:16,family:'sans-serif',color:'rgb(104,72,162)'},
+				font:{size:16,family:'sans-serif',color:'#FFFFFF'},
 				min:sorted_set[nWords-1].count-1,
 				max:sorted_set[0].count+2,
                 axisLabel: 'Count',
@@ -199,7 +199,7 @@ function generateTopicBarGraph(sorted_set,placeAt,maxWords) {
                 axisLabelPadding: 5				
 			},
 			yaxis:{
-				font:{size:16,family:'sans-serif',color:'rgb(104,72,162)'},
+				font:{size:16,family:'sans-serif',color:'#FFFFFF)'},
                 min: (new Date(year, 0, 1)).getTime(),
                 max: (new Date(year, nWords+1, 1)).getTime(),
                 tickSize: [1, "month"],
