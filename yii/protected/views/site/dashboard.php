@@ -219,10 +219,11 @@ function generateTopicBarGraph(sorted_set,placeAt,maxWords) {
 			bars: {
 				show:true,
 				horizontal:true,
-				barWidth:12*24*60*60*300,
+				barWidth:12*24*60*60*900,
 				fill:true,
-				fillColor:  "#80699B",
-				lineWidth:1,				
+				fillColor:  sorted_set[i-1].barColor?sorted_set[i-1].barColor:"#80699B",
+				lineWidth:0,
+				align:'center'				
 			},
 			data:[ [sorted_set[i-1].count,(new Date(year,j,day)).getTime() ] ],
 		});
@@ -376,7 +377,7 @@ function setMoodDisplay(response)
 
 function setTopWordsView(response)
 {
-	
+	var barColors = ['#9a61fc','#2ea4fc'];
 	if (!response) return;
 	if ( !('top_words' in response) ) return;
 	response = response['top_words'];
@@ -399,6 +400,10 @@ function setTopWordsView(response)
 		else if (parseInt(a.count)>parseInt(b.count)) return -1;
 		else return 0;
 	});
+
+	$.each(topWords,function(index,item) {
+		item.barColor = barColors[index%2];
+	});
 	
 	if (topWords && topWords.length && topWords.length>0) generateTopicBarGraph(topWords,'topwords-tab',10);
 	else $('#topwords-tab').empty();
@@ -406,6 +411,7 @@ function setTopWordsView(response)
 
 function setTopPeopleView(response)
 {
+	var barColors = ['#2ca8fe','#e55ffc','#fcfcfc','#985ffc','#01d04c'];
 	if (!response) return;
 	if ( !('top_people' in response) ) return;
 	
@@ -426,6 +432,7 @@ function setTopPeopleView(response)
 	/* Remove prepended '+' */
 	$.each(topPeople,function(index,item) {
 		item.word = item.word.replace(/\+/,'');
+		item.barColor = barColors[index];
 	});
 	if (topPeople && topPeople.length && topPeople.length>0) generateTopicBarGraph(topPeople,'toppeople-tab');
 	else $('#toppeople-tab').empty();
