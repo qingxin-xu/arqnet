@@ -55,19 +55,17 @@ h3 {
 	width:42%;
 }
 .progress {
-	background-color:#222224;
-	background-image:url('/assets/images/header/progressBarContainer.png');
+	background-color:#181818;
+	/*background-image:url('/assets/images/header/progressBarContainer.png');*/
 	background-size:339px 43px;
 	background-position:center;	
-	background-repeat:no-repeat;
 }
 
 .progress-bar {
 	position:relative;
-	height:55%;
+	height:100%;
 	top:9px;
 	left:13px;
-	border-radius:12px 0 0 12px;
 	width:75%;
 }
 .arqHeader {
@@ -85,12 +83,44 @@ h3 {
 	left:82%;
 }
 
+.moodLabel {
+	margin:4px 0 0 0;
+	font-size:12px;
+	line-height:18px;
+	text-align:center;
+}
+
 .progress-bar-success {
 	background-color:transparent;
-	background-image:url('/assets/images/header/progressBarGreen.png');
+	
 	background-size:15px 23px;
-	background-repeat:repeat;
+	background-repeat:repeat-x;
 }
+
+.happymoodProgressBar {
+	background-image:url('/assets/images/happyMoodBar.png');
+}
+
+.sadmoodProgressBar {
+	background-image:url('/assets/images/sadMoodBar.png');
+}
+
+.angrymoodProgressBar {
+	background-image:url('/assets/images/angryMoodBar.png');
+}
+
+.anxiousmoodProgressBar {
+	background-image:url('/assets/images/anxiousMoodBar.png');
+}
+
+.moodProgress {
+	border-radius:0;
+}
+
+.progress {
+	height:38px;
+}
+
 .page-container .main-content {
   position: relative;
   float: left;
@@ -215,7 +245,7 @@ form input[value=Cancel],button.image_upload,button.next,button.previous,button.
 	font-weight:100;
 }
 
-.boxHeader .word2,.journalEntryTitle  {
+.purpleLabel,.boxHeader .word2,.journalEntryTitle  {
 	color:#6A44A9;
 }
 .calendar-env .calendar-body .fc-content .fc-view .fc-event.color-agendaDay {
@@ -307,4 +337,8 @@ a.logout {
 
 .FormPlaceHolder form {
 	padding-top:5px;
+}
+
+#moodSliders {
+	border:none;
 }

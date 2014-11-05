@@ -352,16 +352,22 @@ function setMoodDisplay(response)
 	{
 		var bar = $('.'+moods[i]+' .progress-bar');
 		moodValue = response[moods[i]]||0;
+		
 		if (bar  /*&& response[moods[i]] != null*/)
 		{
 			bar.css('width',moodValue*100+'%');
 		}
-
+		/*
 		bar = $('.'+moods[i]+' .addG-midspan');
-		if (bar /*&& response[moods[i]] != null*/)
+		if (bar )
 		{
 			bar.html(parseFloat(moodValue).toFixed(2));
 			moodValues[moods[i]] = moodValue*10;
+		}
+		*/
+		bar = $('.'+moods[i]+' .moodValue');
+		if (bar) {
+			bar.html(parseFloat(moodValue).toFixed(2));
 		}
 	}
 	drawradar(moodValues);
@@ -982,36 +988,37 @@ function getRandomInt(min, max)
 								<div id="moodSlidersCont" class="addG-fleft" style="padding-top: 20px;width:50%">
 									<p>Scaled from 0-1</p>
 									<div id="moodSliders">
-										<div class="addG-lefttab2">
-											<p>ANGRY</p>
-										</div>
-										<div class="angry progress">
-											<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-												<span class="addG-midspan">0.0></span>
-											</div>
-										</div>
-										<div class="addG-lefttab2">
-											<p>HAPPY</p>
+										<div class="happy moodLabel addG-lefttab2">
+											<div>HAPPY</div>
+											<div class="purpleLabel moodValue">0.0</div>
 										</div>
 										<div class="happy progress">
-											<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-												<span class="addG-midspan">0.0</span>
+											<div class="happymoodProgressBar moodProgress progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+												<!--<span class="addG-midspan">0.0</span>-->
 											</div>
-										</div>	
-										<div class="addG-lefttab2">
-											<p>SAD</p>
+										</div>										
+										<div class="angry moodLabel addG-lefttab2">
+											<div>ANGRY</div>
+											<div class="purpleLabel moodValue">0.0</div>
+										</div>
+										<div class="angry progress">
+											<div class="angrymoodProgressBar moodProgress progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+											</div>
+										</div>
+										<div class="sad moodLabel addG-lefttab2">
+											<div>SAD</div>
+											<div class="purpleLabel moodValue">0.0</div>
 										</div>
 										<div class="sad progress">
-											<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-												<span class="addG-midspan">0.0</span>
+											<div class="sadmoodProgressBar moodProgress progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">												
 											</div>
 										</div>	
-										<div class="addG-lefttab2">
-											<p>ANXIOUS</p>
+										<div class="anxious moodLabel addG-lefttab2">
+											<div>ANXIOUS</div>
+											<div class="purpleLabel moodValue">0.0</div>
 										</div>
 										<div class="anxious progress">
-											<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-												<span class="addG-midspan">0.0</span>
+											<div class="anxiousmoodProgressBar moodProgress progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
 											</div>
 										</div>							
 									</div>
