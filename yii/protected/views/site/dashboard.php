@@ -884,7 +884,6 @@ function getRandomInt(min, max)
 }
 </script>
 
-<br />
 
 <div class="row">
 	
@@ -1096,9 +1095,6 @@ function getRandomInt(min, max)
 	</div>
 	</div>
 
-
-<br />
-
 <div class="row">
 	<div class="col-sm-6">
 
@@ -1159,10 +1155,6 @@ function getRandomInt(min, max)
 		<!--<span style="padding-right:20px;">View a Custom Range</span><button type="button" class="btn btn-white" style="margin: 17px 0;">Select a range of dates</button>-->
 	</div>
 </div>
-
-
-<br />
-
 
 <div class="row">
 	<div class="col-sm-6">

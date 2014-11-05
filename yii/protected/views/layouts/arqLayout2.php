@@ -22,13 +22,18 @@
 	<link rel="stylesheet" href="assets/css/neon.css">
 	<link rel="stylesheet" type="text/css" href="styles/addonsG.css">
 	<link rel="stylesheet" href="/assets/css/custom.css">
-	
+	<link type="text/css" href="/assets/js/jscrollpane/jquery.jscrollpane.css" rel="stylesheet" media="all" />
 	<style type='text/css'>
 		.addG-date {margin:-23px 42%;}
 		.addG-panelhalfheight {height:398px;}
 	</style>
 	<script src="/assets/js/jquery-1.11.0.min.js"></script>
-
+	<!-- the mousewheel plugin - optional to provide mousewheel support -->
+	<script type="text/javascript" src="/assets/js/jscrollpane/jquery.mousewheel.js"></script>
+	
+	<!-- the jScrollPane script -->
+	<script type="text/javascript" src="/assets/js/jscrollpane/jquery.jscrollpane.min.js"></script>
+	
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
 	  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
