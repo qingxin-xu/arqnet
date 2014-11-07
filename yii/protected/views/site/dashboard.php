@@ -151,10 +151,9 @@ function initializeMainSlider(range,dateRangeAverages)
 		var str = _avg[currentValue]['date'].replace(/-/g,'_');
 		if (!str) return;
 		var tmp = str.split(/_/);
-		tmp[1] = tmp[1] - 1;
+		tmp[1] = tmp[1];
 		window.open('/calendar?atDate='+tmp[0]+'_'+tmp[1]+'_'+tmp[2],'_blank');
 	});
-	console.log('VALUES',values);
 	onMainSliderChange({value:0});
 	
 }

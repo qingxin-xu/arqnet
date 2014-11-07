@@ -452,7 +452,9 @@ jQuery(document).ready(function($){
 			{
 				var tmp = initialDate.split(/_/);
 				//Jump to this date
-				$('#calendar').fullCalendar('gotoDate',tmp[0],tmp[1],tmp[2]);
+				var myMoment = $.fullCalendar.moment(initialDate.replace(/_/g,'-'));
+				//$('#calendar').fullCalendar('gotoDate',tmp[0],tmp[1],tmp[2]);
+				$('#calendar').fullCalendar('gotoDate',myMoment);
 				$('#calendar').fullCalendar('changeView','agendaDay')
 			}
 		});
