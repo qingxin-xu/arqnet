@@ -18,6 +18,7 @@ var categories = <?php echo json_encode($categories); ?>,
 	answered_questions  = <?php echo json_encode($answeredQuestions); ?>,
 	questions_asked = <?php echo json_encode($questionsAsked); ?>,
 	askedQuestions,answeredQuestions,
+	initialTab = <?php if ($goto) echo '"'.$goto.'"';else echo 'null';?>;
 	//This will populate other questions
 	randomQuestionsByCategory = <?php echo json_encode($randomQuestionsByCategory);?>;
 function updateMsg( description,t ) {
@@ -80,6 +81,17 @@ jQuery(document).ready(function($){
 		answeredQuestions = $.extend({},QuestionAnalysis);
 		answeredQuestions = $.extend(answeredQuestions,AnsweredQuestions);
 		answeredQuestions.display('#ViewQuestionsAnsweredPane',answered_questions,true);
+	}
+
+	if (initialTab) {
+		var availableTabs = {
+			myQuestions:'#ViewQuestionsAskedPane',
+			myAnswers:'#ViewQuestionsAnsweredPane'
+		};
+		
+		if (initialTab in availableTabs) {
+			$('a[href='+availableTabs[initialTab]+']').tab('show');
+		}
 	}
 });
 </script>

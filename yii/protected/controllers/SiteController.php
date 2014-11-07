@@ -252,12 +252,18 @@ class SiteController extends Controller
 		$range_labels = array(1,3,7,15,30);
 		$date_ranges = array(1,3,7,15,30);
 
-		$today = date('Y-m-d');
+		$showTracker = null;
+		if (isset($_GET['goto']))
+		{
+			$showTracker = true;
+			$today = date('Y-m-d',strtotime($_GET['goto']));	
+		} else {
+			$today = date('Y-m-d');
+		}
 		$day = 24*3600;
 		$yesterday = date('Y-m-d',strtotime($today) - $day);
 		$end_date = date('Y-m-d',strtotime($today) - 30*$day);
 		$current_time = date('h:i a');
-		
 		$activities = $this->calendarActivities($end_date,$today,$user_id);
 
 		$dashboardData = $this->getDashboardData(30,null,$today,$user_id);
@@ -299,7 +305,8 @@ class SiteController extends Controller
 				'event_units'=>$units,
 				'randomQuestion'=>$randomQuestion,
 				'question_flags'=>$this->getQuestionFlags(),
-				'current_time'=>$current_time
+				'current_time'=>$current_time,
+				'showTracker'=>$showTracker
 				//'_dates'=>$eventData
 			)
 		);
@@ -614,6 +621,12 @@ class SiteController extends Controller
 			$randomQuestion = $this->getRandomQuestionByCategory($categories{$randInt});
 		}
 		
+		$goto=null;
+		if (isset($_GET['goto']))
+		{
+			$goto = $_GET['goto'];
+		} 
+		
 		$this->render('arq', array(
 			'question_statuses'=>$this->getQuestionStatuses(),
 			'question_types'=>$this->getQuestionTypes(),
@@ -624,7 +637,8 @@ class SiteController extends Controller
 			'categories'=>$categories,
 			'randomQuestionsByCategory'=>$randomQuestions,
 			'answeredQuestions'=>$this->getMyAnsweredQuestions(),
-			'questionsAsked'=>$this->getMyQuestions()
+			'questionsAsked'=>$this->getMyQuestions(),
+			'goto'=>$goto
 		));
 	}
 	
@@ -838,7 +852,17 @@ class SiteController extends Controller
 		
 		$activities = $this->calendarActivities($end_date,$today,$user_id);
 		$journalDates = $this->getJournalDates();
-		$renderNotes = $this->journalPager(0,null);
+		$renderNotes;
+		if (isset($_GET['goto']))
+		{
+			$goto = explode('-',$_GET['goto']);
+			if (count($goto)>0) {
+				$dateObj = array('year'=>$goto[0],'month'=>$goto[1],'day'=>$goto[2]);	
+				$renderNotes = $this->getMyJournalsByDate($dateObj,0,$this->RECENTPOSTCOUNT);
+			} else {$renderNotes = $this->journalPager(0,null);}
+			
+		} else {$renderNotes = $this->journalPager(0,null);}
+		
 		$this->render('my-journals',array(
 			'activities'=>$activities,
 			'note_visibility'=>$noteVisibility,

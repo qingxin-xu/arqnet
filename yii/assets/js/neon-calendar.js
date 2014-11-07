@@ -5,11 +5,71 @@
  */
 
 var neonCalendar = neonCalendar || {};
-
+var calendar;
 var eventRender = {
+		
+	QA_Asked:{},
+	QA_Answered:{},
+	Note:{},
+	
+	unRegisterEvents:function() {
+		this['QA_Asked'] = {};
+		this['QA_Answered'] = {};
+		this['Note'] = {};
+	},
+	
+	registerEvent:function(element,event,view) {
+
+		if (eventHandler && eventHandler.createTooltip) {
+			eventHandler.createTooltip(element,event);
+		}
+		
+		if (view.name != 'month' || !event.subcategory || !this[event.subcategory]) {
+			if (this['render'+event.subcategory]) this['render'+event.subcategory](element,event,view);
+			else this.renderEvent(element,event,view);
+			return;
+		}
+		
+		if (!event || !event.subcategory) return ;
+		if (!event.start || !event.start._i) return ;
+		if (!this[event.subcategory]) return ;
+		var myD = event.start._i.split(/\s+/)[0];
+		if (!this[event.subcategory][myD]) {
+			this[event.subcategory][myD] = {element:element,count:1};
+			this['render'+event.subcategory](element,event,view);
+			/*
+			element.find('.fc-content').addClass('monthViewIcon');
+			element.removeClass('color-green');
+			element.addClass('monthViewWrapper');
+			element.find('.fc-content').html('<span class="monthViewTotal">1</span>');
+			*/
+			this.createCounter(element);
+		} else {
+			this.updateCounter(element, event.subcategory, myD)
+			element.css('display','none');
+		}
+	},
+	
+
+	createCounter:function(element) {
+		if (!element) return;
+		element.find('.fc-content').addClass('monthViewIcon').html('');
+		element.removeClass('color-green');
+		element.addClass('monthViewWrapper');
+		element.find('.fc-content').html('<span class="monthViewTotal">1</span>');		
+	},
+	
+	updateCounter:function(element,sc,myD) {
+		if (!sc || !myD) return;
+		if (!this[sc] || !this[sc][myD]) return;
+		if (element) element.css('display','none');
+		this[sc][myD]['count']++;
+		this[sc][myD]['element'].find('.monthViewTotal').html(this[sc][myD]['count']);		
+	},
+	
 	renderQA_Asked:function(element,event) {
 		if (!element || !event) return;
-		
+		if (!event.description || !event.description.length|| event.description.length<=0) return;
 		element.find('.fc-content').addClass('eventIcon qa_asked').html('Asked: '+event.description[0].value);
 	},
 	renderQA_Answered:function(element,event) {
@@ -26,6 +86,8 @@ var eventRender = {
 	renderEvent:function(element,event) {
 		if (!element || !event) return;
 		element.find('.fc-content').addClass('eventIcon event');
+		//formFactory._renderTitleTooltip(event);
+		
 	}
 	
 };
@@ -118,7 +180,8 @@ function submitCalendarEvent(data,input,appendTo)
 			// Setup Calendar
 			if($.isFunction($.fn.fullCalendar))
 			{
-				var calendar = $('#calendar');
+				
+				calendar = $('#calendar');
 				
 				calendar.fullCalendar({
 					header: {
@@ -142,7 +205,7 @@ function submitCalendarEvent(data,input,appendTo)
 								allDay: allDay,
 								description:'blah',
 								quantity:1,
-								className: $this.data('event-class')
+								className: 'color-green'//$this.data('event-class')
 							};
 							
 						var myEvent = $(this).data('eventObj');
@@ -158,7 +221,14 @@ function submitCalendarEvent(data,input,appendTo)
 
 					},
 					eventClick:function(event,jsEvent,view) {
+						console.log('event',event);
 						if (!event) return;
+						if (event.subcategory && eventHandler[event.subcategory]) {
+							eventHandler[event.subcategory](event);
+						} else {
+							eventHandler['Tracker'](event);
+						}
+						/*
 						if (!event.title) return;
 						if (!event.description) return;
 						if (!categories) return;
@@ -184,8 +254,10 @@ function submitCalendarEvent(data,input,appendTo)
 								}
 							}
 						}
+						*/
 					},
 					events:function(start,end,timezone,callback) {
+						eventRender.unRegisterEvents();
 						$.ajax({
 							url:'/calendarActivities',
 							dataType:'json',
@@ -218,19 +290,23 @@ function submitCalendarEvent(data,input,appendTo)
 					},
 
 					eventRender:function(event,element,view) {
-						
+						//console.log('event render',view.name,view);
 						if (eventRender && event.subcategory) {
-							if (eventRender['render'+event.subcategory]) eventRender['render'+event.subcategory](element,event);
-							else eventRender.renderEvent(element,event);
+							eventRender.registerEvent(element,event,view);
 						}
-						
+
 						if (view.name == 'agendaDay') {
-							console.log('event',event);
-							console.log('event element',element);
+							//console.log('event',event);
+							//console.log('event element',element);
 							element.removeClass('color-green');
 							element.addClass('color-agendaDay');
 						}
-					}
+						//element.qtip({content:'this is another test'});
+					}/*,
+					
+					eventAfterRender:function(event,element,view) {
+						element.tooltip({content:'this is a test',disabled:false});
+					}*/
 				});
 				
 				$("#draggable_events li a").draggable({

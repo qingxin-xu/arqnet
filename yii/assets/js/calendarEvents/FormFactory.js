@@ -70,7 +70,9 @@ var formFactory = {
 						eventObj['className'] +=' '+response['calendar_event_id'];
 					}
 					eventObj['editable'] = false;
-					$('#calendar').fullCalendar('renderEvent', eventObj, true);
+					
+					if (eventRender && eventRender.unRegisterEvents) eventRender.unRegisterEvents();
+					$('#calendar').fullCalendar('renderEvent', eventObj, false);
 				} else {
 					var msg = 'Unable to create event';
 					if ('msg' in response) msg = response['msg'];
@@ -471,9 +473,9 @@ var formFactory = {
 	// Title attribute for items of the calendar views
 	_renderTitleTooltip:function (event)
 	{
-		var exclude = ['_no_input_','boolean','QA: Asked:','QA: Answered:','Note:'];
-		//console.log('_render tooltip',event);
-		var html = " title='";
+		var exclude = ['_no_input_','boolean'/*,'QA: Asked:','QA: Answered:','Note:'*/];
+		
+		var html = "";
 		
 		if (event && (event.description) )
 		{
@@ -488,8 +490,6 @@ var formFactory = {
 						html += ""+event.description[i].value||' '+"<br>"; 
 				}
 			}				
-
-			html+="' ";
 		}
 		return html;
 	},

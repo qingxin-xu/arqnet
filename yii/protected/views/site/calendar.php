@@ -8,7 +8,20 @@
 <script type='text/javascript' src='assets/js/calendarEvents/Fields.js'></script>
 <script type='text/javascript' src='assets/js/calendarEvents/FormFactory.js'></script>
 <script type='text/javascript' src='assets/js/magicsuggest/magicsuggest.js'></script>
+<script type='text/javascript' src='assets/js/qtip/jquery.qtip-1.0.0-rc3.min.js'></script>
+<script type='text/javascript' src='assets/js/calendarEvents/eventHandler.js'></script>
 <script type="text/javascript">
+
+jQuery.browser = {};
+(function () {
+    jQuery.browser.msie = false;
+    jQuery.browser.version = 0;
+    if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+        jQuery.browser.msie = true;
+        jQuery.browser.version = RegExp.$1;
+    }
+})();
+
 var eventData = <?php if ($eventData) echo json_encode($eventData).';'; else echo 'null;'; ?>
 
 var eventHash = {};

@@ -41,6 +41,7 @@
  * For redrawing the tabs when the main slider changes
  */
 var topics_donut_chart,
+	showTracker = <?php if (isset($showTracker)) echo '"'.true.'"';else echo 'null';?>;
 	current='current',
 	currentRangeValue = <?php echo $default_range; ?>,
 	defaultRange = <?php echo $default_range; ?>,
@@ -691,6 +692,10 @@ function onMainSliderChange(ui)
 	setTopPeopleView(response);
 	Tracker.drawOverlayLine(ui);
 	Tracker.showTooltips(ui);
+	if (showTracker) {
+		showTracker = null;
+		$('a[href=#trackers]').tab('show');
+	}
 }
 function updateMsg( description,t ) {
 	description
