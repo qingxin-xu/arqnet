@@ -26,7 +26,7 @@ label input {
     margin:0;
     vertical-align: bottom;
     position: relative;
-    top: -1px;
+    top: -;
     *overflow: hidden;
 }
 
@@ -90,4 +90,8 @@ label input {
 
 .col-sm-4 {
 	z-index:-1;
+}
+
+.arqHeader-logout.col-md-6.col-sm-4.clearfix.hidden-xs {
+	z-index:1000;
 }
