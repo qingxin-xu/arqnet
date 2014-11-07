@@ -901,7 +901,7 @@ function getRandomInt(min, max)
 <div class="row">
 	
 	<div class="col-sm-9">
-		<div class="boxHeader"><span class="word1">The </span><span class="word2">Analyzer</span></div>
+		<div class="boxHeader"><span class="word1">The </span><span class="word2 lowercase">ArQ</span></div>
 		<div class="panel panel-primary addG-darkBG" id="charts_env" >
 			
 			<div class="panel-heading">

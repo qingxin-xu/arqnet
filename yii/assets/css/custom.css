@@ -252,6 +252,11 @@ form input[value=Cancel],button.image_upload,button.next,button.previous,button.
 .purpleLabel,.boxHeader .word2,.journalEntryTitle  {
 	color:#6A44A9;
 }
+
+.lowercase {
+	text-transform:none;
+}
+
 .calendar-env .calendar-body .fc-content .fc-view .fc-event.color-agendaDay {
 	background:#4e3a73;
 }

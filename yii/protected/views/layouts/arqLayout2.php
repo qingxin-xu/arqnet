@@ -105,14 +105,14 @@ function updateMsg( description,t ) {
 			<li class="active opened active">
 				<a href="/">
 					<i class="entypo-gauge"></i>
-					<span>HOME</span>
+					<span>ArQ</span>
 				</a>
 				
 			</li>
 			<li>
 				<a href="/arq">
 					<i class="entypo-layout"></i>
-					<span>ARQ</span>
+					<span>REVELATIONS</span>
 				</a>
 				
 			</li>
@@ -127,7 +127,7 @@ function updateMsg( description,t ) {
 						
 						<a href="/calendar">
 							<i class="entypo-calendar"></i>
-							<span>CALENDAR</span>
+							<span>ArQIVE</span>
 						</a>
 					</li>
 			<li>
