@@ -61,6 +61,8 @@ var topics_donut_chart,
 	trackerSelection = {},
 	morric_topic_colors=['#9c68f9','#33aefb','#e668fa','#fcec4e','#24de55'],
 	morris_donut_label_color='#ffffff',
+	moodSpiderGraph=null,
+	trackerSpiderGraph=null,
 	//What time it is at the server
 	server_time = new Date(<?php echo "'".date('Y-m-d')." ";; if ($current_time) echo $current_time;else echo date('h:i a'); echo "'";?>);
 
@@ -342,8 +344,27 @@ function setOverviewDisplay(response)
 	}
 }
 
+function drawCircle() {
+	var canvas = $('#mood-tab')[0];
+
+	var x0 = 185.5;
+	var y0 = 150;
+	var ctx = canvas.getContext('2d');
+	for (i=0;i<4;i++)
+	{	
+		if (i<3) ctx.lineWidth=rescale(3);
+		else     ctx.lineWidth=rescale(5);
+
+		ctx.beginPath();
+		ctx.strokeStyle = "rgba(100,100,100,1)";
+		console.log('Center',x0,y0,i,i*35+60,rescale(i*35+60));
+		ctx.arc(x0, y0, rescale(i*35+60), 0, 2 * Math.PI, false);
+		ctx.stroke();
+	}
+}
 function setMoodDisplay(response)
 {
+
 	if (!response) return;
 	if ( !('top_categories' in response) ) return;
 	response = response['top_categories'];
@@ -357,6 +378,7 @@ function setMoodDisplay(response)
 		if (bar  /*&& response[moods[i]] != null*/)
 		{
 			bar.css('width',moodValue*100+'%');
+			moodValues[moods[i]] = moodValue;
 		}
 		/*
 		bar = $('.'+moods[i]+' .addG-midspan');
@@ -371,8 +393,9 @@ function setMoodDisplay(response)
 			bar.html(parseFloat(moodValue).toFixed(2));
 		}
 	}
-	drawradar(moodValues);
-	drawradar(moodValues,$('#tracker-mood-tab'));
+	moodSpiderGraph.drawradar(moodValues);
+	trackerSpiderGraph.drawradar(moodValues/*,$('#tracker-mood-tab')*/);
+	//drawradar(moodValues,$('#tracker-mood-tab'));
 }
 
 function setTopWordsView(response)
@@ -738,6 +761,10 @@ jQuery(document).ready(function($)
 		recentActivities.display(trackerActivities,'#recentActivities');
 	}
 
+	//Spider graphs
+	moodSpiderGraph = $.extend({},spiderGraph,{canvasObj:$('#mood-tab')});
+	trackerSpiderGraph = $.extend({},spiderGraph,{canvasObj:$('#tracker-mood-tab')});
+	
 	if (defaultRange>0) 
 	{
 		
@@ -781,10 +808,12 @@ jQuery(document).ready(function($)
 					var moodValues = {};
 					for (var i = 0;i<moods.length;i++)
 					{
-						moodValues[moods[i]] = /*responses*/_avg[value]['top_categories'][moods[i]]*10;
+						moodValues[moods[i]] = /*responses*/_avg[value]['top_categories'][moods[i]];
 					}
 					
-					drawradar(moodValues);
+					//drawradar(moodValues);
+					moodSpiderGraph.drawradar(moodValues/*,$('#mood-tab')*/);
+					trackerSpiderGraph.drawradar(moodValues/*,$('#tracker-mood-tab')*/);
 				} else if (el.attr('href').match(/topwords/))
 				{
 					//if (responses && responses[value]) setTopWordsView(responses[value]);
@@ -992,7 +1021,7 @@ function getRandomInt(min, max)
 						<div class="tab-pane" id="mood" style='border:1px solid black;'>
 								 
 								<div id="moodtabLeft" class="addG-fleft" >
-									<canvas id="mood-tab" style='height:300px;width:371px;' ></canvas>
+									<canvas id="mood-tab" style='height:300px;width:371px;' height='300' width='371'></canvas>
 								</div>
 								 
 								 
@@ -1060,7 +1089,7 @@ function getRandomInt(min, max)
 								<div id='Tooltip4' class='plotTooltip'></div>
 
 								<div id="trackerMoodtabLeft" style='width:8%;position:relative;left:-8%;float:left;opacity:0;'>
-									<canvas id="tracker-mood-tab" style='height:300px;width:100%;position:relative;' ></canvas>
+									<canvas id="tracker-mood-tab" style='height:300px;width:100%;'   height='300'></canvas>
 								</div>
 								<div id="trackerChart" class="addG-fleft" style="float:left;height: 300px;width:75%;position:relative;left:0;"></div>
 								<div id='trackerCategories' class="addG-fleft chartLegend" style='display:inline-block;height:300px;width:7%;position:relative;left:0;'>
@@ -1359,7 +1388,7 @@ function getRandomInt(min, max)
 	<script src="assets/js/wysihtml5/wysihtml5-0.4.0pre.min.js"></script>
 	<script src="assets/js/wysihtml5/bootstrap-wysihtml5.js"></script>
 	
-	<script type='text/javascript' src='assets/js/spiderGraph.js'></script>
+	<script type='text/javascript' src='assets/js/spiderGraph2.js'></script>
 	<script type='text/javascript' src='assets/js/dashboard/tracker.js'></script>
 	<link rel="stylesheet" href="assets/css/dashboard.css">
 <div id="myThinker" title="...">
