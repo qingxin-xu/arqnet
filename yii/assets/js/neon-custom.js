@@ -1926,7 +1926,7 @@ function onPageAppear(callback)
 	
 	if(document[state] || typeof document[state] == 'undefined')
 	{
-		callback();
+		if (callback) callback();
 	}
 	
 	document.addEventListener(visibilityChange, callback, false);
