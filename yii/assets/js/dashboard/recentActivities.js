@@ -30,6 +30,13 @@ var recentActivities = {
 			html += eventHTML;
 		}
 		$(placeAt).html(html);
+		
+		if ($(placeAt).jScrollPane) {
+			$(placeAt).jScrollPane({
+				verticalDragMinHeight: 50
+			});
+		}
+		
 		/*
 		 * Hook up click event
 		 */

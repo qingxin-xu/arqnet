@@ -21,8 +21,9 @@
 	-->
 	<link rel="stylesheet" href="assets/css/neon.css">
 	<link rel="stylesheet" type="text/css" href="styles/addonsG.css">
-	<link rel="stylesheet" href="/assets/css/custom.css">
 	<link type="text/css" href="/assets/js/jscrollpane/jquery.jscrollpane.css" rel="stylesheet" media="all" />
+	<link rel="stylesheet" href="/assets/css/custom.css">
+	
 	<style type='text/css'>
 		.addG-date {margin:-23px 42%;}
 		.addG-panelhalfheight {height:398px;}
