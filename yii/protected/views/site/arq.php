@@ -77,12 +77,28 @@ jQuery(document).ready(function($){
 	if (QuestionAnalysis && QuestionAnalysis.display) {
 		askedQuestions = $.extend({},QuestionAnalysis);
 		askedQuestions.display('#ViewQuestionsAskedPane',questions_asked);
-		
+
 		answeredQuestions = $.extend({},QuestionAnalysis);
 		answeredQuestions = $.extend(answeredQuestions,AnsweredQuestions);
 		answeredQuestions.display('#ViewQuestionsAnsweredPane',answered_questions,true);
 	}
 
+	$('a[href=#ViewQuestionsAskedPane]').on('shown.bs.tab',function() {
+		if ($(askedQuestions.placeHolder).jScrollPane) {
+			$(askedQuestions.placeHolder).jScrollPane({
+				verticalDragMinHeight: 50
+			});
+		}
+	});
+
+	$('a[href=#ViewQuestionsAnsweredPane]').on('shown.bs.tab',function() {
+		if ($(answeredQuestions.placeHolder).jScrollPane) {
+			$(answeredQuestions.placeHolder).jScrollPane({
+				verticalDragMinHeight: 50
+			});
+		}
+	});
+	
 	if (initialTab) {
 		var availableTabs = {
 			myQuestions:'#ViewQuestionsAskedPane',

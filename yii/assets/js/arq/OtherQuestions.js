@@ -18,6 +18,13 @@ var OtherQuestions = {
 				index++;
 			}
 		}
+		
+		if ($(this.placeHolder).jScrollPane) {
+			$(this.placeHolder).jScrollPane({
+				verticalDragMinHeight: 50
+			});
+		}
+		
 	},
 	
 	replaceQuestion:function(question) {
