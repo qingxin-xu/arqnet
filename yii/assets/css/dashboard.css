@@ -67,13 +67,18 @@ box-shadow:0 0 5px #262626;
 	top:-9px;
 	box-shadow: 0 0 5px 5px #49274a;
 }
+
 .addG-sliderContainer > .ui-widget-content {
+	
+	background:#613ba8;
 	background-color:#613ba8;/*#9860e9;*/
 	height:3px;
 	/*box-shadow: 0 0 5px 1px #a07ddb;*/
+	
 	box-shadow:0 0 14px 4px #613ba8;
 	margin:6px auto 0 auto;
 	border:1px solid #9860e9;
+	
 	/*
 	background:none;
 	background-image:url('/assets/images/dashboard/overview_purple.png');
@@ -81,6 +86,10 @@ box-shadow:0 0 5px #262626;
 	background-repeat:repeat;
 	*/
 	width:100%;
+}
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
+	opacity:1.0;
 }
 
 /* Dashboard slider polarity graphs */
