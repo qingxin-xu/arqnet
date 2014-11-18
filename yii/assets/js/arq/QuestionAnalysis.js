@@ -276,29 +276,17 @@ var QuestionAnalysis = {
 		buttons += this.setButtons(next,prev,id);
 		html = html.replace(/{BUTTONS}/,buttons);
 		
-		$(placeHolder).append(html);
+		// The .jspPane container is from the jScrollPane plugin for fancy scrollbars
+		if ($(placeHolder+' .jspPane')) {
+			$(placeHolder+' .jspPane').append(html);
+		} else {
+			$(placeHolder).append(html);
+		}
 		
 		$('#ViewComments_'+id).click(function() {
 			self.showAnswerComments(id);
 		});
 		
-		/*
-		$('#GOBACK_'+id).click(function() {
-			self.goBack(id);
-		});
-		
-		if (this.questions && this.questions[next]) {
-			$('#NEXT_'+id).click(function() {
-				self.displayAnswerAnalysis(placeHolder, self.questions[next], next);
-			});
-		}
-		
-		if (this.questions && this.questions[prev]) {
-			$('#PREV_'+id).click(function() {
-				self.displayAnswerAnalysis(placeHolder, self.questions[prev], prev);
-			});
-		}
-		*/
 		this.hookupButtons(next, prev, id,placeHolder);
 		
 		this.analysisPages[id] = {plot:1};
