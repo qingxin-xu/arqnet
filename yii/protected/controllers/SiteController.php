@@ -626,6 +626,10 @@ class SiteController extends Controller
 		{
 			$goto = $_GET['goto'];
 		} 
+		$sortByDate=null;
+		if (isset($_GET['onDate'])) {
+			$sortByDate = $_GET['onDate'];
+		}
 		
 		$this->render('arq', array(
 			'question_statuses'=>$this->getQuestionStatuses(),
@@ -638,7 +642,8 @@ class SiteController extends Controller
 			'randomQuestionsByCategory'=>$randomQuestions,
 			'answeredQuestions'=>$this->getMyAnsweredQuestions(),
 			'questionsAsked'=>$this->getMyQuestions(),
-			'goto'=>$goto
+			'goto'=>$goto,
+			'sortByDate'=>$sortByDate
 		));
 	}
 	

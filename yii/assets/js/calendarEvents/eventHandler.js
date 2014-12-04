@@ -15,12 +15,18 @@ var eventHandler = {
 	
 	QA_Asked:function(event) {
 		if (!event) return;
-		this.dispatch('/arq?goto=myQuestions');
+		var onDate = this.getEventDate(event);
+		var dispatch = '/arq?goto=myQuestions';
+		if (onDate) dispatch+="&onDate="+onDate;
+		this.dispatch(dispatch);
 	},
 	
 	QA_Answered:function(event) {
 		if (!event) return;
-		this.dispatch('/arq?goto=myAnswers');
+		var onDate = this.getEventDate(event);
+		var dispatch = '/arq?goto=myAnswers';
+		if (onDate) dispatch+="&onDate="+onDate;
+		this.dispatch(dispatch);
 	},
 	
 	Tracker:function(event) {
@@ -40,7 +46,7 @@ var eventHandler = {
 	},
 	
 	getEventDate:function(event) {
-		if (!event || !event.start._i) return null;
+		if (!event || !event.start|| !event.start._i) return null;
 		var myD = event.start._i.split(/\s+/)[0];
 		return myD||'';
 	},

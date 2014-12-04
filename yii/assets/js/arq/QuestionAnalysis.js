@@ -11,6 +11,7 @@ var QuestionAnalysis = {
 	mainDisplay:null,
 	analysisPages:{},
 	areAnswers:false,
+	sortByDateParameter:'date_created',
 	sortParameter:'date_created',
 	//sortDirection:['DESC','DESC','DESC']
 	sortable:['category','date_created','status'],
@@ -744,7 +745,44 @@ var QuestionAnalysis = {
 		});
 	},
 	
-	sort:function(property,redraw) {
+	getSortByDateValue:function(question) {
+		if (!question) return null;
+		var sortByDateParameter = this.sortByDateParameter||'date_created';
+		if (sortByDateParameter.match(/\./)) {
+			var tmp = sortByDateParameter.split(/\./),
+			p1 = tmp[0],p2=tmp[1];
+		
+			if (!p1) return null;
+			if (!p2) return null;
+			return question[p1][p2];
+		} else return question.question[sortByDateParameter];
+	},
+	
+	/**
+	 * Provided a date, in the form YYYY-MM-DD, display all questions either asked
+	 * or answered on this date.  The determination of whether or not we sort by 
+	 * answered or asked questions is determined the the sortByDateParameter class property
+	 */
+	sortByDate:function(sortDate) {
+		if (!sortDate) return;
+		if (!this.questions) return;
+		var sortDateQuestions = [],
+			otherQuestions = [];
+		for (var i = 0;i<this.questions.length;i++) {
+			var value = this.getSortByDateValue(this.questions[i]) || null;
+			if (value) {
+				var question_date = value.split(/\s+/)[0];
+				if (question_date == sortDate) {
+					sortDateQuestions.push(this.questions[i]);
+				} else otherQuestions.push(this.questions[i]);
+			} else otherQuestions.push(this.questions[i]);
+		}
+		
+		this.questions = sortDateQuestions.concat(otherQuestions);
+		this.display(this.placeHolder,this.questions,this.areAnswers);
+	},
+	
+	sort:function(property,redraw) {		
 		if (!this.questions) return;
 		if (!property) return;
 		if (property.match(/\./)) {

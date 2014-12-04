@@ -1,5 +1,6 @@
 var AnsweredQuestions = {
 
+		sortByDateParameter:'myAnswer.date_created',
 		sortParameter:'myAnswer.date_created',
 		//sortDirection:['DESC','DESC','DESC']
 		sortable:['category','myAnswer.date_created','status'],

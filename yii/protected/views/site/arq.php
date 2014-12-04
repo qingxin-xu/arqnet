@@ -18,7 +18,8 @@ var categories = <?php echo json_encode($categories); ?>,
 	answered_questions  = <?php echo json_encode($answeredQuestions); ?>,
 	questions_asked = <?php echo json_encode($questionsAsked); ?>,
 	askedQuestions,answeredQuestions,
-	initialTab = <?php if ($goto) echo '"'.$goto.'"';else echo 'null';?>;
+	initialTab = <?php if ($goto) echo '"'.$goto.'"';else echo 'null';?>,
+	sortByDate = <?php if ($sortByDate) echo '"'.$sortByDate.'"';else echo 'null';?>,
 	//This will populate other questions
 	randomQuestionsByCategory = <?php echo json_encode($randomQuestionsByCategory);?>;
 function updateMsg( description,t ) {
@@ -88,6 +89,7 @@ jQuery(document).ready(function($){
 			$(askedQuestions.placeHolder).jScrollPane({
 				verticalDragMinHeight: 50
 			});
+			askedQuestions.placeHolder = askedQuestions.placeHolder+' .jspPane';
 		}
 	});
 
@@ -96,6 +98,7 @@ jQuery(document).ready(function($){
 			$(answeredQuestions.placeHolder).jScrollPane({
 				verticalDragMinHeight: 50
 			});
+			answeredQuestions.placeHolder = answeredQuestions.placeHolder+' .jspPane';
 		}
 	});
 	
@@ -107,6 +110,13 @@ jQuery(document).ready(function($){
 		
 		if (initialTab in availableTabs) {
 			$('a[href='+availableTabs[initialTab]+']').tab('show');
+			if (sortByDate) {
+				if (initialTab == 'myAnswers') {
+					answeredQuestions.sortByDate(sortByDate);
+				} else if (initialTab == 'myQuestions') {
+					askedQuestions.sortByDate(sortByDate);
+				}
+			}
 		}
 	}
 });
