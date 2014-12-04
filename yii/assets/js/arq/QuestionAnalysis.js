@@ -61,12 +61,12 @@ var QuestionAnalysis = {
 		}
 		html = html.replace(/{ROWS}/,rows);
 		
-		$(placeHolder).html(html);
+		$(this.placeHolder).html(html);
 		
 		//Click on question will bring up answer analysis
-		$(placeHolder+' td.questionContent').each(function(index,row) {
+		$(this.placeHolder+' td.questionContent').each(function(index,row) {
 			$(this).click({row:index},function(e) {
-				self.displayAnswerAnalysis(placeHolder, self.questions[e.data.row], e.data.row);
+				self.displayAnswerAnalysis(self.placeHolder, self.questions[e.data.row], e.data.row);
 			});
 		});
 		
@@ -278,7 +278,7 @@ var QuestionAnalysis = {
 		html = html.replace(/{BUTTONS}/,buttons);
 		
 		// The .jspPane container is from the jScrollPane plugin for fancy scrollbars
-		if ($(placeHolder+' .jspPane')) {
+		if ($(placeHolder+' .jspPane') && $(placeHolder+' .jspPane').length>0) {
 			$(placeHolder+' .jspPane').append(html);
 		} else {
 			$(placeHolder).append(html);
