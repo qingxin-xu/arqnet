@@ -62,7 +62,7 @@ function updateMsg( description,t ) {
 			
 			<!-- logo -->
 			<div class="logo">
-				<a href="index.html">
+				<a href="dashboard">
 					<img src="assets/images/logo@2x.png" width="120" alt="" />
 				</a>
 			</div>
