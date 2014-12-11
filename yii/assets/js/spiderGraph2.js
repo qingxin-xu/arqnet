@@ -16,7 +16,7 @@ var spiderGraph = {
 	isRunning:0,
 	scale:0.75,
 	step:0,
-	maxSteps:100,
+	maxSteps:20,
 	
 	rescale:function(number) {
 		return (number*this.scale+0.5)|0;		// returns rounded int
