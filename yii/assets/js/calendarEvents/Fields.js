@@ -53,6 +53,10 @@ var Fields = {
 		//return $.extend({label:label||'Value'},this[type],name?{name:name}:{});
 	},
 	
+	note:{
+		rule:{required:false}
+	},
+	
 	generic:{
 		rule:{required:true}
 	},

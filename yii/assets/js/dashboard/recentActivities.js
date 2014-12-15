@@ -4,6 +4,10 @@ var recentActivities = {
 	 * So this will tell the render method below to use a description instead
 	 */
 	exclude:['_no_input_','boolean'],
+	/*
+	 * These types have values that we will not display
+	 */
+	excludeDisplay:['note','notes'],
 	display:function(activities,placeAt,includeOnly) {
 		var self = this;
 		if (!activities || !activities.length || activities.length<=0) {
@@ -162,18 +166,20 @@ var recentActivities = {
 		if (!html) return html;
 		if (!activity) return html;
 		html = html.replace(/{EVENT}/,'event');
-		var description = '';
+		var description = '';	
 		if (activity.description.length>0) {
 			html = this.setID(html,activity.description[0]);
 		}
 		for (var i =0;i<activity.description.length;i++)
 		{
-			if ($.inArray(activity.description[i].type,this.exclude) >=0) {
+			if ($.inArray(activity.description[i].type,this.exclude) >=0) {				
 				description +='<p>'+activity.title+'</p>';
 				html = html.replace(/{ACTIVITY}/,description);
 				return html;
+			} 
+			if ($.inArray(activity.description[i].type,this.excludeDisplay) <0) {
+				description+='<p>'+activity.description[i].value+'</p>';
 			}
-			description+='<p>'+activity.description[i].value+'</p>';
 		}
 
 		html = html.replace(/{ACTIVITY}/,description);

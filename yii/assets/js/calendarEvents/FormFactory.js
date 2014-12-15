@@ -102,26 +102,28 @@ var formFactory = {
 		{
 			var name = tooltipFields[t].name,
 				label = tooltipFields[t].label,
+				type = tooltipFields[t].type||null,
 				units = tooltipFields[t].unit||null;
 			for (var v =0;v<values.length;v++) 
 			{
-				if (values[v].name == name) {
-					var tip = label+' '+values[v].value
-					if (units) {
-						for (u = 0;u<values.length;u++)
-						{
-							if (values[u].name == name+'_unit') {
-								for (var unit=0;unit<units.length;unit++)
-								{
-									if (units[unit]['event_unit_id'] == values[u].value)
+				if (values[v].name == name) {					
+						var tip = label+' '+values[v].value
+						if (units) {
+							for (u = 0;u<values.length;u++)
+							{
+								if (values[u].name == name+'_unit') {
+									for (var unit=0;unit<units.length;unit++)
 									{
-										tip+=' '+units[unit].name;
+										if (units[unit]['event_unit_id'] == values[u].value)
+										{
+											tip+=' '+units[unit].name;
+										}
 									}
 								}
 							}
 						}
-					}
-					formValues.push({value:tip,definition_id:values[v].name});
+						formValues.push({value:tip,definition_id:values[v].name});
+					
 				}
 			}
 		}
@@ -474,9 +476,9 @@ var formFactory = {
 	_renderTitleTooltip:function (event)
 	{
 		var exclude = ['_no_input_','boolean'/*,'QA: Asked:','QA: Answered:','Note:'*/];
+		var exceptions = {note:'Notes:'};
 		
-		var html = "";
-		
+		var html = "";		
 		if (event && (event.description) )
 		{
 			for (var i =0;i< event.description.length;i++)
@@ -487,10 +489,18 @@ var formFactory = {
 				} else {
 					//if (event.description[i].type !='_no_input_')
 					if ($.inArray(event.description[i].type,exclude) ==-1)
-						html += ""+event.description[i].value||' '+"<br>"; 
+					{
+						if (exceptions[event.description[i].type]) {
+							var myRegExp = new RegExp("^"+exceptions[event.description[i].type]+"\\s+$");							
+							if (event.description[i].value.match(myRegExp)) {								
+								continue;
+							}
+						}
+						html += ""+(event.description[i].value||' ')+"<br>"; 
+					}
 				}
 			}				
-		}
+		}	
 		return html;
 	},
 
