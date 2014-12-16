@@ -474,7 +474,7 @@ var formFactory = {
 	
 	// Title attribute for items of the calendar views
 	_renderTitleTooltip:function (event)
-	{
+	{	
 		var exclude = ['_no_input_','boolean'/*,'QA: Asked:','QA: Answered:','Note:'*/];
 		var exceptions = {note:'Notes:'};
 		
@@ -501,7 +501,14 @@ var formFactory = {
 				}
 			}				
 		}	
-		return html;
+		var inputID = Math.floor(Math.random() * 26) + Date.now();
+		var buttonHTML = '';
+		if (event && event.subcategory && $.inArray(event.subcategory,eventHandler.doNotRemove)<0) 
+			buttonHTML = '<div class="tooltip_btn_wrapper"><input id="deleteBtn_'+inputID+'" class="tooltip_tracker_delete" type="button" value="Delete"/></div>';
+		
+		html='<div class="tooltip_wrapper">'+html+buttonHTML+'</div>';
+		var myContent = $(html);
+		return myContent;
 	},
 
 	formTemplate:[

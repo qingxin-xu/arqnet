@@ -2276,6 +2276,57 @@ class SiteController extends Controller
 	}
 	
 	/*
+	 * For deleting a calendar event
+	 */
+	public function actionDeleteCalendarEvent() {
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}		
+		header('Content-type: application/json');
+		$calendar_event_id = Yii::app()->request->getPost('calendar_event','');
+		if (!$calendar_event_id) {
+			echo CJSON::encode(array(
+					'success'=>0,
+					'error'=>'Invalid calendar_event_id',
+			));
+			Yii::app()->end();			
+		}
+		$condition = array('calendar_event_id'=>$calendar_event_id);
+		/*
+		$cal = CalendarEvent::model()->findByAttributes(array('calendar_event_id'=>$calendar_event_id));
+		
+		if (!$cal) {
+			header('Content-type: application/json');
+			echo CJSON::encode(array(
+					'success'=>0,
+					'error'=>'Invalid calendar_event_id',
+			));
+			Yii::app()->end();
+		}
+		*/
+		/*
+		 * The corresponding event value(s)
+		 */
+		try {
+			EventValue::model()->deleteAllByAttributes($condition);
+			CalendarEvent::model()->deleteAllByAttributes($condition);
+			echo CJSON::encode(array(
+					'success'=>1,
+			));
+			Yii::app()->end();
+		} catch (Exception $e) {
+			MyStuff::Log('BEGIN Error deleting event '.$calendar_event_id);
+			MyStuff::Log($e);
+			MyStuff::Log('END Error deleting event '.$calendar_event_id);
+			echo CJSON::encode(array(
+					'success'=>-1,
+					'msg'=>'Failed to delete selected calendar event'
+			));
+			Yii::app()->end();			
+		}
+	}
+	
+	/*
 	 * Perhaps deprecate
 	 */
 	public function actionAttachCalendarToDate() {
@@ -3893,6 +3944,7 @@ where user_id = $user_id
 				array_push($description,$d);
 			}
 			array_push($myEvents,array(
+			'calendar_event'=>$ce->calendar_event_id,
 			'subcategory'=>$subcategory->name,
 			'title'=>$title,
 			'start'=>$ce->start_date,

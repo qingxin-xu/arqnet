@@ -101,7 +101,27 @@ jQuery(document).ready(function($){
           return true;
         }
       }
-      
+
+    $('#deleteEventConfirmation').dialog({
+		autoOpen:false,
+		closeOnEscape: false,
+		modal:true,
+		draggable:true,
+		height:150,
+		width:300,
+		buttons:{
+			Yes:function() {
+				if ($(this) && $(this).data && $(this).data('event')) {
+					var myEvent = $(this).data('event');
+					if (eventHandler && eventHandler.removeEvent) {
+						eventHandler.removeEvent(myEvent,this);
+					}
+				}
+			},
+			No:function() {$(this).dialog('close');}
+		}
+    });
+
 	$('#myDndDescriptionForm').dialog({
 		autoOpen:false,
 		closeOnEscape: false,
@@ -414,6 +434,10 @@ jQuery(document).ready(function($){
  
   </fieldset>
   </form>
+</div>
+
+<div id="deleteEventConfirmation" title="Confirm Event Deletion">
+	<p class="deleteEventConfirmationMsg">Are you sure you want to delete this event?</p>
 </div>
 
 <div id="myErrorMsg" title="Error">

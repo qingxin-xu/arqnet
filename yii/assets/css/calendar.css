@@ -189,3 +189,11 @@ hr.ui-widget-header {
 .event {
 	background-image:url('/assets/images/dashboard/tracker.png');
 }
+
+div.tooltip_btn_wrapper {
+	margin:7px 0;
+}
+
+input.tooltip_tracker_delete {
+	float:right;
+}
