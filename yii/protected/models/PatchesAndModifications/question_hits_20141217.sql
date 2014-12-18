@@ -1,0 +1,1 @@
+alter table question add column hits integer default '0';
