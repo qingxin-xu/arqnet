@@ -609,18 +609,19 @@ class SiteController extends Controller
 		$this->setPageTitle('Questions & Answers');
 		//$question = $this->getRandomQuestion();
 		$categories = $this->getQuestionCategories();
+		MyStuff::Log('CATEGORIES');
 		$randomQuestions = array();
 	
 		foreach ($categories as $c => $category) {
 			$randomQuestions{$category{'name'}} = $this->getRandomQuestionByCategory($category);
 		}
-		
+		MyStuff::Log('Random questions0');
 		$randomQuestion = null;
 		while(!$randomQuestion) {
 			$randInt = rand(0,count($categories)-1);
 			$randomQuestion = $this->getRandomQuestionByCategory($categories{$randInt});
 		}
-		
+		MyStuff::Log('Random questions');
 		$goto=null;
 		if (isset($_GET['goto']))
 		{
@@ -3700,6 +3701,7 @@ where user_id = $user_id
 				'questionStatus'=>array('condition'=>"name='Approved'")
 		))->findAll('t.question_category_id=:_id',array(':_id'=>$category{'question_category_id'}));
 
+		if (count($_questions) <=0) {return 1;}
 		$questions = array();
 		foreach ($_questions as $question) {
 			if ($question->answers)
