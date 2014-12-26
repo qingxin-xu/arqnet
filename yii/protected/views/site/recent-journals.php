@@ -167,12 +167,11 @@ jQuery(document).ready(function($){
 		<strong>Journal Home</strong>
 	</li>
 </ol>
-								<a style="float:right; width:20%;" href="journal" class="btn btn-success btn-icon btn-block">
-			Compose Journal
-			<i class="entypo-pencil"></i>
+			<button style="float:right;" onclick="window.location.href='journal'" type="button">Create New Entry</button>
 		</a>
-			<h1>My Journal</h1>
-
+			<div class='boxHeader'>
+			<span class='word2'>Journal Dashboard</span>
+			</div>
 				<!-- compose new Journal button -->
 
 
@@ -180,7 +179,7 @@ jQuery(document).ready(function($){
 		<?php 
 		 	if ($my_journals)
 		 	{
-		 		echo "<table class='noteAdminTable' width='100%'><thead><tr>";
+		 		echo "<table class='noteAdminTable' width='100%'><thead class='journalEntryContent'><tr>";
 				echo "<th>Title</th><th>Status</th><th>Visibility</th><th>Date Created</th><th>Date To Publish</th>";
 		 		echo "</tr></thead>";
 		 		$count=0;
@@ -191,7 +190,7 @@ jQuery(document).ready(function($){
 		 			else $title = str_replace("<br>"," ",$entry['content']);
 		 			$row_class='note_row';
 		 			if ($count%2 != 0) {$row_class = $row_class.' oddRow';}
-		 			echo "<tr class='".$row_class."' id='".$entry['note_id']."' ><td class='note_title'>".$title;
+		 			echo "<tr class='journalEntryContent ".$row_class."' id='".$entry['note_id']."' ><td class='note_title'>".$title;
 		 			echo "<div class='btnRow invisible'>";
 		 			echo "<a class='btnRowBtn' href='/journal?journal_id=".$entry['note_id']."' >Edit</a>";
 		 			echo "<a class='btnRowBtn' href='javascript:deleteEntry(".$entry['note_id'].");'>Delete</a>";

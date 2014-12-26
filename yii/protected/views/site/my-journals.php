@@ -168,7 +168,7 @@
 				-->  
 				<span class="word2">Journal</span>
 			</div>
-			<div style='float:right;margin:26px 0 0 0;'><button class='myJournals_new' onclick='window.location.href="/journal"' type='button'>Create New Entry</button></div>
+			<div style='float:right;margin:26px 0 0 0;'><button  onclick='window.location.href="/journal"' type='button'>Create New Entry</button></div>
 		</div>
 		<div class='myJournalsContainer'  id='myJournals'>You have no journal entries</div>
 		<div class='myJournalsPager'>
