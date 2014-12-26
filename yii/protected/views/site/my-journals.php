@@ -149,15 +149,10 @@
 	<li>
 		<a href="dashboard"><i class="entypo-home"></i>Home</a>
 	</li>
-	<li>		
-		<a href="journal">Journal</a>
-	</li>
 	<li>
-		<a href='/recentJournals'>Journal Home</a>
+		<a href='/recentJournals'>Journal Dashboard</a>
 	</li>
-	<li class="active">	
-		<strong>My Journals</strong>
-	</li>
+
 </ol>
 <div class="row">
 	<div class='row col-sm-9'>

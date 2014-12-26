@@ -51,11 +51,11 @@ jQuery(document).ready(function($){
 			</li>
 					<li>
 			
-							<a href="recentJournals">My Journals</a>
+							<a href="myJournals">My Journal</a>
 					</li>
-				<li class="active">
+				<li >
 			
-							<strong>New Journal</strong>
+							<a href="recentJournals">Journal Dashboard</a>
 					</li>
 					</ol>
 <div class='boxHeader'><span class='word2'>Add New Journal</span></div>
@@ -294,6 +294,7 @@ jQuery(document).ready(function($){
 </footer>	
 <link rel="stylesheet" href="assets/js/wysihtml5/bootstrap-wysihtml5.css">
 <script src="/assets/js/jquery.validate.min.js"></script>
+<!--  <script src='/assets/js/bootstrap.min.js'></script> -->
 <script src='http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js'></script>
 <script src="/assets/js/journal.js"></script>
 <script src="/assets/js/journal_autosave.js"></script>

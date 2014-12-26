@@ -384,3 +384,11 @@ a.logout {
 	line-height:32px;
 	margin:15px 0;
 }
+
+.breadcrumb > li {
+	margin:0 7px;
+}
+
+.breadcrumb > li + li:before {
+	content:none;
+}

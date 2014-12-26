@@ -157,15 +157,11 @@ jQuery(document).ready(function($){
 	<li>
 		<a href="dashboard"><i class="entypo-home"></i>Home</a>
 	</li>
+
 	<li>		
-		<a href="journal">Journal</a>
+		<a href="myJournals">My Journal</a>
 	</li>
-	<li>		
-		<a href="myJournals">My Journals</a>
-	</li>
-	<li class="active">	
-		<strong>Journal Home</strong>
-	</li>
+
 </ol>
 			<button style="float:right;" onclick="window.location.href='journal'" type="button">Create New Entry</button>
 		</a>
