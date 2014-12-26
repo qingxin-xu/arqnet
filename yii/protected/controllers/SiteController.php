@@ -64,7 +64,8 @@ class SiteController extends Controller
 		'death',
 		'self',
 		'food',
-		'fitness'
+		'fitness',
+		'other'
 	);
 	var $aer_categories = array(
 		'negative',

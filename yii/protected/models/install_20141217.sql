@@ -33529,3 +33529,8 @@ insert into event_definition set event_subcategory_id=@subcategory_id,parameter=
 set @subcategory_id = (select event_subcategory_id from event_subcategory where name='Note');
 insert into event_definition set event_subcategory_id=@subcategory_id,parameter='note',label='Notes:';
 alter table question add column hits integer default '0';
+
+/*
+	'Other' category for journal entries
+*/
+insert into category(description,display_name,category_type,date_created) values ('other','Other','mood',now());
