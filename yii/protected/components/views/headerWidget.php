@@ -10,12 +10,13 @@
 				
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 					<?php 
+						$img = "default_user.jpg";
 						if (!is_null($image))
 						{
-							echo '<img src="'.$image->path.'" alt="" class="img-circle" width="44" />';
+							echo '<img src="'.$image->path.'" alt=""  width="44" />';
 						} else
 						{
-							echo '<img src="assets/images/thumb-1@2x.png" alt="" class="img-circle" width="44" />';
+							echo '<img src="assets/images/'.$img.'" alt="" width="44" />';
 						}
 						
 						if (!is_null($user))
