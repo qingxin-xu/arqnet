@@ -71,8 +71,8 @@ var QuestionAnalysis = {
 		});
 		
 		//Click the delete button
-		$(placeHolder+' input.deleteButton').each(function(index,row) {
-			$(this).on('click',{index:index,row:row},function(e) {
+		$(this.placeHolder+' button.deleteButton').each(function(index,row) {
+			$(this).on('click',{index:index,row:row},function(e) {		
 				if (areAnswers) {
 					self.deleteQuestion(e.data.index,true);
 				} else {
@@ -161,6 +161,7 @@ var QuestionAnalysis = {
 			$('#Wrapper_'+this.id+'_'+id).remove();
 		}
 		this.questions.splice(index,1);
+		this.display(this.placeHolder,this.questions,this.areAnswers);
 	},
 	
 	setDateTime:function(dateString) {
