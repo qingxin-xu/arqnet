@@ -3931,31 +3931,34 @@ where user_id = $user_id
 			{
 				$eventDefn = EventDefinition::model()->with('eventSubcategory')->find('t.event_definition_id=:_id',array(':_id'=>$ev->event_definition_id));
 				$subcategory = EventSubcategory::model()->findByPk($eventDefn->event_subcategory_id);
-		
-				$title = $subcategory->name;
-				$d = array(
-				'id'=>$ev->event_value_id,
-				'value'=>$ev->value,
-				'type'=>$eventDefn->parameter
-				);
-				if ($ev->eventNote) {
-					$d['note_id'] = $ev->eventNote->note_id;
-				} else if ($ev->eventQuestion) {
-					$d['question_id'] = $ev->eventQuestion->question_id;
-					$d['question_type'] = $ev->eventQuestion->type;
+				if (isset($subcategory)) {
+					$title = $subcategory->name;
+					$d = array(
+					'id'=>$ev->event_value_id,
+					'value'=>$ev->value,
+					'type'=>$eventDefn->parameter
+					);
+					if ($ev->eventNote) {
+						$d['note_id'] = $ev->eventNote->note_id;
+					} else if ($ev->eventQuestion) {
+						$d['question_id'] = $ev->eventQuestion->question_id;
+						$d['question_type'] = $ev->eventQuestion->type;
+					}
+					array_push($description,$d);
 				}
-				array_push($description,$d);
 			}
-			array_push($myEvents,array(
-			'calendar_event'=>$ce->calendar_event_id,
-			'subcategory'=>$subcategory->name,
-			'title'=>$title,
-			'start'=>$ce->start_date,
-			'end'=>$ce->end_date,
-			'allDay'=>intval($ce->all_day),
-			'description'=>$description,
-			'editable'=>false
-			));
+				if (isset($subcategory)) {
+				array_push($myEvents,array(
+				'calendar_event'=>$ce->calendar_event_id,
+				'subcategory'=>$subcategory->name,
+				'title'=>$title,
+				'start'=>$ce->start_date,
+				'end'=>$ce->end_date,
+				'allDay'=>intval($ce->all_day),
+				'description'=>$description,
+				'editable'=>false
+				));
+			}
 		}
 		return $myEvents;
 	}
