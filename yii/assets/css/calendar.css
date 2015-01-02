@@ -121,11 +121,11 @@ button[type=button].ui-button,.calendar-env .calendar-body .fc-header .fc-button
 .fc-event-time{
    display : none;
 }
-
+/*
 .fc-time {
 	display:none;
 }
-
+*/
 .fc-event.color-green {
 	background:#00a651;
 	border:1px solid #00a651;
