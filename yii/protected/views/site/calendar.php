@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="assets/js/jquery-ui/css/vader/jquery-ui.min.css">
 <link href="assets/js/magicsuggest/magicsuggest-min.css" rel="stylesheet">
-<link rel='stylesheet' href='/assets/js/fullcalendar-2.1.1/fullcalendar.css' />
+<link rel='stylesheet' href='/assets/js/fullcalendar-2.2.5/fullcalendar.css' />
 <link rel="stylesheet" href="assets/css/calendar.css">
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src='http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js'></script>
@@ -454,8 +454,8 @@ jQuery(document).ready(function($){
 	<link rel="stylesheet" href="/assets/js/jvectormap/jquery-jvectormap-1.2.2.css">
 	<!--  <script src="/assets/js/fullcalendar/fullcalendar.js"></script>-->
 	
-	<script src='/assets/js/fullcalendar-2.1.1/lib/moment.min.js'></script>
-	<script src='/assets/js/fullcalendar-2.1.1/fullcalendar.js'></script>
+	<script src='/assets/js/fullcalendar-2.2.5/lib/moment.min.js'></script>
+	<script src='/assets/js/fullcalendar-2.2.5/fullcalendar.js'></script>
 	
 	<script src="/assets/js/neon-calendar.js"></script>
 	<script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>

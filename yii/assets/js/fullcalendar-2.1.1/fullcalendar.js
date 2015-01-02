@@ -8375,7 +8375,7 @@ $.extend(AgendaDayView.prototype, {
 
 
 	render: function(date) {
-
+		console.log('INTERVAL START',date,date.stripTime());
 		this.start = this.intervalStart = date.clone().stripTime();
 		this.end = this.intervalEnd = this.start.clone().add(1, 'days');
 

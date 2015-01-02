@@ -4,6 +4,39 @@
  *	Developed by Arlind Nushi - www.laborator.co
  */
 
+/**
+ * Extend AgendaDay View so that it defaults to the current day
+ */
+$.fullCalendar.views.myDayView = $.fullCalendar.views.agenda.extend({
+	// Sets the display range and computes all necessary dates
+	setRange: function(range) {
+		range.intervalStart = $.fullCalendar.moment().clone().stripTime();
+		range.intervalEnd =  range.intervalStart.clone().add(1, 'days');
+		$.fullCalendar.views.agenda.prototype.setRange.call(this, range); // call the super-method
+
+		this.timeGrid.setRange(range);
+		if (this.dayGrid) {
+			this.dayGrid.setRange(range);
+		}
+	}
+});
+$.fullCalendar.views['day'] = {type:'myDayView',duration:{days:1}};
+
+$.fullCalendar.views.myWeekView = $.fullCalendar.views.agenda.extend({
+	// Sets the display range and computes all necessary dates
+	setRange: function(range) {
+		range.intervalStart = $.fullCalendar.moment().clone().stripTime();
+		range.intervalEnd =  range.intervalStart.clone().add(1,'week');
+		$.fullCalendar.views.agenda.prototype.setRange.call(this, range); // call the super-method
+
+		this.timeGrid.setRange(range);
+		if (this.dayGrid) {
+			this.dayGrid.setRange(range);
+		}
+	}
+});
+//$.fullCalendar.views['_week'] = {type:'myWeekView',duration:{weeks:1}};
+
 var neonCalendar = neonCalendar || {};
 var calendar;
 var eventRender = {
@@ -186,9 +219,9 @@ function submitCalendarEvent(data,input,appendTo)
 				calendar.fullCalendar({
 					header: {
 						left: 'title',
-						right: 'month,agendaWeek,agendaDay today prev,next'
+						right: 'month,agendaWeek,day, today prev,next'
 					},
-
+				
 					//defaultView: 'basicWeek',
 					theme:true,
 					editable: true,
