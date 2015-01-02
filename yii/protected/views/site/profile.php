@@ -44,14 +44,14 @@
 </script>
 	<div class='row'>
 					<?php 
-						//$image = '';
+						$img = "default_user.jpg";
 						echo "<div class='profile_header'><div class='profile_header_top'></div><div class='profile_header_bottom'></div>";
 						if ($image)
 						{
-							echo '<img src="'.$image->path.'" alt="" class="img-circle" width="88"/>';
+							echo '<img src="'.$image->path.'" alt=""  width="88" height="117" />';
 						} else
 						{
-							echo '<img src="assets/images/thumb-1@2x.png" alt="" class="img-circle"  />';
+							echo '<img src="assets/images/'.$img.'" alt="" width="88"  />';
 						}
 						
 						if (!is_null($profile))
