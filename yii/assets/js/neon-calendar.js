@@ -227,7 +227,7 @@ function submitCalendarEvent(data,input,appendTo)
 				calendar.fullCalendar({
 					header: {
 						left: 'title',
-						right: 'month,agendaWeek,_week,day, today prev,next'
+						right: 'month,_week,day, today prev,next'
 					},
 				
 					//defaultView: 'basicWeek',
