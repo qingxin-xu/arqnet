@@ -91,7 +91,53 @@ var eventRender = {
 		}
 	},
 	
+	/*
+	 * Take time of date created, round to nearest 15 minutes on the clock,
+	 * set start time to this, and end time to start time + 15 minutes
+	 */
+	setTimeSlot:function(event) {
+		
+		if (!event || !event.date_created || !event.start) return;
+		var start_time = event.date_created.split(/\s+/)[1],
+			start_minutes = start_time.split(/:/)[1],
+			start_hours = start_time.split(/:/)[0],
+			start_seconds = start_time.split(/:/)[2],
+			rounded_minutes = this.roundTime(parseInt(start_minutes)),
+			end_minutes = (parseInt(rounded_minutes)+30).toString(),
+			start_date = event.start.split(/\s+/)[0],
+			new_start = start_date+' '+start_hours+':'+rounded_minutes+':'+start_seconds,
+			endMoment = $.fullCalendar.moment(new_start).add(30,'minutes'),
+			new_end = endMoment.format("YYYY-MM-DD HH:mm:ss");//start_date+' '+start_hours+':'+end_minutes+':'+start_seconds,
 
+		event.start = new_start;
+		event['end']= new_end;
+	},
+	
+	roundTime:function(minutes) {
+		/*
+		if (minutes>30) {
+			if (minutes>37) {
+				return '45';
+			} else { 
+				return '30';
+			}
+		} else {
+			if (minutes>22) {
+				return '30';
+			} else {
+				if (minutes > 15) {
+					return '15';
+				} else {
+					if (minutes > 7) return '15';
+					else return '00';
+				}
+			}
+		}
+		*/
+		if (minutes >30 ) return '30';
+		else return '00';
+	},
+	
 	createCounter:function(element) {
 		if (!element) return;
 		element.find('.fc-content').addClass('monthViewIcon').html('');
@@ -227,7 +273,7 @@ function submitCalendarEvent(data,input,appendTo)
 				calendar.fullCalendar({
 					header: {
 						left: 'title',
-						right: 'month,_week,day, today prev,next'
+						right: 'month,agendaWeek,agendaDay, today, prev,next'
 					},
 				
 					//defaultView: 'basicWeek',
@@ -307,15 +353,9 @@ function submitCalendarEvent(data,input,appendTo)
 							success:function(d) {
 								if ('success' in d && d['success']==1 && 'events' in d) {
 									$.each(d['events'],function(index,value) {
+										value.allDay = 0;
 										value = $.extend(value,{className:['color-green']});
-										/*
-										console.log('value',value.subcategory);
-										if (!value.end && value.start) {
-											var myD = new Date(value.start);
-											myD.setTime(myD.getTime()+60*60*1000);
-											value.end = myD;
-										}
-										*/
+										eventRender.setTimeSlot(value);
 									});
 									callback(d['events']);
 								} else {
@@ -336,12 +376,14 @@ function submitCalendarEvent(data,input,appendTo)
 							eventRender.registerEvent(element,event,view);
 						}
 
-						if (view.name == 'agendaDay') {
+						if (view.name == 'agendaDay'||view.name=='day') {
 							//console.log('event',event);
+							//eventRender.setTimeSlot(event);
+							event.allDay = 0;
 							//console.log('event element',element);
 							element.removeClass('color-green');
 							element.addClass('color-agendaDay');
-						}
+						} 
 						//element.qtip({content:'this is another test'});
 					}/*,
 					

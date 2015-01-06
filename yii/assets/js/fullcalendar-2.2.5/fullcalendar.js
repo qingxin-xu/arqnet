@@ -6868,8 +6868,6 @@ var View = fc.View = Class.extend({
 function Calendar(element, instanceOptions) {
 	var t = this;
 
-	console.log('instanceOptions',instanceOptions);
-
 	// Build options object
 	// -----------------------------------------------------------------------------------
 	// Precedence (lowest to highest): defaults, rtlDefaults, langOptions, instanceOptions

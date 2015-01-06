@@ -478,15 +478,8 @@ jQuery(document).ready(function($){
 				$('#calendar').fullCalendar('renderEvent',myEvents[i],true);
 			}
 			*/
-			/* A hack to get the events to be positioned correctly on the calendar */
-			if (!initialDate)
-			{
-				setTimeout(function() {
-					$('#calendar').fullCalendar('prev');
-					$('#calendar').fullCalendar('next');}
-				,500);
-			} else
-			{
+
+			if (initialDate) {
 				var tmp = initialDate.split(/_/);
 				//Jump to this date
 				var myMoment = $.fullCalendar.moment(initialDate.replace(/_/g,'-'));

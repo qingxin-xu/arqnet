@@ -121,11 +121,21 @@ button[type=button].ui-button,.calendar-env .calendar-body .fc-header .fc-button
 .fc-event-time{
    display : none;
 }
-/*
-.fc-time {
+
+/* Hides time on day view */
+.fc-time-grid-event.fc-short .fc-time,.eventIcon .fc-time {
 	display:none;
 }
-*/
+
+.fc-ltr .fc-day-view .fc-time-grid .fc-event-container,
+.fc-ltr .fc-agendaDay-view .fc-time-grid .fc-event-container {
+	margin:0 75% 0 2px;
+}
+
+.fc-ltr .fc-_week-view .fc-time-grid .fc-event-container {
+	margin:0 2.5% 0 2px;
+}
+
 .fc-event.color-green {
 	background:#00a651;
 	border:1px solid #00a651;
@@ -149,7 +159,7 @@ hr.ui-widget-header {
 	background-position:left center;
 	background-repeat:no-repeat;
 	/*height:24px;*/
-	padding:11px 0 0 26px;
+	padding:3px 0 0 26px;
 	word-break:break-word;
 	background-size:22px 22px;
 }
