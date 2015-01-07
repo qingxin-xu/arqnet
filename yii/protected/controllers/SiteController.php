@@ -3949,6 +3949,7 @@ where user_id = $user_id
 			}
 				if (isset($subcategory)) {
 				array_push($myEvents,array(
+				'date_created'=>$ce->date_created,
 				'calendar_event'=>$ce->calendar_event_id,
 				'subcategory'=>$subcategory->name,
 				'title'=>$title,

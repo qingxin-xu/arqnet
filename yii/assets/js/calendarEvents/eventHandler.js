@@ -11,7 +11,7 @@ var eventHandler = {
 	/*
 	 * We do not remove these types of events
 	 */
-	doNotRemove:['Note','QA_Asked','QA_Answered'],
+	otherEvents:['Note','QA_Asked','QA_Answered'],
 	
 	Note:function(event) {
 		if (!event) return;
@@ -138,7 +138,7 @@ var eventHandler = {
 				   }
 				});
 			var self = this;
-			if (event && event.subcategory && $.inArray(event.subcategory,this.doNotRemove)<0) {
+			if (event && event.subcategory && $.inArray(event.subcategory,this.otherEvents)<0) {
 				tipContent.find('input.tooltip_tracker_delete').click(function() {
 					element.qtip('hide');
 					$('#deleteEventConfirmation').data('event',event).dialog('open');				

@@ -97,7 +97,13 @@ var eventRender = {
 	 */
 	setTimeSlot:function(event) {
 		
-		if (!event || !event.date_created || !event.start) return;
+		if (!event || !event.start) return;
+		if (!event.date_created) {
+			if (!event.subcategory) return;
+			if ($.inArray(event.subcategory,eventHandler.otherEvents)>=0) {
+				event.date_created = event.start;
+			} else return;
+		}
 		var start_time = event.date_created.split(/\s+/)[1],
 			start_minutes = start_time.split(/:/)[1],
 			start_hours = start_time.split(/:/)[0],
