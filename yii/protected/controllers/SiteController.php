@@ -2638,11 +2638,13 @@ class SiteController extends Controller
 		if ($ae_response) {
 			$ae_categories = Category::model()->findAllByAttributes(array('category_type'=>'mood'));
 			foreach ($ae_categories as $category) {
-				$aec = new AeResponseCategory();
-				$aec->ae_response_id = $ae_response->ae_response_id;
-				$aec->category_id = $category->category_id;
-				$aec->value = (float)$ae_data[$category->description];
-				$aec->save();
+				if (isset($ae_data[$category->description])) {
+					$aec = new AeResponseCategory();
+					$aec->ae_response_id = $ae_response->ae_response_id;
+					$aec->category_id = $category->category_id;
+					$aec->value = (float)$ae_data[$category->description];
+					$aec->save();
+				}
 			}
 			for ($i=1; $i<=10; $i++) {
 				$get_word = 'topWords'.$i;
