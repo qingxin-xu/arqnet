@@ -27,8 +27,7 @@ var neonForgotPassword = neonForgotPassword || {};
 				}
 			},
 			
-			messages: {
-				
+			messages: {	
 				email: {
 					email: 'Invalid E-mail.'
 				}	
@@ -44,60 +43,47 @@ var neonForgotPassword = neonForgotPassword || {};
 				$(element).closest('.input-group').removeClass('validate-has-error');
 			},
 			
-			submitHandler: function(ev)
-			{
-				$(".login-page").addClass('logging-in');
+			submitHandler:function(ev)
+			{		
 				
-				// We consider its 30% completed form inputs are filled
-				neonForgotPassword.setPercentage(30, function()
-				{
-					// Lets move to 98%, meanwhile ajax data are sending and processing
-					neonForgotPassword.setPercentage(98, function()
+				var service = '/resetPassword',
+					email = $('input[name=email]') && $('input[name=email]').length && $('input[name=email]').length==1?$('input[name=email]').val()||null:null;
+				
+				if (!email) return;	
+				
+				//Animation				
+				$(".login-page").addClass('logging-in'); // This will hide the login form and init the progress bar
+				neonLogin.setPercentage(10);
+
+				$.ajax({
+					url:service,
+					type:'POST',
+					dataType:'json',
+					data:{email:email},
+					success:function(d) {
+						
+						//Animation
+						neonLogin.setPercentage(100);
+						if (!d.success) 
+						{
+							_handleError(d);
+							return;
+						}
+						
+						if (d.success == 1)
+						{
+							if (d.redirect) setTimeout(function() {window.location.href = d.redirect;}, 2000);
+						} else
+							_handleError(d);
+					},
+					
+					error:function(err)
 					{
-						// Send data to the server
-						$.ajax({
-							url: baseurl + 'data/sample-forgotpassword-form.php',
-							method: 'POST',
-							dataType: 'json',
-							data: {
-								email: $("input#email").val(),
-							},
-							error: function()
-							{
-								alert("An error occoured!");
-							},
-							success: function(response)
-							{
-								// From response you can fetch the data object retured
-								var email = response.submitted_data.email;
-								
-								
-								// Form is fully completed, we update the percentage
-								neonForgotPassword.setPercentage(100);
-								
-								
-								// We will give some time for the animation to finish, then execute the following procedures	
-								setTimeout(function()
-								{
-									// Hide the description title
-									$(".login-page .login-header .description").slideUp();
-									
-									// Hide the register form (steps)
-									neonForgotPassword.$steps.slideUp('normal', function()
-									{
-										// Remove loging-in state
-										$(".login-page").removeClass('logging-in');
-										
-										// Now we show the success message
-										$(".form-forgotpassword-success").slideDown('normal');
-										
-										// You can use the data returned from response variable
-									});
-									
-								}, 1000);
-							}
-						});
-					});
+						console.log('error',err);
+						neonLogin.setPercentage(100);
+						console.log('error',err);
+						_handleError();
+					}
 				});
 			}
 		});

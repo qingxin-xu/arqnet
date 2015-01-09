@@ -236,6 +236,43 @@ class SiteController extends Controller
 		$this->setPageTitle('Register');
 		$this->render('register');
 	}
+	
+	public function actionResetPassword() {
+		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+			throw new CHttpException('403', 'Forbidden access.');
+		}
+		
+		header('Content-type: application/json');
+		
+		$userEmail = Yii::app()->request->getPost('email', '');
+		if (!$userEmail) {
+			echo CJSON::encode(array(
+			'success'=>-999,
+			'msg'=>'No email specified'
+			));
+			Yii::app()->end();
+		}
+
+		$user = User::model()->findByAttributes(array('email'=>$userEmail));
+		if (!$user) {
+			echo CJSON::encode(array(
+					'success'=>-999,
+					'msg'=>'No account with the specified email was found'
+			));
+			Yii::app()->end();			
+		}
+		$pass=Yii::app()->epassgen->generate(10, 2, 3, 2);
+		$user->setPassword($pass);
+		$settings = array('resetPassword'=>$pass,'username'=>$user->username);
+		$this->SendMail($userEmail,'passwordReset',$settings);
+		echo CJSON::encode(array(
+				'success'=>1,
+				'msg'=>'An email with your reset password has been sent to you',
+				'redirect'=>'/login'
+		));
+		Yii::app()->end();
+			
+	}
 
 	public function actionDashboard()
 	{
@@ -4440,6 +4477,25 @@ order by avg_rank desc";
 				'msg'=>'Entry not found'
 			));
 			Yii::app()->end();
+		}
+	}
+	
+	/**
+	 * Wrapper around YiiMailer for sending out plain-text emails
+	 * This wrapper does not support attachments
+	 * @param String $userEmail The email address to send email to
+	 * @param String $emailView the name of the file in /views/mail/ to use as a template
+	 * @param array $message defines the variables to fill out in the template
+	 */
+	public function SendMail($userEmail,$emailView,$message) {
+		$mail = new YiiMailer($emailView,$message);
+		$mail->setTo($userEmail);
+		$mail->setFrom(Yii::app()->params['adminEmail'],'ArQNet Administrator');
+		$mail->setSubject('Your Password Has Been Reset');
+		if ($mail->send()) {
+			Yii::app()->user->setFlash('test','Thank you for contacting us. We will respond to you as soon as possible.');
+		} else {
+			Yii::app()->user->setFlash('error','Error while sending email: '.$mail->getError());
 		}
 	}
 }

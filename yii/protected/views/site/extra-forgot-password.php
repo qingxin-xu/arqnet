@@ -1,4 +1,108 @@
+<link rel="stylesheet" href="assets/js/jquery-ui/css/vader/jquery-ui.min.css">
+<style type='text/css'>
+button {
+	border:none;
+	background:transparent;
+}
+</style>
+<script src="/assets/js/jquery.validate.min.js"></script>
+<!--  <script src='/assets/js/bootstrap.min.js'></script> -->
+<script src='http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js'></script>
+<script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script type='text/javascript'>
+function updateMsg( description,t ) {
+	description
+      .text( t );
+ }
+var neonForgotPassword = {};
+$(document).ready(function()
+{
+	$('#myThinker').dialog({
+		autoOpen:false,
+		closeOnEscape: false,
+		modal:true,
+		draggable:true,
+		height:150,
+		width:350,
+	});
+	neonForgotPassword.$container = $("#form_forgot_password");
+	neonForgotPassword.$steps = neonForgotPassword.$container.find(".form-steps");
+	neonForgotPassword.$steps_list = neonForgotPassword.$steps.find(".step");
+	neonForgotPassword.step = 'step-1'; // current step
 	
+			
+	neonForgotPassword.$container.validate({
+		rules: {
+			
+			email: {
+				required: true,
+				email: true
+			}
+		},
+		
+		messages: {
+			
+			email: {
+				email: 'Invalid E-mail.'
+			}	
+		},
+		
+		highlight: function(element){
+			$(element).closest('.input-group').addClass('validate-has-error');
+		},
+		
+		
+		unhighlight: function(element)
+		{
+			$(element).closest('.input-group').removeClass('validate-has-error');
+		},
+		
+		submitHandler:function(ev)
+		{		
+			updateMsg($('.validateTips'),'Resetting password');
+			$('#myThinker').dialog('open');
+			var service = '/resetPassword',
+				email = $('input[name=email]') && $('input[name=email]').length && $('input[name=email]').length==1?$('input[name=email]').val()||null:null;
+			
+			if (!email) return;	
+			
+			$.ajax({
+				url:service,
+				type:'POST',
+				dataType:'json',
+				data:{email:email},
+				success:function(d) {
+					if (!d.success) 
+					{
+						var msg = d['msg']?d['msg']:'Error resetting password';
+						updateMsg($('.validateTips'),msg);
+						setTimeout(function() {$('#myThinker').dialog('close');},2000);
+						return;
+					}
+					
+					if (d.success == 1)
+					{
+						var msg = d['msg']?d['msg']:'Password Reset';
+						updateMsg($('.validateTips'),msg);
+						if (d.redirect) setTimeout(function() {window.location.href = d.redirect;}, 1000);
+					} else {
+						var msg = d['msg']?d['msg']:'Error resetting password';
+						updateMsg($('.validateTips'),msg);
+						setTimeout(function() {$('#myThinker').dialog('close');},2000);
+					}
+				},
+				
+				error:function(err)
+				{
+					var msg = 'Error resetting password';
+					updateMsg($('.validateTips'),msg);
+					setTimeout(function() {$('#myThinker').dialog('close');},2000);
+				}
+			});
+		}
+	});
+});
+</script>
 	<div class="login-header login-caret">
 		
 		<div class="login-content">
@@ -83,3 +187,6 @@
 		
 	</div>
 	
+<div id="myThinker" title="...">
+  <p class="validateTips">Submitting Journal Entry</p> 
+</div>
