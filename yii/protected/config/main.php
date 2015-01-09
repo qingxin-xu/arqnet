@@ -41,6 +41,7 @@ return array(
 	'import'=>array(
 		'application.models.*',
 		'application.components.*',
+		'ext.YiiMailer.YiiMailer'
 	),
 
 	'modules'=>array(
@@ -80,6 +81,7 @@ return array(
 		// uncomment the following to use a MySQL database
 		'db'=>array(
 			'connectionString' => 'mysql:host=localhost;dbname=arqbrand_dev01',
+			//'connectionString' => 'mysql:host=localhost;dbname=arq_test',
 			'emulatePrepare' => true,
 			'username' => $db_user,
 			'password' => $db_pass,
@@ -104,6 +106,9 @@ return array(
 				*/
 			),
 		),
+		'epassgen' => array(
+				'class' => 'ext.epasswordgenerator.EPasswordGenerator',
+		),
 	),
 
 	// application-level parameters that can be accessed
@@ -119,5 +124,5 @@ return array(
 		'relativeNoteImageDir'=>$img_dir_rel.DIRECTORY_SEPARATOR.'notes',
 		'relativeUserImageDir'=>$img_dir_rel.DIRECTORY_SEPARATOR.'user',
 		'analysis_engine_url'=>$analysis_engine_url,
-	),
+	)
 );
