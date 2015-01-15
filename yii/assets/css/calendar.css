@@ -204,6 +204,10 @@ div.tooltip_btn_wrapper {
 	margin:7px 0;
 }
 
-input.tooltip_tracker_delete {
+input.tooltip_tracker_delete,a.tooltip_tracker_viewMore {
 	float:right;
+}
+
+.clickable {
+	cursor:pointer;
 }

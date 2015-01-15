@@ -60,14 +60,13 @@ var eventRender = {
 	},
 	
 	registerEvent:function(element,event,view) {
-
-		if (eventHandler && eventHandler.createTooltip) {
-			eventHandler.createTooltip(element,event);
-		}
 		
 		if (view.name != 'month' || !event.subcategory || !this[event.subcategory]) {
 			if (this['render'+event.subcategory]) this['render'+event.subcategory](element,event,view);
 			else this.renderEvent(element,event,view);
+			if (eventHandler && eventHandler.createTooltip) {
+				eventHandler.createTooltip(element,event/*,this[event.subcategory][myD]*/);
+			}			
 			return;
 		}
 		
@@ -76,7 +75,7 @@ var eventRender = {
 		if (!this[event.subcategory]) return ;
 		var myD = event.start._i.split(/\s+/)[0];
 		if (!this[event.subcategory][myD]) {
-			this[event.subcategory][myD] = {element:element,count:1};
+			this[event.subcategory][myD] = {element:element,count:1,html:'',ids:{},index:myD,sc:event.subcategory};
 			this['render'+event.subcategory](element,event,view);
 			/*
 			element.find('.fc-content').addClass('monthViewIcon');
@@ -89,6 +88,10 @@ var eventRender = {
 			this.updateCounter(element, event.subcategory, myD)
 			element.css('display','none');
 		}
+		if (eventHandler && eventHandler.createTooltip) {
+			eventHandler.createTooltip(this[event.subcategory][myD].element,event,this[event.subcategory][myD]);
+		}
+
 	},
 	
 	/*
@@ -321,33 +324,7 @@ function submitCalendarEvent(data,input,appendTo)
 						} else {
 							eventHandler['Tracker'](event);
 						}
-						/*
-						if (!event.title) return;
-						if (!event.description) return;
-						if (!categories) return;
-						var eventTemplate;
-						//console.log('click',event);
-						for (var i in categories) {
-							for (var j in categories[i]) {
-								if (j == event.title) {
-									//console.log('THIS ONE',categories[i][j],event.description);
-									eventTemplate = $.extend({},categories[i][j]);
-									break;
-								}
-							}
-						}
-						if (eventTemplate) {
-							eventTemplate.values = {};
-							for (var i = 0;i<event.description.length;i++) {
-								var value = event.description[i].value;
-								for (var j in eventTemplate.labels) {
-									if (value.match(i)) {
-										
-									}
-								}
-							}
-						}
-						*/
+
 					},
 					events:function(start,end,timezone,callback) {
 						eventRender.unRegisterEvents();

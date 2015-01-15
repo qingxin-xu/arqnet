@@ -8,7 +8,7 @@
 <script type='text/javascript' src='assets/js/calendarEvents/Fields.js'></script>
 <script type='text/javascript' src='assets/js/calendarEvents/FormFactory.js'></script>
 <script type='text/javascript' src='assets/js/magicsuggest/magicsuggest.js'></script>
-<script type='text/javascript' src='assets/js/qtip/jquery.qtip-1.0.0-rc3.min.js'></script>
+<script type='text/javascript' src='assets/js/qtip/jquery.qtip-1.0.min.js'></script>
 <script type='text/javascript' src='assets/js/calendarEvents/eventHandler.js'></script>
 <script type="text/javascript">
 

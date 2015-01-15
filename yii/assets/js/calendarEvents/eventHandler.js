@@ -101,10 +101,10 @@ var eventHandler = {
 		});
 	},
 	
-	createTooltip:function(element,event) {
-		if (!element) return;
+	createTooltip:function(element,event,registeredEvent) {	
+		if (!element) return;	
 		if (!element.qtip) return;	
-		var tipContent = formFactory._renderTitleTooltip(event);
+		var tipContent = registeredEvent?formFactory._renderRegisteredEventTooltip(event,registeredEvent):formFactory._renderTitleTooltip(event);
 		if (tipContent) {
 			var myTip = element.qtip({
 				   content:{text:tipContent},
@@ -113,7 +113,7 @@ var eventHandler = {
 					   delay:300
 				   },
 				   style: { 
-				      width: 200,
+				      width: 200,			
 				      padding: 5,
 				      background: '#181818',
 				      color: '#FFFFFF',
@@ -138,14 +138,53 @@ var eventHandler = {
 				   }
 				});
 			var self = this;
+			
 			if (event && event.subcategory && $.inArray(event.subcategory,this.otherEvents)<0) {
 				tipContent.find('input.tooltip_tracker_delete').click(function() {
 					element.qtip('hide');
 					$('#deleteEventConfirmation').data('event',event).dialog('open');				
 				});
 			}
+
 		}
 	},
 	
+	/*
+	 * Connects to a specific item in a tooltip containing multiple events
+	 * When clicking on a specific item, the user is taken to the appropriate 
+	 * part of the application.  For example, if the user clicks on a specific
+	 * Note item in the tooltip, the application navigates to myJournals and displays
+	 * that particular day
+	 */
+	handleTooltipContentClick:function(element,subcategory,index,count) {
+		if (!subcategory || !index || count == null) return;
+		if (eventRender && eventRender[subcategory] && eventRender[subcategory][index] && 
+			eventRender[subcategory][index]['ids'] && eventRender[subcategory][index]['ids'][count]) {
+			var event = eventRender[subcategory][index]['ids'][count]['event']||null;
+			if (event.subcategory && eventHandler[event.subcategory]) {
+				eventHandler[event.subcategory](event);
+			} else {
+				eventHandler['Tracker'](event);
+			}			
+		}
+
+	},
+	
+	/*
+	 * Connects to the view more button on tooltips with more than about 5 
+	 * lines of events
+	 */
+	handleTooltipViewMoreClick:function(element,subcategory,index,count) {
+		if (!subcategory || !index || count == null) return;
+		if (eventRender && eventRender[subcategory] && eventRender[subcategory][index]) {
+			var element = eventRender[subcategory][index].element||null;
+			if (element) {
+				element.qtip('hide');
+				$('#calendar').fullCalendar('gotoDate',index);
+				$('#calendar').fullCalendar('changeView','agendaDay');
+			}
+		}
+	},
+
 	template:[].join("")
 };

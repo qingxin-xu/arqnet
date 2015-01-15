@@ -472,8 +472,36 @@ var formFactory = {
 		}
 	},
 	
+	/**
+	 * Add a line to the tooltip representing this event, but if there are
+	 * more than the specified amount, it is hidden, and the user must 
+	 * click on a view more button instead
+	 */
+	_renderRegisteredEventTooltip:function(event,registeredEvent) {
+		if (!event||!registeredEvent||!event.description) return;
+		var count = 0,
+			id = Math.floor((Math.random() * (new Date()).getTime()) + 1),
+			index = registeredEvent['index'],
+			sc = registeredEvent['sc'];
+			//html = "<span id='"+id+"'>"+registeredEvent['html']+"</span>"||'';
+		registeredEvent['ids'][registeredEvent['count']] = {event:event,id:id};
+		if ('count' in registeredEvent) count = registeredEvent['count'];
+		if (count <=5) {
+			html = "<span class='clickable' onclick='eventHandler.handleTooltipContentClick(this,\""+sc+"\",\""+index+"\","+count+");' id='"+id+"'>"+this._renderTitleTooltip(event,registeredEvent)+"</span>";
+			registeredEvent['html'] += html;
+		} else if (count==6) {
+			buttonHTML = "<a class='clickable tooltip_tracker_viewMore' onclick='eventHandler.handleTooltipViewMoreClick(this,\""+sc+"\",\""+index+"\","+count+")'>View More</a>";
+			registeredEvent['html']+=buttonHTML;
+		}
+		
+		html='<div class="tooltip_wrapper">'+registeredEvent['html']+'</div>';
+		
+		var myContent = $(html);
+		return myContent;
+	},
+	
 	// Title attribute for items of the calendar views
-	_renderTitleTooltip:function (event)
+	_renderTitleTooltip:function (event,leaveRaw)
 	{	
 		var exclude = ['_no_input_','boolean'/*,'QA: Asked:','QA: Answered:','Note:'*/];
 		var exceptions = {note:'Notes:'};
@@ -483,9 +511,15 @@ var formFactory = {
 		{
 			for (var i =0;i< event.description.length;i++)
 			{
+				var value = event.description[i].value;
+				if (leaveRaw) {
+					if (value.length>15) 
+						value = value.substring(0,15)+'...'
+				}
 				if (event.capping_event && event.capping_event>0) {
+					//console.log("VALUE?",event.descriptions[i].value);
 					if (event.description[i] && event.description[i].type && event.description[i].type=='cap_event')
-						html+= ""+event.description[i].value||' '+"<br>";
+						html+= ""+value||' '+"<br>";
 				} else {
 					//if (event.description[i].type !='_no_input_')
 					if ($.inArray(event.description[i].type,exclude) ==-1)
@@ -495,20 +529,25 @@ var formFactory = {
 							if (event.description[i].value.match(myRegExp)) {								
 								continue;
 							}
-						}
-						html += ""+(event.description[i].value||' ')+"<br>"; 
+						}		
+						html += ""+(value||' ')+"<br>"; 
 					}
 				}
 			}				
 		}	
 		var inputID = Math.floor(Math.random() * 26) + Date.now();
 		var buttonHTML = '';
-		if (event && event.subcategory && $.inArray(event.subcategory,eventHandler.doNotRemove)<0) 
-			buttonHTML = '<div class="tooltip_btn_wrapper"><input id="deleteBtn_'+inputID+'" class="tooltip_tracker_delete" type="button" value="Delete"/></div>';
 		
-		html='<div class="tooltip_wrapper">'+html+buttonHTML+'</div>';
-		var myContent = $(html);
-		return myContent;
+		if (leaveRaw) {
+			return html;
+		} else {
+			if (event && event.subcategory && $.inArray(event.subcategory,eventHandler.otherEvents)<0) 
+				buttonHTML = '<div class="tooltip_btn_wrapper"><input id="deleteBtn_'+inputID+'" class="tooltip_tracker_delete" type="button" value="Delete"/></div>';
+
+			html='<div class="tooltip_wrapper">'+html+buttonHTML+'</div>';
+			var myContent = $(html);
+			return myContent;
+		}
 	},
 
 	formTemplate:[
