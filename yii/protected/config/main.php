@@ -72,6 +72,7 @@ return array(
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
 				'<action:[\w\-]+>' => 'site/<action>',
+				'showScriptName'=> false,
 			),
 		),
 		'showScriptName' => false,
@@ -83,8 +84,8 @@ return array(
 			'connectionString' => 'mysql:host=localhost;dbname=arqbrand_dev01',
 			//'connectionString' => 'mysql:host=localhost;dbname=arq_test',
 			'emulatePrepare' => true,
-			'username' => $db_user,
-			'password' => $db_pass,
+			'username' => "root",
+			'password' => "amaxgs",
 			'charset' => 'utf8',
 		),
 		'errorHandler'=>array(
