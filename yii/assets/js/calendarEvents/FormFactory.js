@@ -67,11 +67,14 @@ var formFactory = {
 					if (response['calendar_event_id'])
 					{
 						eventObj['calendar_event_id'] = response['calendar_event_id'];
+						eventObj['calendar_event'] = response['calendar_event_id'];
 						eventObj['className'] +=' '+response['calendar_event_id'];
 					}
 					eventObj['editable'] = false;
 					
 					if (eventRender && eventRender.unRegisterEvents) eventRender.unRegisterEvents();
+					eventObj['title']?eventObj['subcategory'] = eventObj['title']:eventObj['subcategory']='';
+					if ('date_created' in response) {eventObj['date_created'] = response['date_created'];}	
 					$('#calendar').fullCalendar('renderEvent', eventObj, false);
 				} else {
 					var msg = 'Unable to create event';

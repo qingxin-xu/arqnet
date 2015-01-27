@@ -2304,7 +2304,8 @@ class SiteController extends Controller
 
 		echo CJSON::encode(array(
 				'success'=>1,
-				'calendar_event_id'=>$cal->calendar_event_id
+				'calendar_event_id'=>$cal->calendar_event_id,
+				'date_created'=>$cal->date_created
 		));
 		Yii::app()->end();
 	}
