@@ -132,7 +132,7 @@ function updateMsg( description,t ) {
 						</a>
 					</li>
 			<li>
-				<a href="/profile">
+				<a href="/settings">
 					<i class="entypo-doc-text"></i>
 					<span>SETTINGS</span>
 				</a>

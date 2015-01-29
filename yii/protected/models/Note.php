@@ -149,7 +149,7 @@ class Note extends CActiveRecord
 		return parent::model($className);
 	}
 	
-	public function recentJournals($from_date,$to_date) {
+	public static function recentJournals($from_date,$to_date) {
 		$list = Yii::app()->db->createCommand('select n.note_id,
 				n.content,
 				n.title,

@@ -2,6 +2,7 @@
 
 class MyStuff {
 	public static function log($str) {
+		$log_file = "";
 		if (file_exists('/home/thomp/www/arqnet/yii/output.log')) {
 			$log_file = '/home/thomp/www/arqnet/yii/output.log';
 		} elseif (file_exists('/home/arqbrand/public_html/yii/output.log')) {
@@ -24,7 +25,7 @@ class MyStuff {
 	}
 	
 	# expecting $postdata to be in json format or array/object
-	function curl_request($url,  $postdata = false) //single custom cURL request.
+	static function curl_request($url,  $postdata = false) //single custom cURL request.
 	{
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);

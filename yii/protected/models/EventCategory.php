@@ -114,7 +114,7 @@ class EventCategory extends CActiveRecord
 		return $list;
 	}
 	
-	public function _getCategories($cat)
+	public static function _getCategories($cat)
 	{
 		$categories = array();
 		foreach ($cat as $c)

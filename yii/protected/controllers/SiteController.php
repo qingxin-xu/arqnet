@@ -209,7 +209,7 @@ class SiteController extends Controller
 		$this->render('login',array('model'=>$model));
 	}
 	
-	public function beforeAction()
+	public function beforeAction($action = null)
 	{
 		$action_requiring_auth = array(
 			'dashboard',

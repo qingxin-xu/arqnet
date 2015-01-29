@@ -140,7 +140,7 @@ class Question extends CActiveRecord
 	 * @param unknown $user_id
 	 * @return unknown
 	 */
-	public function unroll($model) {
+	public static function unroll($model) {
 		if (!$model) return array();
 		
 		$choices = $model->questionChoices;
