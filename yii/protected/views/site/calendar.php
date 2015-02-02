@@ -226,7 +226,7 @@ jQuery(document).ready(function($){
 </script>
 
 <!-- progress start -->
-
+<link rel="stylesheet" href="/assets/css/progress_bar.css">
 <style>
 	* {
 		margin: 0;
@@ -295,7 +295,15 @@ jQuery(document).ready(function($){
 <div id="light" class="white_content">
 	<div class="close"><a href="javascript:void(0)" onclick="hide('light')"> close</a></div>
 	<div class="con">
-		<div id="progressbar" style="display: none"></div>
+		<div class="wrapper" id="progressbar" style="display: none">
+
+			<div class="barBg">
+				<div id="inprogress" class="bar cornflowerblue">
+					<div class="barFill"></div>
+				</div>
+			</div>
+		</div>
+<!--		<div id="progressbar" style="display: none"></div>-->
 		<div style="margin-left: -25px;" id="askConfirm">Import Facebook Updates?</div>
 		<!--		<input type="hidden" name="link" value="0"  onclick="change(this)">-->
 		<!--		<input type="radio" name="link" value="1" onclick="hide('light')">not now-->
@@ -359,9 +367,8 @@ jQuery(document).ready(function($){
 					return;
 				}
 				$("#progressbar").show();
-				$("#progressbar").progressbar({
-					value: response.start
-				});
+				
+				$("#inprogress").css('width', response.start+'%')
 				if (response.start == 100) {
 					alert("import success!");
 					window.location.href ="/calendar";

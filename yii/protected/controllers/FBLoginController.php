@@ -512,6 +512,7 @@ class FBLoginController extends Controller
 
 			}
 		}
+
 		if ($key >= count($statuse) - 1) {
 			$start = 100;
 		} else {
