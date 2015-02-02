@@ -68,35 +68,35 @@
 					<em>- or -</em>
 				</div> -->
 				
-				<!-- <div class="form-group">
-				
-					<button type="button" class="btn btn-default btn-lg btn-block btn-icon icon-left facebook-button">
-						Login with Facebook
-						<i class="entypo-facebook"></i>
-					</button>
-					
-				</div> -->
-				
-				<!-- 
-				
+				<div class="form-group">
+					<a href="FBLogin/connect/">
+						<button type="button" class="btn btn-default btn-lg btn-block btn-icon icon-left facebook-button">
+							Login with Facebook
+							<i class="entypo-facebook"></i>
+						</button>
+					</a>
+				</div>
+
+
+
 				You can also use other social network buttons
 				<div class="form-group">
-				
+
 					<button type="button" class="btn btn-default btn-lg btn-block btn-icon icon-left twitter-button">
 						Login with Twitter
 						<i class="entypo-twitter"></i>
 					</button>
-					
+
 				</div>
-				
+
 				<div class="form-group">
-				
+
 					<button type="button" class="btn btn-default btn-lg btn-block btn-icon icon-left google-button">
 						Login with Google+
 						<i class="entypo-gplus"></i>
 					</button>
-					
-				</div> -->				
+
+				</div>
 			</form>
 			
 			

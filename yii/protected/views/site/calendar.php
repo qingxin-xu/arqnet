@@ -225,6 +225,178 @@ jQuery(document).ready(function($){
 });
 </script>
 
+<!-- progress start -->
+
+<style>
+	* {
+		margin: 0;
+		padding: 0
+	}
+
+	html, body {
+		height: 100%;
+		width: 100%;
+		font-size: 12px
+	}
+
+	.white_content {
+		display: none;
+		position: absolute;
+		top: 25%;
+		left: 25%;
+		width: 50%;
+		padding: 6px 16px;
+		border: 12px solid #D6E9F1;
+		background-color: white;
+		z-index: 1002;
+		overflow: auto;
+	}
+
+	.black_overlay {
+		display: none;
+		position: absolute;
+		top: 0%;
+		left: 0%;
+		width: 100%;
+		height: 100%;
+		background-color: #f5f5f5;
+		z-index: 1001;
+		-moz-opacity: 0.8;
+		opacity: .80;
+		filter: alpha(opacity=80);
+	}
+
+	.close {
+		float: right;
+		clear: both;
+		width: 100%;
+		text-align: right;
+		margin: 0 0 6px 0
+	}
+
+	.close a {
+		color: #333;
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 700
+	}
+
+	.con {
+		text-indent: 1.5pc;
+		line-height: 21px
+	}
+	#showDateInput {
+		margin-left: -25px;
+	}
+</style>
+<div id="fade" class="black_overlay">
+
+</div>
+<div id="light" class="white_content">
+	<div class="close"><a href="javascript:void(0)" onclick="hide('light')"> close</a></div>
+	<div class="con">
+		<div id="progressbar" style="display: none"></div>
+		<div style="margin-left: -25px;" id="askConfirm">Import Facebook Updates?</div>
+		<!--		<input type="hidden" name="link" value="0"  onclick="change(this)">-->
+		<!--		<input type="radio" name="link" value="1" onclick="hide('light')">not now-->
+		<div id="showDateInput" style="display: none">
+			Select your date:<input type="text" id="selectDate" name="importDate" readonly="readonly"/>
+		</div>
+		<input type="button" class="btn btn-success" id="submitImport" value="import">
+		<input type="button" class="btn btn-success" id="notNow" onclick="javascript:window.location.href='/dashboard'" value="not now">
+
+	</div>
+</div>
+
+
+<script>
+	function change(obj)
+	{
+		if(obj.checked&&obj.value==0)
+			$("#showDateInput").hide();
+		else
+		if(obj.checked&&obj.value==1)
+			$("#showDateInput").show();
+		$('#selectDate').datepicker();
+	}
+
+
+
+
+	function getUrlParam(name)
+	{
+		var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+		var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+		if (r!=null) return unescape(r[2]); return null; //返回参数值
+	}
+	if(getUrlParam("progress") == 1 ){
+		show('light');
+	}else if(getUrlParam("progress") == 2){//settings点击sync 同步facebook信息
+		show('light');
+		$('#submitImport').hide();
+		$('#notNow').hide();
+		$('#askConfirm').hide();
+		processBar(0);
+	}
+
+	function processBar(key) {
+		$.ajax({
+			url: '/FBLogin/ProgressBar',
+			data: {
+//				since: $('#selectDate').val(),
+				key: key
+			},
+			method: 'POST',
+			dataType: 'json',
+			error: function (err) {
+
+//				$('.myErrorMsg_msg').text('Unable to save date/time of this item at this time.');
+//				$('#myErrorMsg').dialog('open');
+			},
+			success: function (response) {
+				if (response.success == 0) {
+					alert(response.msg);
+					return;
+				}
+				$("#progressbar").show();
+				$("#progressbar").progressbar({
+					value: response.start
+				});
+				if (response.start == 100) {
+					alert("import success!");
+					window.location.href ="/calendar";
+					return;
+				}
+				processBar(response.nextKey);
+			}
+
+		});
+	}
+	$("#submitImport").click(function () {
+//		$('#submitImport').attr('disabled', "true");
+		processBar(0);
+
+	});
+
+	function show(tag) {
+		var light = document.getElementById(tag);
+		var fade = document.getElementById('fade');
+		light.style.display = 'block';
+		fade.style.display = 'block';
+	}
+	function hide(tag) {
+		var light = document.getElementById(tag);
+		var fade = document.getElementById('fade');
+		light.style.display = 'none';
+		fade.style.display = 'none';
+	}
+
+
+</script>
+
+<!-- progress end -->
+
+
 <div class="calendar-env">
 	<?php 
 	/*

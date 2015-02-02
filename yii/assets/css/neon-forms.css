@@ -6546,6 +6546,7 @@ hr + .mail-env {
   -o-transition: all 300ms ease-in-out;
   -webkit-transition: all 300ms ease-in-out;
   transition: all 300ms ease-in-out;
+  height: 40px;
 }
 .login-page .login-form .form-group .facebook-button i,
 .login-page .login-form .form-group .twitter-button i,

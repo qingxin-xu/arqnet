@@ -1067,6 +1067,7 @@ class SiteController extends Controller
     	$user->gender = Yii::app()->request->getPost('gender', '');
     	
     	$get_dob = Yii::app()->request->getPost('birthdate', '');
+
     	$get_dob = explode('/', $get_dob);
     	$get_dob = $get_dob[2].'-'.$get_dob[0].'-'.$get_dob[1];
     	$user->birthday = $get_dob;
@@ -1117,7 +1118,17 @@ class SiteController extends Controller
     	));
     	$user->orientation_id = $orie->orientation_id;
     	$user->date_created = new CDbExpression('NOW()');
-    	
+		//if register from facebook
+		if (Yii::app()->request->getPost('loginWith', '') == "facebook") {
+			$user->image_id = Yii::app()->request->getPost('image_id', '');
+			$user->register_from = Yii::app()->request->getPost('register_from', '');
+			$user->facebook_url = Yii::app()->request->getPost('facebook_url', '');
+			$encrypt_pwd = Yii::app()->request->getPost('password', '');
+			//facebook login pwd
+			$encrypt_pwd = $this->encrypt($encrypt_pwd, 'E', 'danielcome');
+			$user->encrypt_pwd = $encrypt_pwd;
+
+		}
     	try {
     		$user_inserted = $user->save();
     	} catch (Exception $e) {
@@ -4497,6 +4508,45 @@ order by avg_rank desc";
 			Yii::app()->user->setFlash('test','Thank you for contacting us. We will respond to you as soon as possible.');
 		} else {
 			Yii::app()->user->setFlash('error','Error while sending email: '.$mail->getError());
+		}
+	}
+	/*
+	 * for facebook login pwd
+	 */
+	private function encrypt($string, $operation, $key = '')
+	{
+		$key = md5($key);
+		$key_length = strlen($key);
+		$string = $operation == 'D' ? base64_decode($string) : substr(md5($string . $key), 0, 8) . $string;
+		$string_length = strlen($string);
+		$rndkey = $box = array();
+		$result = '';
+		for ($i = 0; $i <= 255; $i++) {
+			$rndkey[$i] = ord($key[$i % $key_length]);
+			$box[$i] = $i;
+		}
+		for ($j = $i = 0; $i < 256; $i++) {
+			$j = ($j + $box[$i] + $rndkey[$i]) % 256;
+			$tmp = $box[$i];
+			$box[$i] = $box[$j];
+			$box[$j] = $tmp;
+		}
+		for ($a = $j = $i = 0; $i < $string_length; $i++) {
+			$a = ($a + 1) % 256;
+			$j = ($j + $box[$a]) % 256;
+			$tmp = $box[$a];
+			$box[$a] = $box[$j];
+			$box[$j] = $tmp;
+			$result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));
+		}
+		if ($operation == 'D') {
+			if (substr($result, 0, 8) == substr(md5(substr($result, 8) . $key), 0, 8)) {
+				return substr($result, 8);
+			} else {
+				return '';
+			}
+		} else {
+			return str_replace('=', '', base64_encode($result));
 		}
 	}
 }
