@@ -6,6 +6,26 @@ var myArq = myArq || {},
 	errorMsg = 'Unable to update your settings at this time',
 	thinkingMsg = 'Updating settings',
 	formID = '#userSettings';
+function auto_update(third) {
+	$.ajax({
+		url: '/AutoUpdate',
+		data: {
+			auto_update: $("#is_auto_update").is(':checked'),
+			third_party: third
+		},
+		method: 'POST',
+		dataType: 'json',
+		success: function (response) {
+			if(response.success == 1) {
+				return;
+			} else {
+				alert(response.error);
+			}
+
+		}
+
+	});
+}
 
 function resetPasswordFields()
 {

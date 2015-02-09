@@ -367,7 +367,7 @@ jQuery(document).ready(function($){
 					return;
 				}
 				$("#progressbar").show();
-				
+
 				$("#inprogress").css('width', response.start+'%')
 				if (response.start == 100) {
 					alert("import success!");

@@ -93,13 +93,25 @@ jQuery(document).ready(function($){
 							<span class="description"></span>
 						</div>
 					</div>
-	
+
 					<div class="form-group">
-						<label for="facebook_url" class="col-sm-3 control-label">Facebook URL</label>
-						
+						<label for="facebook_url" class="col-sm-3 control-label">Facebook</label>
+
 						<div class="col-sm-5">
-							<input type="text" class="form-control" name="facebook_url" id="facebook-url" data-validate="required,url" value="<?php echo $user->facebook_url; ?>">
+							<?php if(!empty($user['facebook_url'])) { ?>
+								<a href="<?php echo $user['facebook_url']?>" target="_blank"><?php echo $user['facebook_url']?></a>
+							<?php } else { ?>
+								<?php if (empty($is_bound)) { ?>
+									<a href="/FBLogin/BandingStatus/"><input type="button" class="btn btn-success" value="Link"></a>
+									<!--							<input type="button" class="btn btn-success" value="link">-->
+								<?php } else{ ?>
+									<span class="description"><a href="<?php echo $third_part_account; ?>" target="_blank"><?php echo $third_part_account; ?></a></span>
+									<a href="/unlink?param=1" class="btn btn-success">Unlink</a>
+									<a href="/FBLogin/JustImport/"><input class="btn btn-success" type="button" value="sync"></a>
+<!--									<input id="is_auto_update" --><?php //if($is_auto == 1){echo "checked";}?><!-- type="checkbox" value="1" onclick="auto_update('facebook')"/>Auto_update-->
+								<?php } }?>
 						</div>
+
 					</div>
 
 					<div class="form-group">

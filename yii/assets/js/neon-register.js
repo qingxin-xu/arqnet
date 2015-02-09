@@ -60,10 +60,6 @@ var neonRegister = neonRegister || {};
 					required: true
 				},
 				
-				lname: {
-					required: true
-				},
-				
 				birthdate: {
 					required: true
 				},

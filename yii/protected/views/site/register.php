@@ -58,7 +58,7 @@
 									<i class="entypo-user"></i>
 								</div>
 								
-								<input type="text" class="form-control" name="lname" id="lname" placeholder="Last Name" autocomplete="off" />
+								<input type="text" class="form-control" name="lname" id="lname" placeholder="Last Name(Optional)" autocomplete="off" />
 							</div>
 						</div>
 
@@ -88,8 +88,94 @@
 								<div class="input-group-addon">
 									<i class="entypo-calendar"></i>
 								</div>
-								
-								<input type="text" class="form-control" name="birthdate" id="birthdate" placeholder="Date of Birth (DD/MM/YYYY)" data-mask="date" autocomplete="off" />
+
+								<input type="hidden" class="form-control" name="birthdate" id="birthdate" value="1976-01-01" autocomplete="off"/>
+								<script type="text/javascript">
+
+									var numDays = {
+										'1': 31, '2': 28, '3': 31, '4': 30, '5': 31, '6': 30,
+										'7': 31, '8': 31, '9': 30, '10': 31, '11': 30, '12': 31
+									};
+
+									function setDays(oMonthSel, oDaysSel, oYearSel)
+									{
+										var nDays, oDaysSelLgth, opt, i = 1;
+										nDays = numDays[oMonthSel[oMonthSel.selectedIndex].value];
+										if (nDays == 28 && oYearSel[oYearSel.selectedIndex].value % 4 == 0)
+											++nDays;
+										oDaysSelLgth = oDaysSel.length;
+										if (nDays != oDaysSelLgth)
+										{
+											if (nDays < oDaysSelLgth)
+												oDaysSel.length = nDays;
+											else for (i; i < nDays - oDaysSelLgth + 1; i++)
+											{
+												opt = new Option(oDaysSelLgth + i, oDaysSelLgth + i);
+												oDaysSel.options[oDaysSel.length] = opt;
+											}
+										}
+										var oForm = oMonthSel.form;
+										var month = oMonthSel.options[oMonthSel.selectedIndex].value;
+										var day = oDaysSel.options[oDaysSel.selectedIndex].value;
+										var year = oYearSel.options[oYearSel.selectedIndex].value;
+										oForm.birthdate.value = year + '-' + month + '-' + day;
+									}
+
+								</script>
+								<div id="selected"  style="margin-left: -70px;margin-top: 3px;" >
+									<select name="month" id="month" onchange="setDays(this,day,year)">
+										<option value="1">January</option>
+										<option value="2">February</option>
+										<option value="3">March</option>
+										<option value="4">April</option>
+										<option value="5">May</option>
+										<option value="6">June</option>
+										<option value="7">July</option>
+										<option value="8">August</option>
+										<option value="9">September</option>
+										<option value="10">October</option>
+										<option value="11">November</option>
+										<option value="12">December</option>
+									</select>
+									<select name="day" id="day" onchange="setDays(month,this,year)">
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+										<option value="6">6</option>
+										<option value="7">7</option>
+										<option value="8">8</option>
+										<option value="9">9</option>
+										<option value="10">10</option>
+										<option value="11">11</option>
+										<option value="12">12</option>
+										<option value="13">13</option>
+										<option value="14">14</option>
+										<option value="15">15</option>
+										<option value="16">16</option>
+										<option value="17">17</option>
+										<option value="18">18</option>
+										<option value="19">19</option>
+										<option value="20">20</option>
+										<option value="21">21</option>
+										<option value="22">22</option>
+										<option value="23">23</option>
+										<option value="24">24</option>
+										<option value="25">25</option>
+										<option value="26">26</option>
+										<option value="27">27</option>
+										<option value="28">28</option>
+										<option value="29">29</option>
+										<option value="30">30</option>
+										<option value="31">31</option>
+									</select>
+									<select name="year" id="year" onchange="setDays(month,day,this)">
+										<?php foreach ($years as $val){?>
+											<option value="<?php echo $val;?>"><?php echo $val;?></option>
+										<?php } ?>
+									</select>
+								</div>
 							</div>
 						</div>
 
@@ -177,8 +263,13 @@
 								<div class="input-group-addon">
 									<i class="entypo-user"></i>
 								</div>
-								
-								<input type="text" class="form-control" name="ethnicity" id="ethnicity" placeholder="Ethnicity" autocomplete="off" />
+								<select style="background-color: #0A0A0A;" class="form-control" name="ethnicity" id="ethnicity">
+									<?php foreach ($ethnicity as $val) {
+										echo '<option value=' . $val['ethnicity_id'] . '>' . $val['description'] . '</option>';
+									}
+									?>
+								</select>
+<!--								<input type="text" class="form-control" name="ethnicity" id="ethnicity" placeholder="Ethnicity" autocomplete="off" />-->
 							</div>
 						</div>
 

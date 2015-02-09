@@ -234,7 +234,15 @@ class SiteController extends Controller
 	{
 		$this->layout = 'arqLayout1';
 		$this->setPageTitle('Register');
-		$this->render('register');
+		$ethnicity = Ethnicity::model()->findAll();
+		$now = Date("Y");
+		//70岁封顶 10岁开始
+		for ($i = $now - 70; $i <= $now - 10; $i++) {
+			$years[] = $i;
+		}
+
+		$this->render('register', array('ethnicity' => $ethnicity,
+			'years' => $years));
 	}
 	
 	public function actionResetPassword() {
@@ -475,14 +483,94 @@ class SiteController extends Controller
 		);
 		$cat = EventCategory::model()->with('eventSubcategories')->findAll('t.name=:_name',array(':_name'=>'Milestones'));
 		$milestones = EventCategory::_getCategories($cat);
+		$is_bound = BindingAccount::model()->findAllByAttributes(array('arq_id' => Yii::app()->user->id));
+		//被绑定的第三方账户链接
+		$third_part_account = null;
+		if (!empty($is_bound)) {
+			$third_part_account =$is_bound[0]['third_part_account'];
+		}
+		$userIcon = Image::model()->findByAttributes(
+			array('image_id' => $user['image_id'])
+		);
+		if (isset($userIcon['path'])) {
+			$fromFacebook = strpos($userIcon['path'], "https://");
+			if ($fromFacebook === false) {
+				$newImage = explode("\\", $userIcon['path']);
+				$userIcon['path'] = "/" . $newImage[1] . '/' . $newImage[2] . '/' . $newImage[3] . '/' . $newImage[5];
+			}
+		}
+		$image_path = null;
+		if (!empty($user->image_id)) {
+			$image_path = Image::model()->findAllByPk($user->image_id);
+		}
+
+		if ($image_path && $image_path[0]['path']) {
+			$fromFacebook = strpos($image_path[0]['path'], "https://");
+			if ($fromFacebook === false) {
+				$newImage = explode("\\", $image_path[0]['path']);
+				$image_path = "/" . $newImage[1] . '/' . $newImage[2] . '/' . $newImage[3] . '/' . $newImage[5];
+			} else {
+				$image_path = $image_path[0]['path'];
+			}
+		} else {
+			$image_path = "";
+		}
 		$this->layout = 'arqLayout2';
 		$this->setPageTitle('Settings');
 		$this->render('settings', array(
 				'user'=>$user,
-				'milestones'=>$milestones
+				'milestones'=>$milestones,
+				'is_bound' =>$is_bound,
+				'third_part_account' => $third_part_account,
+				'is_auto' => isset($is_bound[0]['auto_update'])?$is_bound[0]['auto_update']:"",
+				'image_path'=>$image_path
 			));
 	}
-	
+
+	/**
+	 * unlink the bound account from settings page
+	 */
+	public function actionUnlink()
+	{
+		$unlinkId = Yii::app()->getRequest()->getQuery('param');
+		$user_id = Yii::app()->user->id;
+		switch ($unlinkId) {
+			case 1:
+				BindingAccount::model()->deleteAllByAttributes(array('arq_id' => $user_id));
+
+				$this->redirect("/settings");
+				break;
+			default:
+				$this->redirect("/settings");
+
+		}
+	}
+
+	/**
+	 * facebook link account auto update notes in the back_end
+	 */
+	public function actionAutoUpdate() {
+		$is_auto_update = Yii::app()->request->getPost('auto_update', '');
+		$third_party = Yii::app()->request->getPost('third_party', '');
+		if($third_party) {
+			//判断该账户是否已经绑定相关第三方账户
+			$is_bound = BindingAccount::model()->findByAttributes(array('arq_id'=> Yii::app()->user->id,'third_party'=>$third_party));
+			if($is_bound) {
+				//更新autoflag
+				BindingAccount::model()->updateByPk($is_bound['binding_account_id'], array('auto_update'=>$is_auto_update == 'true'?1:0));
+				echo CJSON::encode(array(
+					'success' => 1,
+					'error' => ''
+				));
+			}
+
+		} else {
+			echo CJSON::encode(array(
+				'success' => 0,
+				'error' => 'Operation Failed'
+			));
+		}
+	}
 	public function actionCalendar()
 	{
 		$user_id = Yii::app()->user->Id;
@@ -1040,6 +1128,20 @@ class SiteController extends Controller
 			'rememberMe'=>true,
 		);
 		if ($auth->validate() && $auth->login()) {
+			// if the user is linded to the third party and has click auto-update button
+			$is_bound = BindingAccount::model()->findAllByAttributes(array('arq_id' => Yii::app()->user->id));
+			if ($is_bound) {
+				if ($is_bound[0]['third_party'] == "facebook" && $is_bound[0]['auto_update'] == 1) {
+					Yii::app()->session['auto_update'] = 1;
+					header('Content-type: application/json');
+					echo CJSON::encode(array(
+						'success' => 1,
+						'redirect' => '/FBLogin/connect/',
+					));
+					Yii::app()->end();
+
+				}
+			}
 			header('Content-type: application/json');
 			echo CJSON::encode(array(
 				'success'=>1,
@@ -1068,8 +1170,8 @@ class SiteController extends Controller
     	
     	$get_dob = Yii::app()->request->getPost('birthdate', '');
 
-    	$get_dob = explode('/', $get_dob);
-    	$get_dob = $get_dob[2].'-'.$get_dob[0].'-'.$get_dob[1];
+//    	$get_dob = explode('/', $get_dob);
+//    	$get_dob = $get_dob[2].'-'.$get_dob[0].'-'.$get_dob[1];
     	$user->birthday = $get_dob;
     	
     	$user->location = Yii::app()->request->getPost('location', '');
@@ -1632,7 +1734,7 @@ class SiteController extends Controller
 	    	/* upload tags */
 	    	if (Yii::app()->request->getPost('tags', '')!='') {
 	    		$tags = Yii::app()->request->getPost('tags');
-	    		$tags = split(',', $tags);
+	    		$tags = @split(',', $tags);
 	    		$current_tags = array();
 	    		foreach ($tags as $get_tag) {
 	    			$get_tag = trim($get_tag);

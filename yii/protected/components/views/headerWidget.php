@@ -8,8 +8,8 @@
 						<!-- Profile Info -->
 			<li class="profile-info dropdown"><!-- add class "pull-right" if you want to place this from right -->
 				
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-					<?php 
+				<a href="#" class="dropdown-toggle " data-toggle="dropdown">
+					<?php
 						$img = "default_user.jpg";
 						if (!is_null($image))
 						{

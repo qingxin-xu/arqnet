@@ -27,7 +27,7 @@ class FBLoginController extends Controller
 	public function actionBandingStatus()
 	{
 		Yii::app()->session['binding_status'] = 1;
-		$this->redirect("/brandhorse/yii/index.php/FBLogin/connect/");
+		$this->redirect("/FBLogin/connect/");
 		exit;
 	}
 
@@ -38,7 +38,7 @@ class FBLoginController extends Controller
 	public function actionJustImport()
 	{
 		Yii::app()->session['for_import'] = 1;
-		$this->redirect("/brandhorse/yii/index.php/FBLogin/connect/");
+		$this->redirect("/FBLogin/connect/");
 		exit;
 	}
 	
@@ -69,7 +69,7 @@ class FBLoginController extends Controller
 					));
 
 					if ($is_bound) {
-						$this->redirect("/brandhorse/yii/index.php/settings/index?error=2");
+						$this->redirect("/settings?error=2");
 						exit;
 					} else {
 						//开始绑定
@@ -80,14 +80,14 @@ class FBLoginController extends Controller
 						$banding_account->third_part_account = $me['link'];
 						$banding_account->date_created = date("y-m-d");
 
-						$banding_account->save(false, $banding_account);
+						$banding_account->save();
 						//绑定成功 改变session
 						if ($banding_account) {
 							Yii::app()->session['binding_status'] = 0;
 						}
 //						Yii::app()->session['fb_user_id'] = $username_exists['user_id'];
 						//绑定成功后，弹出导入blog选项
-						$this->redirect("/brandhorse/yii/index.php/calendar/index?progress=1");
+						$this->redirect("/calendar?progress=1");
 						exit;
 
 
@@ -105,9 +105,9 @@ class FBLoginController extends Controller
 
 					if ($is_bound && $me) {
 						//$this->getUserMessage($timePeriod = null);
-						$this->redirect("/brandhorse/yii/index.php/calendar/index?progress=2");
+						$this->redirect("/calendar?progress=2");
 					} else {
-						$this->redirect("/brandhorse/yii/index.php/settings/index?error=1");
+						$this->redirect("/settings?error=1");
 					}
 
 				}
@@ -295,13 +295,15 @@ class FBLoginController extends Controller
 	public function getUserMessage($timePeriod = null)
 	{
 		$facebook = new Facebook($this->config);
-		$fql = "SELECT post_id,message,updated_time,attachment FROM stream WHERE source_id = me() ";
+
+		$fql = "SELECT post_id,message,updated_time,attachment FROM stream WHERE source_id = me() AND is_hidden = 0
+			ORDER BY created_time
+			DESC LIMIT 1000000";
 		$param = array(
 			'method' => 'fql.query',
 			'query' => $fql
 		);
 		$statuse = $facebook->api($param);
-
 		if ($statuse) {
 			foreach ($statuse as $blogList) {
 				$newBlog = explode('_', $blogList['post_id']);
@@ -319,13 +321,12 @@ class FBLoginController extends Controller
 					$update_res = Image::model()->updateByPk($is_inserted['fb_video_ids'], array('path' => $newPath));
 
 				}
-
+				$facebookNote = $blogList['message'];
 				//只入库不存在的博客
 				if (!$is_inserted) {
 					$note = new Note();
 					//存储facebook中post的视频或者图片
 					if (isset($blogList['attachment']['media']) && !empty($blogList['attachment']['media']) && isset($blogList['attachment']['fb_object_type'])) {
-
 						//如果为图片
 						if ($blogList['attachment']['fb_object_type'] == "photo") {
 							$currentPostImage = $blogList['attachment']['media'];
@@ -334,7 +335,7 @@ class FBLoginController extends Controller
 								$img = new Image();
 								if (isset($postImages['photo']['images'][1])) {
 									$img->path = $postImages['photo']['images'][1]['src'];
-									$img->save(false, $img);
+									$img->save();
 									$postImageID[] = $img->image_id;
 								}
 
@@ -352,26 +353,34 @@ class FBLoginController extends Controller
 
 							$img = new Image();
 							$img->path = $postFBVideo['video']['source_url'];
-							$img->save(false, $img);
+							$img->save();
 							$note->fb_video_ids = $img->image_id;
 
 
 						}
 
 
+
 					}
 
-					$note->user_id = Yii::app()->user->Id;
+					if(empty($blogList['message'])) {
+						if(isset($blogList['attachment']['fb_object_type'])) {
+							$facebookNote = "just media";
+						}
 
-					$note->title = substr($blogList['message'], 0, 20);
-					
-					$note->content = $this->addcontentlink($blogList['message']);
+					}
+					$note->user_id = Yii::app()->user->Id;
+					$note->title = substr($facebookNote, 0, 20);
+					$note->content = $this->addcontentlink($facebookNote);
 					$note->date_created = date('Y-m-d H:i:s', $blogList['updated_time']);
 					$note->fb_message_id = $blogList['post_id'];
 					$note->publish_date = date("y-m-d");
 
-					if ($blogList['message'] != "" || isset($blogList['attachment']['media']['photo']['images']) || isset($blogList['attachment']['media']['video']['source_url'])) {
-						$note->save(false, $note);
+
+					if (!empty($blogList['message']) || isset($blogList['attachment']['media']['photo']['images']) || isset($blogList['attachment']['media']['video']['source_url'])) {
+
+						$note->save();
+
 					}
 				}
 			}
@@ -480,7 +489,7 @@ class FBLoginController extends Controller
 
 						$img = new Image();
 						$img->path = $postFBVideo['video']['source_url'];
-						$img->save(false, $img);
+						$img->save();
 						$note->fb_video_ids = $img->image_id;
 
 
@@ -505,7 +514,7 @@ class FBLoginController extends Controller
 				$note->fb_message_id = $fb_message_id[1];
 				$note->publish_date = date("y-m-d");
 				if(!empty($statuse[$key]['message']) || isset($statuse[$key]['attachment']['fb_object_type'])) {
-					$note->save(false, $note);
+					$note->save();
 				}
 				
 				
