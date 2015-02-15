@@ -183,7 +183,13 @@ jQuery(document).ready(function($){
 		 		{
 		 			$title = 'Not Yet Titled';
 		 			if ($entry['title']) $title = $entry['title'];
-		 			else $title = str_replace("<br>"," ",$entry['content']);
+		 			else {
+						$_content = strip_tags($entry['content']);
+						if (strlen($_content)>75) {
+							$_content = substr($_content,0,75)." ...";
+						}
+						$title = str_replace("<br>"," ",$_content);
+					}
 		 			$row_class='note_row';
 		 			if ($count%2 != 0) {$row_class = $row_class.' oddRow';}
 		 			echo "<tr class='journalEntryContent ".$row_class."' id='".$entry['note_id']."' ><td class='note_title'>".$title;

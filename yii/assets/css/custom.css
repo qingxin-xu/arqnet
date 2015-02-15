@@ -175,6 +175,32 @@ table > thead:first-child > tr:first-child > th.qa_header,table > tbody > tr > t
 	border:none;
 }
 
+.mce-panel,.mce-toolbar {
+	border:none;
+	background-image:none;
+}
+
+.mce-content-body  {
+	background-color:#181818;
+	color:#FFFFFF;
+	font-size:14px;
+}
+
+.mce-container {
+	background-color:#181818;
+	border:1px solid rgb(50,50,50);
+}
+
+.mce-container .mce-menubtn button span {
+	color:#FFFFFF
+}
+
+.mce-widget.mce-btn,
+.mce-menubar .mce-menubtn:hover,.mce-menubar .mce-menubtn:focus {
+	background:none;
+}
+
+div.mce-container button,
 input[type=submit],button[type=submit],button[type=button] {
 padding:0 12px;
 background: -webkit-linear-gradient(top,  rgba(45, 31, 84, 1) 0%,rgba(54, 37, 105, 1) 47%,rgba(45, 31, 84, 1) 53%);
@@ -186,6 +212,7 @@ border-radius:3px;
 color:#FFFFFF;
 }
 
+div.mce-container button,
 button.skip,button.flag,button.deleteButton,input.qa_analysis,
 form input[value=Cancel],button.image_upload,button.next,button.previous,button.edit,button.myJournals_new,input.tooltip_tracker_delete,.tooltip_tracker_viewMore {
 	background: -webkit-linear-gradient(top, rgb(3,3,3) 0%,rgb(23,23,23) 20%,rgb(36,36,36) 40%,rgb(18,18,18) 55%);

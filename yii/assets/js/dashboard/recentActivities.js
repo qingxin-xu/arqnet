@@ -151,9 +151,9 @@ var recentActivities = {
 	renderNote:function(html,activity) {
 		if (!html) return html;
 		if (!activity) return html;
-		html = html.replace(/{EVENT}/,'note');
+		html = html.replace(/{EVENT}/,'note');	
 		if (activity.description.length>0) {
-			var value = activity.description[0].value;
+			var value = arqUtils && arqUtils.strip?arqUtils.strip(activity.description[0].value):activity.description[0].value;
 			if (value.length>19) value = value.substring(0,19)+'...';
 			html = html.replace(/{ACTIVITY}/,'Note: '+value);
 			html = this.setID(html,activity.description[0]);
