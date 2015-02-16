@@ -229,7 +229,28 @@ class SiteController extends Controller
 		
 		return true;
 	}
+	/**
+	 * Get location autocomplete data.
+	 */
+	public function actionSearchLocal()
+	{
+		if ($_GET['name'] != "") {
+			$city = $_GET['name'];
+		}
+		
+		$criteria = new CDbCriteria();
 
+		$criteria->addSearchCondition('city', $city);
+		
+		$location = Cities::model()->findAll($criteria);
+		foreach ($location as $val) {
+			echo $val['city'] . ', ' . $val['state_code'] . "\n";
+
+		}
+		
+		
+	}
+	
 	public function actionRegister()
 	{
 		$this->layout = 'arqLayout1';
@@ -503,18 +524,19 @@ class SiteController extends Controller
 		if (!empty($user->image_id)) {
 			$image_path = Image::model()->findAllByPk($user->image_id);
 		}
-
-		if ($image_path && $image_path[0]['path']) {
+		$image_path = $image_path[0]['path'];
+	/*	if ($image_path && $image_path[0]['path']) {
 			$fromFacebook = strpos($image_path[0]['path'], "https://");
 			if ($fromFacebook === false) {
-				$newImage = explode("\\", $image_path[0]['path']);
+				$newImage = explode("\\", $image_path[0]['path']);					
 				$image_path = "/" . $newImage[1] . '/' . $newImage[2] . '/' . $newImage[3] . '/' . $newImage[5];
-			} else {
+			} else{ 
 				$image_path = $image_path[0]['path'];
 			}
 		} else {
 			$image_path = "";
 		}
+		*/
 		$this->layout = 'arqLayout2';
 		$this->setPageTitle('Settings');
 		$this->render('settings', array(
@@ -599,17 +621,83 @@ class SiteController extends Controller
 
 		$start_date = date('Y-m-d',strtotime('-1 month',strtotime($end_date)  ) );
 		$myEvents = $this->calendarActivities($start_date,$end_date,$user_id);
-	
+
+		//todo add by daniel
+		//$events = CalendarEvent::getEvents(Yii::app()->user->Id);
+		$events = array();
+		$userId = Yii::app()->user->Id;
+		$allYourNotes = Note::model()->findAllByAttributes(array('user_id' => $userId));
+
+		if (!empty($allYourNotes)) {
+			foreach ($allYourNotes as $key => $YourNotes) {
+				if (strlen($YourNotes['title']) > 15) {
+					$YourNotes['title'] = substr($YourNotes['title'], 0, 12) . "...";
+				}
+				$yourImage = "";
+				$notesFrom = "arq";
+				if(!empty($YourNotes['fb_message_id'])) {
+					$notesFrom = "facebook";
+				}
+
+				if (!empty($YourNotes['fb_image_ids'])) {
+					$yourImage = Image::model()->findByAttributes(array('image_id' => $YourNotes['fb_image_ids']));
+				}
+
+				$yourVideo = "";
+				if (!empty($YourNotes['fb_video_ids'])) {
+					$yourVideo = Image::model()->findByAttributes(array('image_id' => $YourNotes['fb_video_ids']));
+				}
+				$events[$key]['videos'] = empty($yourVideo) ? "" : $yourVideo['path'];
+				$events[$key]['images'] = empty($yourImage) ? "" : $yourImage['path'];
+
+				$day_event = explode(" ", $YourNotes['date_created']);
+				$events[$key]['event_date'] = $YourNotes['date_created'];
+				$events[$key]['day_event'] = $day_event[0];
+				$events[$key]['event_type'] = 'facebook';
+				$events[$key]['event_name'] = $YourNotes['title'];
+				$events[$key]['description'] = $YourNotes['content'];
+				$events[$key]['notesFrom'] = $notesFrom;
+
+			}
+		}
+
+		$eventsHash = array('tracker' => array(), 'events' => array(), 'other' => array());
+		if (isset($userIcon['path'])) {
+			$fromFacebook = strpos($userIcon['path'], "https://");
+			if ($fromFacebook === false) {
+				$newImage = explode("\\", $userIcon['path']);
+				$userIcon['path'] = "/" . $newImage[1] . '/' . $newImage[2] . '/' . $newImage[3] . '/' . $newImage[5];
+			}
+		}
+		//判断notes来源以及类型
+		foreach ($events as $ev) {
+			if (strcmp($ev['event_type'], 'tracker') == 0) {
+				array_push($eventsHash['tracker'], $ev);
+			} else if (strcmp($ev['event_type'], 'events') == 0) {
+				array_push($eventsHash['events'], $ev);
+			} else {
+				array_push($eventsHash['other'], $ev);
+			}
+		}
 
 		$this->layout = 'arqLayout2';
 		$this->setPageTitle('Calendar');
-		$this->render('calendar',array(
-				'categories'=>$categories,
-				'myEvents'=>$myEvents,
-				'goto'=>$atDate,
-				'eventData'=>$eventData,
-				'milestones'=>$milestones
+		$this->render('calendar', array(
+			'data' => $eventsHash,
+			'goto' => $atDate,
+			'eventData' => $eventData,
+			'milestones'=>$milestones,
+			'categories'=>$categories,
+			'myEvents'=>$myEvents,
 		));
+
+//		$this->render('calendar',array(
+//				'categories'=>$categories,
+//				'myEvents'=>$myEvents,
+//				'goto'=>$atDate,
+//				'eventData'=>$eventData,
+//				'milestones'=>$milestones
+//		));
 	}
 	
 	/*
@@ -1142,6 +1230,7 @@ class SiteController extends Controller
 
 				}
 			}
+			
 			header('Content-type: application/json');
 			echo CJSON::encode(array(
 				'success'=>1,
@@ -1161,8 +1250,8 @@ class SiteController extends Controller
 	
 	public function actionDoRegister() {
 		if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
-    	    throw new CHttpException('403', 'Forbidden access.');
-    	}
+    	    		throw new CHttpException('403', 'Forbidden access.');
+    		}
     	$user = new User();
     	$user->first_name = Yii::app()->request->getPost('fname', '');
     	$user->last_name = Yii::app()->request->getPost('lname', '');
@@ -2233,10 +2322,12 @@ class SiteController extends Controller
 		/* upload user image */
 		$image_id = 0;
 		if ($_FILES and $_FILES['user_image'] and $_FILES['user_image']['size']>0) {
+			$format = explode('.', $_FILES['user_image']['name']);
+			$_FILES['user_image']['name'] = strtotime("now") . "." . $format[1];
 			$img = new Image();
 			$img->save();
 			mkdir(Yii::app()->params['userImageDir'].DIRECTORY_SEPARATOR.$img->image_id);
-			$new_filename = Yii::app()->params['userImageDir'].DIRECTORY_SEPARATOR.$img->image_id.DIRECTORY_SEPARATOR.$_FILES['user_image']['name'];
+			$new_filename = Yii::app()->params['userImageDir'].DIRECTORY_SEPARATOR.$img->image_id.DIRECTORY_SEPARATOR.$_FILES['user_image']['name'];						
 			$new_relative_filename = Yii::app()->params['relativeUserImageDir'].DIRECTORY_SEPARATOR.$img->image_id.DIRECTORY_SEPARATOR.$_FILES['user_image']['name'];
 			move_uploaded_file($_FILES['user_image']['tmp_name'], $new_filename);
 			$img->path = $new_relative_filename;

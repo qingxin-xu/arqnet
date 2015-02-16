@@ -32,8 +32,8 @@ function _handleRegistrationError(response)
 				// Remove loging-in state
 				console.log('here');
 				//$(".login-page").removeClass('logging-in');
-				$('#step-2').removeClass('current');
-				$('#step-1').addClass('current');
+				//$('#step-2').removeClass('current');
+				//$('#step-1').addClass('current');
 
 			});
 		},3000);		
@@ -53,7 +53,16 @@ var neonRegister = neonRegister || {};
 		neonRegister.$steps_list = neonRegister.$steps.find(".step");
 		neonRegister.step = 'step-1'; // current step
 		
-		
+		$("#location").autocomplete(
+		            "/SearchLocal",
+		            {
+		                width: 200,
+		                matchContains: false,
+		                selectFirst: true,
+		                scroll:true,
+		                extraParams: {name:function(){return $("#location").val();},action:"getAjaxInfo"}
+		            }
+		);
 		neonRegister.$container.validate({
 			rules: {
 				fname: {

@@ -364,12 +364,18 @@ jQuery(document).ready(function($){
 			success: function (response) {
 				if (response.success == 0) {
 					alert(response.msg);
+					window.location.href ="/calendar";
 					return;
 				}
 				$("#progressbar").show();
-
-				$("#inprogress").css('width', response.start+'%')
-				if (response.start == 100) {
+				if(response.start >= 100) {
+					$("#inprogress").css('width', '100%')
+				} else {
+					$("#inprogress").css('width', response.start+'%')	
+				}
+				
+				if (response.finish) {
+					$("#inprogress").css('width', '100%')
 					alert("import success!");
 					window.location.href ="/calendar";
 					return;
@@ -631,32 +637,72 @@ jQuery(document).ready(function($){
 	
 </footer>	
 	<link rel="stylesheet" href="/assets/js/jvectormap/jquery-jvectormap-1.2.2.css">
-	<!--  <script src="/assets/js/fullcalendar/fullcalendar.js"></script>-->
+<!--	  <script src="/assets/js/fullcalendar/fullcalendar.js"></script>-->
 	
 	<script src='/assets/js/fullcalendar-2.2.5/lib/moment.min.js'></script>
 	<script src='/assets/js/fullcalendar-2.2.5/fullcalendar.js'></script>
-	
+
 	<script src="/assets/js/neon-calendar.js"></script>
 	<script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
 
 	<script type='text/javascript'>
 		var initialDate = <?php if ($goto) echo '"'.$goto.'"';else echo 'null';?>;
 		jQuery(document).ready(function($) {
-			
+
 			//Render events on the calendar
-			var toRender = <?php echo json_encode($myEvents);?>,
+			var toRender = <?php echo json_encode($data);?>,
 				eventClass = {events:'color-primary',tracker:'color-green'},
 				myEvents = [];
+			for (var i in toRender) {
+				for (var j = 0; j < toRender[i].length; j++) {
+					if (toRender[i][j].event_date) {
 
-			/*
-			for (var i = 0;i<toRender.length;i++) {
-				myEvents.push($.extend(toRender[i],{className:[eventClass['events']]}));
+						var event_date = new Date(toRender[i][j].event_date);
+						event_date.setTime(event_date.getTime() + event_date.getTimezoneOffset() * 60 * 1000);
+
+
+						var obj = {
+							title: toRender[i][j].event_name,
+							description: toRender[i][j].description,
+							images: toRender[i][j].images,
+							videos: toRender[i][j].videos,
+							start: event_date,
+							allDay: false,
+							className: [eventClass[i]],
+							event_id: toRender[i][j].calendar_event_id,
+							subcategory: 'typeInEvents',
+							notesFrom: toRender[i][j].notesFrom
+
+
+						};
+						myEvents.push(obj);
+					}
+				}
 			}
-			for (var i = 0;i<myEvents.length;i++)
-			{
-				$('#calendar').fullCalendar('renderEvent',myEvents[i],true);
-			}
-			*/
+
+			 for (var i = 0;i<toRender.length;i++) {
+			 myEvents.push($.extend(toRender[i],{className:[eventClass['events']]}));
+			 }
+			 for (var i = 0;i<myEvents.length;i++)
+			 {
+				 $('#calendar').fullCalendar('renderEvent',myEvents[i],true);
+
+			 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 			if (initialDate) {
 				var tmp = initialDate.split(/_/);
@@ -667,7 +713,7 @@ jQuery(document).ready(function($){
 				$('#calendar').fullCalendar('changeView','agendaDay')
 			}
 		});
-	
+
 	</script>
 	<style type='text/css'>
 	.tooltip-inner {
@@ -676,3 +722,4 @@ jQuery(document).ready(function($){
 	    width: 350px; 
 	}
 	</style>
+

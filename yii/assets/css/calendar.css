@@ -200,6 +200,14 @@ hr.ui-widget-header {
 	background-image:url('/assets/images/dashboard/tracker.png');
 }
 
+.facebook_event {
+	background-image:url('/assets/images/facebook_event.png');
+}
+
+.arq_event {
+	background-image:url('/assets/images/arq_event.png');
+}
+
 div.tooltip_btn_wrapper {
 	margin:7px 0;
 }

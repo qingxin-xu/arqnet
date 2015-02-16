@@ -188,7 +188,8 @@
 							<i class="entypo-user"></i>
 						</div>
 						
-						<input type="text" class="form-control" name="location" id="location" placeholder="Location" autocomplete="off" />
+						<input type="text" class="form-control" class="ui-autocomplete-input" name="location" id="location"
+									       placeholder="Location" autocomplete="off"/>
 					</div>
 					
 				</div>
@@ -347,4 +348,4 @@
 		</div>
 		
 	</div>
-	
+<script src="/assets/js/auto-complete/jquery.autocomplete.js"></script>

@@ -60,13 +60,13 @@ var eventRender = {
 	},
 	
 	registerEvent:function(element,event,view) {
-		
 		if (view.name != 'month' || !event.subcategory || !this[event.subcategory]) {
 			if (this['render'+event.subcategory]) this['render'+event.subcategory](element,event,view);
 			else this.renderEvent(element,event,view);
 			if (eventHandler && eventHandler.createTooltip) {
-				eventHandler.createTooltip(element,event/*,this[event.subcategory][myD]*/);
-			}			
+				eventHandler.createTooltip(element,event/*,this[event.subcategory][myD]*/);					
+			}
+						
 			return;
 		}
 		
@@ -181,8 +181,15 @@ var eventRender = {
 	
 	renderEvent:function(element,event) {
 		if (!element || !event) return;
-		element.find('.fc-content').addClass('eventIcon event');
-		//formFactory._renderTitleTooltip(event);
+		if(event.notesFrom  == "facebook") {
+			element.find('.fc-content').addClass('eventIcon facebook_event');
+		} else if(event.notesFrom  == "arq") {
+			element.find('.fc-content').addClass('eventIcon arq_event');
+		} else {
+			element.find('.fc-content').addClass('eventIcon event');
+			//formFactory._renderTitleTooltip(event);
+		}
+
 		
 	}
 	
@@ -317,7 +324,7 @@ function submitCalendarEvent(data,input,appendTo)
 
 					},
 					eventClick:function(event,jsEvent,view) {
-						console.log('event',event);
+
 						if (!event) return;
 						if (event.subcategory && eventHandler[event.subcategory]) {
 							eventHandler[event.subcategory](event);

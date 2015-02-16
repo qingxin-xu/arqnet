@@ -1,6 +1,23 @@
 /**
  * Submit handler for creating form submissions on arq page
  */
+function getUrlParam(name)
+{
+
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"); //??????????????????
+    var r = window.location.search.substr(1).match(reg);  //??????
+    if (r!=null) return unescape(r[2]); return null; //?????
+}
+
+ if(getUrlParam("error") == 2) {
+ 
+ 	alert("Your facebook account has been bound before, please switch your facebook account.");
+ 	window.location.href="/settings"; 
+ }
+ if(getUrlParam("error") == 1) {
+     alert("Your current facebook login account is not the bind account you left in arq, please re_log your facebook with correct account");
+     window.open("http://www.facebook.com");
+ }
 var myArq = myArq || {},
 	successMsg = 'Settings have been updated',
 	errorMsg = 'Unable to update your settings at this time',
@@ -86,11 +103,12 @@ function resetPasswordFields()
 						
 						if (d.success && d.success>0)
 						{						
-							resetPasswordFields();
+							//resetPasswordFields(); by daniel
 							updateMsg($('.validateTips'),successMsg);
+							//$('#myThinker').dialog('close');
 							setTimeout(function() {
 								$('#myThinker').dialog('close');
-							},3000);							
+							},2000);							
 						} else
 						{
 							$(formID)[0].reset();

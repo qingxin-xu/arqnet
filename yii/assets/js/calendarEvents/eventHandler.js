@@ -17,7 +17,7 @@ var eventHandler = {
 		if (!event) return;
 		this.dispatch('/myJournals',event);
 	},
-	
+
 	QA_Asked:function(event) {
 		if (!event) return;
 		var onDate = this.getEventDate(event);
@@ -100,54 +100,73 @@ var eventHandler = {
 			}
 		});
 	},
-	
-	createTooltip:function(element,event,registeredEvent) {	
-		if (!element) return;	
-		if (!element.qtip) return;	
-		var tipContent = registeredEvent?formFactory._renderRegisteredEventTooltip(event,registeredEvent):formFactory._renderTitleTooltip(event);
-		if (tipContent) {
-			var myTip = element.qtip({
-				   content:{text:tipContent},
-				   hide:{
-					   fixed:true,
-					   delay:300
-				   },
-				   style: { 
-				      width: 200,			
-				      padding: 5,
-				      background: '#181818',
-				      color: '#FFFFFF',
-				      textAlign: 'center',
-				      border: {
-				         width: 7,
-				         radius: 5,
-				         color: '#181818'
-				      },
-				      tip: 'bottomLeft',
-				      //name: 'dark' // Inherit the rest of the attributes from the preset dark style
-				   },
-				   position:{
-					  target:element,
-				      corner: {
-				          target: 'topRight',
-				          tooltip: 'bottomLeft'
-				       },
-				       adjust:{
-				    	   x:-100
-				       }
-				   }
-				});
-			var self = this;
-			
-			if (event && event.subcategory && $.inArray(event.subcategory,this.otherEvents)<0) {
-				tipContent.find('input.tooltip_tracker_delete').click(function() {
-					element.qtip('hide');
-					$('#deleteEventConfirmation').data('event',event).dialog('open');				
-				});
-			}
-
-		}
+	// by daniel click to third_party
+	typeInEvents:function(event) {
+		
 	},
+	
+	createTooltip:function(element,event,registeredEvent) {
+			if (!element) return;	
+			if (!element.qtip) return;	
+			
+			if(event.subcategory == "typeInEvents") {
+				tipContent = event.description;
+				if(event.images){
+					tipContent = "<img height='200px' width='250px' src="+event.images+"><br/>"+event.description;	
+				}
+				if(event.videos) {
+					tipContent = "<embed height='200px' width='250px' src="+event.videos+"></embed><br/>"+event.description;
+				}
+				
+			} else {
+				var tipContent = registeredEvent?formFactory._renderRegisteredEventTooltip(event,registeredEvent):formFactory._renderTitleTooltip(event);
+			}
+			if (tipContent) {
+							var myTip = element.qtip({
+								   content:{text:tipContent},
+								   hide:{
+									   fixed:true,
+									   delay:300
+								   },
+								   style: { 
+								      //width: 200,			
+								      padding: 5,
+								      background: '#181818',
+								      color: '#FFFFFF',
+								      textAlign: 'center',
+								      border: {
+								         width: 7,
+								         radius: 5,
+								         color: '#181818'
+								      },
+								      tip: 'bottomLeft',
+								      //name: 'dark' // Inherit the rest of the attributes from the preset dark style
+								   },
+								   position:{
+									  target:element,
+								      corner: {
+								          target: 'topRight',
+								          tooltip: 'bottomLeft'
+								       },
+								       adjust:{
+								    	   x:-100
+								       }
+								   }
+								});
+							var self = this;
+							
+							if (event && event.subcategory && $.inArray(event.subcategory,this.otherEvents)<0) {
+								if(event.subcategory != "typeInEvents"){
+									tipContent.find('input.tooltip_tracker_delete').click(function() {
+										element.qtip('hide');
+										$('#deleteEventConfirmation').data('event',event).dialog('open');				
+									});
+								}
+								
+							}
+				
+						}
+		},
 	
 	/*
 	 * Connects to a specific item in a tooltip containing multiple events
