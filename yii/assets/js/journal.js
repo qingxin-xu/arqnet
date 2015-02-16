@@ -43,7 +43,9 @@ var myJournal = myJournal || {};
 			
 			submitHandler:function(ev)
 			{		
-				$('textarea[name=stripped_content]').html($('textarea[name=post_content]').val().replace(/\<br\>/g,' '));
+				//$('textarea[name=stripped_content]').html($('textarea[name=post_content]').val().replace(/\<br\>/g,' '));
+				$('textarea[name=stripped_content]').html(tinyMCE.activeEditor.getContent());
+				$('textarea[name=post_content]').html(tinyMCE.activeEditor.getContent());
 				var service = '/createOrUpdateJournal';
 				updateMsg($('.validateTips'),'Creating Journal Entry');
 				$('#myThinker').dialog('open');

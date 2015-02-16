@@ -1913,7 +1913,7 @@ class SiteController extends Controller
 		$entries = Yii::app()->db->createCommand($sql)->queryRow();
 	
 		if ($entries) {
-			$ae_response_id = $this->createAEResponse($entries['total_content']);
+			$ae_response_id = $this->createAEResponse(strip_tags($entries['total_content']));
 			$ajd->ae_response_id = $ae_response_id;
 			$ajd->save();
 		} else {

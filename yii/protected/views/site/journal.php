@@ -24,6 +24,7 @@ label[for='visibility'] {
 }
 
 </style>
+<script type="text/javascript" src="assets/js/tinymce/js/tinymce/tinymce.min.js"></script>
 <script type="text/javascript">
 
 function updateMsg( description,t ) {
@@ -32,7 +33,10 @@ function updateMsg( description,t ) {
  }
 jQuery(document).ready(function($){
 
-
+	tinymce.init({
+	    selector: "textarea",
+	    content_css:'assets/css/custom.css'
+	 });
 	$('input[name=publish_time]').timepicker();
 	$('#myThinker').dialog({
 		autoOpen:false,
@@ -293,6 +297,7 @@ jQuery(document).ready(function($){
 	
 </footer>	
 <link rel="stylesheet" href="assets/js/wysihtml5/bootstrap-wysihtml5.css">
+<link rel="stylesheet" href="assets/css/custom.css">
 <script src="/assets/js/jquery.validate.min.js"></script>
 <!--  <script src='/assets/js/bootstrap.min.js'></script> -->
 <script src='http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js'></script>

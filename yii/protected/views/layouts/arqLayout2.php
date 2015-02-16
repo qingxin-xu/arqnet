@@ -49,6 +49,8 @@ function updateMsg( description,t ) {
  }
  
 </script>
+	<!--  General utilities -->
+	<script type='text/javascript' src="assets/js/utils.js"></script>
 </head>
 <body class="page-body  ">
 
