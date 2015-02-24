@@ -108,7 +108,7 @@ jQuery(document).ready(function($){
 									<span class="description"><a href="<?php echo $third_part_account; ?>" target="_blank"><?php echo $third_part_account; ?></a></span>
 									<a href="/unlink?param=1" class="btn btn-success">Unlink</a>
 									<a href="/FBLogin/JustImport/"><input class="btn btn-success" type="button" value="sync"></a>
-<!--									<input id="is_auto_update" --><?php //if($is_auto == 1){echo "checked";}?><!-- type="checkbox" value="1" onclick="auto_update('facebook')"/>Auto_update-->
+									<input id="is_auto_update" <?php if($is_auto == 1){echo "checked";}?> type="checkbox" value="1" onclick="auto_update('facebook')"/>Auto_update
 								<?php } }?>
 						</div>
 
@@ -162,9 +162,25 @@ jQuery(document).ready(function($){
 					<div class="form-group">
 						<label for="user_image" class="col-sm-3 control-label image_selection">User Image</label>
 						
-						<div class="col-sm-5">
-							&nbsp; &nbsp; &nbsp; &nbsp;<input tabindex="8" class="icheck-10" type="file" id="user_image" name="user_image">
-						</div>
+						<div class="fileinput <?php echo !empty($image_path) ? "fileinput-exists" : "fileinput-new" ?>"
+											     data-provides="fileinput">
+												<div class="fileinput-new thumbnail" style="max-width: 310px; height: 160px;"
+												     data-trigger="fileinput">
+													<img src="http://placehold.it/320x160" alt="...">
+												</div>
+												<div class="fileinput-preview fileinput-exists thumbnail"
+												     style="max-width: 320px; max-height: 160px">
+													<?php echo !empty($image_path) ? "<img src=" . $image_path. ">" : "" ?>
+												</div>
+												<div>
+													<span class="btn btn-black btn-file">
+														<span class="fileinput-new">Select image</span>
+														<span class="fileinput-exists">Change</span>
+														<input type="file" name="user_image" accept="image/*">
+													</span>
+													<a href="#" class="btn btn-orange fileinput-exists" data-dismiss="fileinput">Remove</a>
+												</div>
+											</div>
 					</div>
 					
 
@@ -482,3 +498,4 @@ jQuery(document).ready(function($){
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
 <script type='text/javascript' src='/assets/js/settings.js'></script>
+<script src="/assets/js/fileinput.js"></script>

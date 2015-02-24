@@ -1,26 +1,20 @@
 <?php
 
 /**
- * This is the model class for table "calendar_event".
+ * This is the model class for table "cities".
  *
- * The followings are the available columns in table 'calendar_event':
- * @property integer $calendar_event_id
- * @property integer $user_id
- * @property integer $is_active
- * @property string $date_created
- * @property string $date_modified
- *
- * The followings are the available model relations:
- * @property User $user
+ * The followings are the available columns in table 'cities':
+ * @property string $state_code
+ * @property string $city
  */
-class CalendarEvent extends CActiveRecord
+class Cities extends CActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'calendar_event';
+		return 'cities';
 	}
 
 	/**
@@ -31,12 +25,11 @@ class CalendarEvent extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('user_id, is_active,', 'numerical', 'integerOnly'=>true),
-			array('date_created, date_modified', 'safe'),
-			// The following rule is used by search().
-			// @todo Please remove those attributes that should not be searched.
-			array('calendar_event_id, user_id,  is_active, date_created, date_modified', 'safe', 'on'=>'search'),
-		);
+		array('city', 'length', 'max'=>500),
+		// The following rule is used by search().
+		// @todo Please remove those attributes that should not be searched.
+		array('city, state_code', 'safe', 'on'=>'search'),
+	);
 	}
 
 	/**
@@ -47,8 +40,6 @@ class CalendarEvent extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
-			'eventValues'=>array(self::HAS_ONE,'EventValue','calendar_event_id')
 		);
 	}
 
@@ -58,11 +49,8 @@ class CalendarEvent extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'calendar_event_id' => 'Calendar Event',
-			'user_id' => 'User',
-			'is_active' => 'Is Active',
-			'date_created' => 'Date Created',
-			'date_modified' => 'Date Modified'
+			'city' => 'City',
+			'state_code' => 'State Code',
 		);
 	}
 
@@ -84,11 +72,8 @@ class CalendarEvent extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('calendar_event_id',$this->calendar_event_id);
-		$criteria->compare('user_id',$this->user_id);
-		$criteria->compare('is_active',$this->is_active);
-		$criteria->compare('date_created',$this->date_created,true);
-		$criteria->compare('date_modified',$this->date_modified,true);
+		$criteria->compare('state_code',$this->state_code);
+		$criteria->compare('city',$this->city,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -99,21 +84,24 @@ class CalendarEvent extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return CalendarEvent the static model class
+	 * @return Cities the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
 	}
 
-    public static function getEvents($user_id)
-    {
-         $list = Yii::app()->db->createCommand('select * from calendar_event
-             where user_id = :user_id')->
-             bindValues(array(
-                 ':user_id'=>Yii::app()->user->id,
-             ))->queryAll();
-         return $list;
-    }
+	public static function getSearchList($search_param)
+	{
+		$sql = "select c.city,
+				c.state_code,
+			from cities c
+			where c.city like :city";
+		$pdata = Yii::app()->db->createCommand($sql);
+		$pdata->bindValue(':city', '%' . $search_param . '%'); //$pages->getLimit();
+		$list = $pdata->queryAll();
+		return $list;
+
+	}
 
 }

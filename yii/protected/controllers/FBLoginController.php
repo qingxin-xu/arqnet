@@ -85,8 +85,46 @@ class FBLoginController extends Controller
 						if ($banding_account) {
 							Yii::app()->session['binding_status'] = 0;
 						}
-//						Yii::app()->session['fb_user_id'] = $username_exists['user_id'];
-						//绑定成功后，弹出导入blog选项
+//						//获取当前数据库中最新的时间节点
+						$sql = "SELECT max(date_modified) FROM note WHERE user_id=".Yii::app()->user->id." AND fb_message_id is not null";
+						
+						$get_note = Yii::app()->db->createCommand($sql)->queryRow();
+						//todo 暂时测试用
+						//$get_note["max(date_modified)"] = null;
+						
+						$fql = "SELECT post_id,message,updated_time,created_time,attachment FROM stream WHERE source_id = me() AND is_hidden = 0 ";
+						if($get_note["max(date_modified)"]) {
+							//如果存在， 则获取比当前时间大的数据
+							$latest_time = strtotime($get_note["max(date_modified)"]);
+							
+							$fql.= " AND updated_time > ".$latest_time." ORDER BY created_time DESC LIMIT 1000000";
+						} else {
+							$fql.= " ORDER BY created_time DESC LIMIT 1000000";
+						}
+						
+						
+						
+						$param = array('method' => 'fql.query',
+								'query' => $fql
+								);
+						
+						$statuse = $facebook->api($param);
+						
+						// 去除垃圾数据
+						$new_statuse = array();
+						foreach($statuse as $key=>$statuse_list){
+							//空数据
+							if(empty($statuse_list['message']) && !isset($statuse_list['attachment']['media'])) {
+								unset($statuse[$key]);
+							}
+							
+						}
+						
+						$statuse = array_values($statuse);
+						
+						Yii::app()->session['your_statuse'] = $statuse;
+						
+						//print_r(Yii::app()->session['your_statuse']);exit;
 						$this->redirect("/calendar?progress=1");
 						exit;
 
@@ -104,6 +142,44 @@ class FBLoginController extends Controller
 					));
 
 					if ($is_bound && $me) {
+						
+						//获取当前数据库中最新的时间节点
+						$sql = "SELECT max(date_modified) FROM note WHERE user_id=".Yii::app()->user->id." AND fb_message_id is not null";
+						
+						$get_note = Yii::app()->db->createCommand($sql)->queryRow();
+						//todo 暂时测试用
+						//$get_note["max(date_modified)"] = null;
+						
+						$fql = "SELECT post_id,message,updated_time,created_time,attachment FROM stream WHERE source_id = me() AND is_hidden = 0 ";
+						if($get_note["max(date_modified)"]) {
+							//如果存在， 则获取比当前时间大的数据
+							$latest_time = strtotime($get_note["max(date_modified)"]);
+							
+							$fql.= " AND updated_time > ".$latest_time." ORDER BY created_time DESC LIMIT 1000000";
+						} else {
+							$fql.= " ORDER BY created_time DESC LIMIT 1000000";
+						}
+						
+						
+						
+						$param = array('method' => 'fql.query',
+								'query' => $fql
+								);
+						$statuse = $facebook->api($param);
+						
+						// 去除垃圾数据
+						$new_statuse = array();
+						foreach($statuse as $key=>$statuse_list){
+						//空数据
+							if(empty($statuse_list['message']) && !isset($statuse_list['attachment']['media'])) {
+								unset($statuse[$key]);
+							}						
+						}
+										
+						$statuse = array_values($statuse);
+									
+						Yii::app()->session['your_statuse'] = $statuse;
+						
 						//$this->getUserMessage($timePeriod = null);
 						$this->redirect("/calendar?progress=2");
 					} else {
@@ -296,14 +372,39 @@ class FBLoginController extends Controller
 	{
 		$facebook = new Facebook($this->config);
 
-		$fql = "SELECT post_id,message,updated_time,attachment FROM stream WHERE source_id = me() AND is_hidden = 0
-			ORDER BY created_time
-			DESC LIMIT 1000000";
-		$param = array(
-			'method' => 'fql.query',
-			'query' => $fql
-		);
+		
+		//获取当前数据库中最新的时间节点
+		$sql = "SELECT max(date_modified) FROM note WHERE user_id=".Yii::app()->user->id." AND fb_message_id is not null";
+		
+		$get_note = Yii::app()->db->createCommand($sql)->queryRow();
+		//todo 暂时测试用
+		$get_note["max(date_modified)"] = null;
+		//var_dump($get_note["max(date_modified)"]);exit;					
+		$fql = "SELECT post_id,message,updated_time,created_time,attachment FROM stream WHERE source_id = me() AND is_hidden = 0 ";
+		if($get_note["max(date_modified)"]) {
+			//如果存在， 则获取比当前时间大的数据
+			$latest_time = strtotime($get_note["max(date_modified)"]);
+			$fql.= " AND updated_time > ".$latest_time." ORDER BY created_time DESC LIMIT 1000000";
+		} else {
+			$fql.= " ORDER BY created_time DESC LIMIT 1000000";
+		}
+		$param = array('method' => 'fql.query',
+				'query' => $fql
+				);
 		$statuse = $facebook->api($param);
+		//var_dump($statuse);exit;				
+		// 去除垃圾数据
+		$new_statuse = array();
+		foreach($statuse as $key=>$statuse_list){
+			//空数据
+			if(empty($statuse_list['message']) && !isset($statuse_list['attachment']['media'])) {
+				unset($statuse[$key]);
+			}						
+		}
+												
+		$statuse = array_values($statuse);
+		
+		
 		if ($statuse) {
 			foreach ($statuse as $blogList) {
 				$newBlog = explode('_', $blogList['post_id']);
@@ -314,18 +415,31 @@ class FBLoginController extends Controller
 					'fb_message_id' => $blogList['post_id'],
 					'user_id' => Yii::app()->user->Id
 				));
-				//更新视频路径
+				//todo 暂时解决 应对非死不可老版本的表情
+				$blogList['message']=preg_replace("/👫 😺😼🚼💨/isU","",$blogList['message']);
+				//如果 facebook的数据在库里存在，则表示该条数据为更新数据
+				if($is_inserted) {
+					//先删除相应表内数据
+					$de_res = Note::model()->deleteAllByAttributes(array('fb_message_id' => $blogList['post_id']));
+						if($de_res){
+							//删除成功后，将facebook的数据重新插入.
+							$is_inserted = null;
+						}
+				}
+				/*
 				if ($is_inserted['fb_video_ids'] != null && $blogList['attachment']['fb_object_type'] == "video") {
 					$newPath = $blogList['attachment']['media'][0]['video']['source_url'];
 
 					$update_res = Image::model()->updateByPk($is_inserted['fb_video_ids'], array('path' => $newPath));
 
-				}
+				}*/
 				$facebookNote = $blogList['message'];
 				//只入库不存在的博客
 				if (!$is_inserted) {
+				
 					$note = new Note();
 					//存储facebook中post的视频或者图片
+					
 					if (isset($blogList['attachment']['media']) && !empty($blogList['attachment']['media']) && isset($blogList['attachment']['fb_object_type'])) {
 						//如果为图片
 						if ($blogList['attachment']['fb_object_type'] == "photo") {
@@ -372,7 +486,8 @@ class FBLoginController extends Controller
 					$note->user_id = Yii::app()->user->Id;
 					$note->title = substr($facebookNote, 0, 20);
 					$note->content = $this->addcontentlink($facebookNote);
-					$note->date_created = date('Y-m-d H:i:s', $blogList['updated_time']);
+					$note->date_created = date('Y-m-d H:i:s', $blogList['created_time']);
+					$note->date_modified = date('Y-m-d H:i:s', $blogList['updated_time']);
 					$note->fb_message_id = $blogList['post_id'];
 					$note->publish_date = date("y-m-d");
 
@@ -407,9 +522,19 @@ class FBLoginController extends Controller
 
 	}
 
+	function sub_str($str, $charset = "utf-8"){
+	$re['utf-8']   = "/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|[\xe0-\xef][\x80-\xbf]{2}|[\xf0-\xff][\x80-\xbf]{3}/";
+	$re['gb2312'] = "/[\x01-\x7f]|[\xb0-\xf7][\xa0-\xfe]/";
+	$re['gbk']    = "/[\x01-\x7f]|[\x81-\xfe][\x40-\xfe]/";
+	$re['big5']   = "/[\x01-\x7f]|[\x81-\xfe]([\x40-\x7e]|\xa1-\xfe])/";
+	preg_match_all($re[$charset], $str, $match);
+	return join("",$match[0]);
+	}
+	
+	
 	public function  actionProgressBar()
 	{
-		if (Yii::app()->request->isAjaxRequest) {
+		if (Yii::app()->request->isAjaxRequest) { 
 //			$since = Yii::app()->request->getPost('since', '');
 //			$since = strtotime($since);
 //			if ($since) {
@@ -417,7 +542,7 @@ class FBLoginController extends Controller
 //			} else {
 //				$timePeriod = null;
 //			}
-			$timePeriod = null;
+//			$timePeriod = null;
 //			if ($since > strtotime(date("Y-m-d"))) {
 //				echo CJSON::encode(array(
 //					'success' => 0,
@@ -425,37 +550,50 @@ class FBLoginController extends Controller
 //				));
 //				exit;
 //			}
-
-			$facebook = new Facebook($this->config);
+//
+//			$facebook = new Facebook($this->config);
+//					$fql = "SELECT post_id,message,updated_time,attachment FROM stream WHERE source_id = me() AND is_hidden = 0
+//								ORDER BY created_time
+//								DESC LIMIT 1000000";
+//					$param = array('method' => 'fql.query',
+//							'query' => $fql
+//					);
+//					$statuse = $facebook->api($param);
 			
-			$fql = "SELECT post_id,message,updated_time,attachment FROM stream WHERE source_id = me() AND is_hidden = 0
-			ORDER BY created_time 
-			DESC LIMIT 1000000";
-			$param = array(
-				'method' => 'fql.query',
-				'query' => $fql
-			);
-			$statuse = $facebook->api($param);
-
+			$statuse = Yii::app()->session['your_statuse'];
+	
 			if (empty($statuse)) {
 				echo CJSON::encode(array(
 					'success' => 0,
-					'msg' => "you have no blog！",
+					'msg' => "you do not have the update！",
 				));
 				exit;
 			}
 
 			$key = Yii::app()->request->getPost('key', '');
-
+			
 			$fb_message_id = explode("_", $statuse[$key]['post_id']);
 			//判断是否存在并入库操作
 			$is_inserted = Note::model()->findByAttributes(array(
-				'fb_message_id' => $fb_message_id[1]
+				'fb_message_id' => $fb_message_id[1],
+				'user_id' => Yii::app()->user->Id
 			));
-
-
+			
+			//todo 暂时解决 应对非死不可老版本的表情
+			$statuse[$key]['message']=preg_replace("/👫 😺😼🚼💨/isU","",$statuse[$key]['message']);
+			
+			//如果 facebook的数据在库里存在，则表示该条数据为更新数据
+			if($is_inserted) {
+				//先删除相应表内数据
+				$de_res = Note::model()->deleteAllByAttributes(array('fb_message_id' => $fb_message_id[1]));
+				if($de_res){
+					//删除成功后，将facebook的数据重新插入.
+					$is_inserted = null;
+				}
+			}
+			
+					
 			if (!$is_inserted) {
-
 				$note = new Note();
 				$note->user_id = Yii::app()->user->Id;
 				//存储facebook中post的视频或者图片
@@ -470,7 +608,7 @@ class FBLoginController extends Controller
 							if (isset($postImages['photo']['images'][1])) {
 
 								$img->path = $postImages['photo']['images'][1]['src'];
-								$img->save(false, $img);
+								$img->save();
 								$postImageID[] = $img->image_id;
 							}
 
@@ -494,26 +632,26 @@ class FBLoginController extends Controller
 
 
 					}
-
-
 				}
-
 				$note->user_id = Yii::app()->user->Id;
 				$facebookNote = $statuse[$key]['message'];
 				
-				
+				//如果没有message 判断是否存在照片
 				if(empty($statuse[$key]['message'])) {
 					if(isset($statuse[$key]['attachment']['fb_object_type'])) {
 						$facebookNote = "just media";
 					} 
 					
 				}
+				
 				$note->title = substr($facebookNote, 0, 20);
 				$note->content = $this->addcontentlink($facebookNote);
-				$note->date_created = date('Y-m-d H:i:s', $statuse[$key]['updated_time']);
+				$note->date_created = date('Y-m-d H:i:s', $statuse[$key]['created_time']);
+				$note->date_modified = date('Y-m-d H:i:s', $statuse[$key]['updated_time']);
 				$note->fb_message_id = $fb_message_id[1];
 				$note->publish_date = date("y-m-d");
 				if(!empty($statuse[$key]['message']) || isset($statuse[$key]['attachment']['fb_object_type'])) {
+					
 					$note->save();
 				}
 				
@@ -521,15 +659,18 @@ class FBLoginController extends Controller
 
 			}
 		}
-
+		
+		$finish = false;
 		if ($key >= count($statuse) - 1) {
-			$start = 100;
+			//销毁session
+			unset(Yii::app()->session['your_statuse']);
+			$finish = true;
+			$start = count($statuse) - 1;
+			
+			
+	
 		} else {
 			$key++;
-			//防止数据超过100条 key表示单条数据
-			if ($key >= 100) {
-				$key = 99;
-			}
 			$start = $key;
 		}
 
@@ -538,6 +679,7 @@ class FBLoginController extends Controller
 			'success' => 1,
 			'nextKey' => $key,
 			'start' => $start,
+			'finish' => $finish,
 		));
 		Yii::app()->end();
 

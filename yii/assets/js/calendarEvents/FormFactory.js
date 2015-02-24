@@ -505,11 +505,11 @@ var formFactory = {
 	
 	// Title attribute for items of the calendar views
 	_renderTitleTooltip:function (event,leaveRaw)
-	{	
+	{
 		var exclude = ['_no_input_','boolean'/*,'QA: Asked:','QA: Answered:','Note:'*/];
 		var exceptions = {note:'Notes:'};
 		
-		var html = "";		
+		var html = "";
 		if (event && (event.description) )
 		{
 			for (var i =0;i< event.description.length;i++)
