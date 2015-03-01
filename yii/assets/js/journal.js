@@ -102,7 +102,8 @@ var myJournal = myJournal || {};
 	
 })(jQuery, window);
 
-
+/*
+ * Removed because we are using an image uploader in the tinyMCE editor
 $(function () {
     $('#btn_myFileInput').data('default', $('label[for=btn_myFileInput]').text()).click(function () {
         $('input[name=note_image]').click();
@@ -127,3 +128,4 @@ $(function () {
         $('#btn_myFileInput').focus();
     });
 });
+*/
