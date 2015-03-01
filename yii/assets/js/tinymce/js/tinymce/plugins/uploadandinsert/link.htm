@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+	<title>{#uploadandinsert_dlg.title}</title>
+	<!--  <script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>-->
+	<script type="text/javascript" src="../../../../../utils.js"></script>
+	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
+	<script type="text/javascript" src="../../utils/mctabs.js"></script>
+	<script type="text/javascript" src="../../utils/form_utils.js"></script>
+	<script type="text/javascript" src="../../utils/validate.js"></script>
+	<link href="css/uploadandinsert.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.8.0/dojox/form/resources/UploaderFileList.css" />
+	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.8.0/dojo/dojo.js" data-dojo-config="async: true"></script>
+	<!--  <script type='text/javascript'>require(['dijit/form/ComboBox','dojo/store/Memory'])</script>-->
+	<script src='js/uploadandinsert.js'></script>
+	<script type='text/javascript'>
+	/*
+		console.log('do require');
+		require(['dojo/ready','dojo/parser','dijit/form/ValidationTextBox','dijit/form/Button','dijit/form/Form','dojox/form/uploader/plugins/HTML5','dojox/form/Uploader'],function(ready,parser) {
+			ready(function() {
+				try{
+				var u = new dojox.form.Uploader({
+					multiple:false,
+					label:'select'
+				},'uploaderPH');
+				console.log('u=',u);
+				parser.parse();
+				} catch(e) {console.log('e=',e);}
+			});
+		});
+		*/
+		require(['dojo/ready','dojo/parser','dojo/_base/declare','dijit/layout/ContentPane','dijit/form/NumberTextBox','dijit/form/ValidationTextBox','dijit/form/Button','dijit/form/Form','dojox/form/Uploader','dojox/form/uploader/Base','dojox/form/uploader/FileList'],function(ready,parser) {
+			console.log('editor',tinyMCE.editors[0])
+			ready(function() {
+				require(['dojox/form/uploader/plugins/IFrame'],function() {
+					var isIE = 'NotIE';
+					if (dojo.isIE) isIE='IE';
+					var u = new dojox.form.Uploader({
+						id:'imageUploader',
+						name:'uploadedfile',
+						multiple:false,
+						label:'select',
+						uploadOnSelect:true,
+						url:tinyMCE.activeEditor.documentBaseURI.toAbsolute('php/UploadFile.php?browser='+isIE)
+					},'uploaderPH');
+					u.startup();
+					
+					var list = new dojox.form.uploader.FileList({
+						id:'uploaderListDijit',
+						uploader:u,
+						uploaderId:'imageUploader'
+					},'uploaderList');
+					
+					dojo.connect(u,'onBegin',function(e) {
+						list.showProgress(true);
+					});
+					dojo.connect(u,'onProgress',function(e) {
+						list.showProgress(true);
+					});
+					
+					dojo.connect(u,'onComplete',null,function(data) {
+						console.log('list',list);
+						if (data.responseCode>0)
+						{
+							utils.swap('uploaderBtn','uploadComplete',null,function() {
+								
+								UploadAndInsertDialog.showPreviewImage(data.src);
+								//dijit.byId('imgHeight').attr('value',data.height);
+								//dijit.byId('imgWidth').attr('value',data.width);
+								
+								dojo.connect(dijit.byId('imgSpecsBtn'),'onClick',function() {
+									UploadAndInsertDialog.insert(dijit.byId('imgSpecs'),data);
+								});
+							});	
+						} else
+						{
+							if (data.responseMessage) dojo.byId('errorMsgSpan').innerHTML=data.responseMessage;
+							utils.swap('uploaderBtn','errorMsg');
+						}
+
+					});
+					
+					dojo.connect(u,'onError',function(errData) {
+						console.log('error',errData);
+						utils.swap('uploaderBtn','errorMsg');
+					});
+					
+					parser.parse();
+					utils.swap('loading','uploaderBtn');
+				});
+			});
+		});
+		
+	</script>
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.8.0/dijit/themes/claro/claro.css" />
+	
+</head>
+<body class='claro' id="advlink" style="display: none" role="application" aria-labelledby="app_label">
+	<div class="panel_wrapper" role="presentation">
+		
+		<div data-dojo-type='dijit.layout.ContentPane' style='height:120px;width:200px;' id='loading'>
+			<div data-dojo-type='dijit.layout.ContentPane' style='height:15px;width:200px;'>Loading...</div>
+			<div data-dojo-type='dijit.layout.ContentPane' class='throbber-round' style='height:100px;width:200px;'></div>
+		</div>
+		<div id='uploaderBtn' style='display:none;'>
+			Push to select an image file to upload and insert
+			<div id='uploaderPH'></div>
+			<div id='uploaderList'></div>
+		</div>
+		<div id='errorMsg' style='display:none;'>
+			<p>There was an error uploading the image:</p>
+			<p><span id='errorMsgSpan'></span></p>
+		</div>
+		
+		<div id='uploadComplete' style='display:none;' class="panel current" >
+			<div  id="imgSpecs" data-dojo-type='dijit.form.Form' method='' enctype="multipart/form-data" action='' >
+				<fieldset>
+					<legend>{#uploadandinsert_dlg.general_props}</legend>
+	
+					<table border="0" cellpadding="4" cellspacing="0" role="presentation">
+						<tr>
+							<td><label for='imgTitle'>Specify an image title</label></td>
+							<td><div data-dojo-type='dijit.form.ValidationTextBox' id='imgTitle' required=true name='imgTitle'></div></td>
+						</tr>
+						
+						<tr>
+							<td><label for='imgDesc'>Specify an alternate image description</label></td>
+							<td><div data-dojo-type='dijit.form.ValidationTextBox' id='imgDesc' required=true name='imgDesc'></div></td>
+						</tr>
+						<!-- 
+						<tr>
+								<td><label for='imgWidth'>Specify an image width</label></td>
+							<td><div data-dojo-type='dijit.form.NumberTextBox' id='imgWidth' name='imgWidth' required=true data-dojo-props="constraints:{min:32,max:720,fractional:true}" invalidMessage='Enter a number for image width'></div></td>
+							<td><span>pixels</span></td>
+						</tr>
+						<tr>
+								<td><label for='imgHeight'>Specify an image height</label></td>
+							<td><div data-dojo-type='dijit.form.NumberTextBox' id='imgHeight' data-dojo-props="constraints:{min:32,max:720,fractional:true}" name='imgHeight' required=true  invalidMessage='Enter a number for image height'></div></td>
+							<td><span>pixels</span></td>
+						</tr>	
+						-->					
+					</table>
+					<button id='imgSpecsBtn' data-dojo-type='dijit.form.Button' type='button'>Submit</button>
+				</fieldset>
+
+			</div>
+			<fieldset>
+				<legend>{#uploadandinsert_dlg.preview}</legend>
+				<div id="prev"></div>
+			</fieldset>			
+
+		</div>
+
+	</div>
+</body>
+</html>

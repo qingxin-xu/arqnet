@@ -35,7 +35,9 @@ jQuery(document).ready(function($){
 
 	tinymce.init({
 	    selector: "textarea",
-	    content_css:'assets/css/custom.css'
+	    content_css:'assets/css/custom.css',
+	    plugins:['jbimages'],
+	    relative_urls:false
 	 });
 	$('input[name=publish_time]').timepicker();
 	$('#myThinker').dialog({
