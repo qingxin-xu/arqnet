@@ -105,8 +105,8 @@ jQuery(document).ready(function($){
 	<br />
 	
 	<!-- WYSIWYG - Content Editor -->	<div class="row">
-		<div class="col-sm-12">
-			<textarea placeholder="Type your entry here" class="form-control wysihtml5" rows="18" data-stylesheet-url="assets/css/wysihtml5-color.css" name="post_content" id="post_content">
+		<div class="col-sm-12"><!-- class="form-control wysihtml5" is deleted by daniel-->
+			<textarea placeholder="Type your entry here" class="" rows="18" data-stylesheet-url="assets/css/wysihtml5-color.css" name="post_content" id="post_content">
 <?php 
 				if ($edit_journal) {echo $edit_journal->content;}
 				

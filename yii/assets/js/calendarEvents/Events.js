@@ -135,7 +135,7 @@ function renderMilestone(response)
 }
 
 function renderEvent(response)
-{
+{	
 	var appendTo = $('#draggable_events'),
 		$event = $('<li><a id="'+response.calendar_event_id+'" href="#"></a></li>'),
 		_class='color-primary';

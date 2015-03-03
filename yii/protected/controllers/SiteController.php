@@ -334,6 +334,7 @@ class SiteController extends Controller
 		$activities = $this->calendarActivities($end_date,$today,$user_id);
 
 		$dashboardData = $this->getDashboardData(30,null,$today,$user_id);
+		
 		$event_units = EventUnit::model()->findall();
 		$units = array();
 		foreach ($event_units as $eu) {
@@ -627,7 +628,13 @@ class SiteController extends Controller
 		$events = array();
 		$userId = Yii::app()->user->Id;
 		$allYourNotes = Note::model()->findAllByAttributes(array('user_id' => $userId));
-
+		$sql = "select *, count(*)
+						from note
+						where user_id=$user_id
+						group by DATE_FORMAT(date_created,'%Y-%m-%d')
+						";
+		$allYourNotes = Yii::app()->db->createCommand($sql)->queryAll();
+		
 		if (!empty($allYourNotes)) {
 			foreach ($allYourNotes as $key => $YourNotes) {
 				if (strlen($YourNotes['title']) > 15) {
@@ -654,13 +661,22 @@ class SiteController extends Controller
 				$events[$key]['event_date'] = $YourNotes['date_created'];
 				$events[$key]['day_event'] = $day_event[0];
 				$events[$key]['event_type'] = 'facebook';
-				$events[$key]['event_name'] = $YourNotes['title'];
-				$events[$key]['description'] = $YourNotes['content'];
+				
+				$events[$key]['event_name'] = $YourNotes['count(*)'];
+				$events[$key]['description'] = "goto week view to see more";
+				if($YourNotes['count(*)'] == 1) {
+					$events[$key]['event_name'] = $YourNotes['title'];
+					$events[$key]['description'] = $YourNotes['content'];
+				}
 				$events[$key]['notesFrom'] = $notesFrom;
+				
+				if($allYourNotes[$key] ){
+					
+				}
 
 			}
 		}
-
+//var_dump($events);exit;
 		$eventsHash = array('tracker' => array(), 'events' => array(), 'other' => array());
 		if (isset($userIcon['path'])) {
 			$fromFacebook = strpos($userIcon['path'], "https://");
@@ -682,6 +698,7 @@ class SiteController extends Controller
 
 		$this->layout = 'arqLayout2';
 		$this->setPageTitle('Calendar');
+		
 		$this->render('calendar', array(
 			'data' => $eventsHash,
 			'goto' => $atDate,
@@ -1615,6 +1632,7 @@ class SiteController extends Controller
 			$note->user_id = Yii::app()->user->Id;
 			$note->title = $title;
 			$note->content = Yii::app()->request->getPost('post_content', '');
+			
 			$note->date_created = new CDbExpression('NOW()');
 			$note->is_active = 1;
 			
@@ -1744,6 +1762,7 @@ class SiteController extends Controller
 					/*
 					 * No ae_response yet, so just create one
 					 */
+					 
 					$ae_response_id = $this->createAEResponse();
 					$note->ae_response_id = $ae_response_id;
 				}
@@ -1915,7 +1934,10 @@ class SiteController extends Controller
 		if ($entries) {
 			$ae_response_id = $this->createAEResponse(strip_tags($entries['total_content']));
 			$ajd->ae_response_id = $ae_response_id;
+			//todo add bu daniel
+			$ajd->is_active = 1;
 			$ajd->save();
+			
 		} else {
 			$ajd->delete();
 		}
@@ -2822,6 +2844,7 @@ class SiteController extends Controller
 		if ($content=='') {
 			$content = strip_tags(Yii::app()->request->getPost('stripped_content', ''));
 		}
+		
 		$publication_date = Yii::app()->request->getPost('publish_date', '');
 		$publication_time = Yii::app()->request->getPost('publish_time', '');
 		//$content = preg_replace('/\+/', '%2B', $content); 
@@ -4007,6 +4030,7 @@ where user_id = $user_id
 	 * d6=>empty array
 	 */
 	private function getDashboardData($duration,$from_date,$to_date,$user_id) {
+	
 		if (!$user_id) return array();
 		if (!$duration) $duration = 30;
 		if (!$to_date) $to_date = date('Y-m-d');
@@ -4015,7 +4039,9 @@ where user_id = $user_id
 			$from_date = date('Y-m-d',strtotime($to_date) - $duration*$day);
 		}
 		$_dates = AeResponse::getResponseDate($duration,$to_date,$user_id);
+		
 		$responses = $this->getDashboardResponses($duration,$to_date,$user_id);
+		
 		$trackerInfo = $this->trackerData($from_date,$to_date,$user_id);
 		
 		$all_dates = array_merge($trackerInfo{'trackerDates'});
@@ -4215,6 +4241,7 @@ where user_id = $user_id
 		if ($duration) $duration = 30;
 		
 		$_dates = AeResponse::getResponseDate($duration,$from_date,$user_id);
+		
 		/*
 		$_dates = array();
 		//while( strcmp($myCurrent,$end_date) <= 0) {
@@ -4225,6 +4252,7 @@ where user_id = $user_id
 		}
 		*/
 		$avg = $this->mean_score_per_day($duration,$from_date);
+	
 		$avgResponses = array();
 		$sliderCount = count($_dates);
 		$increments = 0;
@@ -4235,15 +4263,18 @@ where user_id = $user_id
 		{
 			$myDates[$key] = $dateValue;
 		}
+		
 		array_multisort($myDates,SORT_ASC,$_dates);
 		/* And then generate response hash */
 		$index = 0;
+		
 		foreach ($_dates as $date)
 		{
 			$avgResponses[/*$increments**/($index)] = $avg[$date];
 			$avgResponses[/*$increments**/($index)]{'date'}=$date;
 			$index++;
 		}
+		
 		$responses = array('avg'=>$avgResponses,'responseCount'=>$sliderCount);
 		return $responses;
 	}
@@ -4461,6 +4492,7 @@ order by avg_rank desc";
 			where dd.report_date <= date('".$from_date."')
 			  and dd.report_date >= date_sub(curdate(), interval $days_back day)
 			order by dd.report_date desc, res.value desc";
+			
 		return Yii::app()->db->createCommand($sql)->queryAll();
 	}
 	
@@ -4484,6 +4516,7 @@ order by avg_rank desc";
 				  and dd.report_date >= date_sub(date('".$from_date."'), interval $days_back day)
 				  group by dd.report_date,res.person
 				order by date desc, res.person_count desc";
+				
 		return Yii::app()->db->createCommand($sql)->queryAll();
 	}
 	
@@ -4507,6 +4540,7 @@ order by avg_rank desc";
 				  and dd.report_date >= date_sub(date('".$from_date."'), interval $days_back day)
 				  group by dd.report_date,res.word
 				order by date desc, res.word_count desc";
+				
 		return Yii::app()->db->createCommand($sql)->queryAll();
 	}
 	

@@ -102,7 +102,7 @@ var eventHandler = {
 	},
 	// by daniel click to third_party
 	typeInEvents:function(event) {
-		
+		//alert(123);
 	},
 	
 	createTooltip:function(element,event,registeredEvent) {

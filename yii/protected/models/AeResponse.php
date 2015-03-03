@@ -217,8 +217,9 @@ class AeResponse extends CActiveRecord
 			and user_id = :user_id
 			order by(DATE(date_created)) DESC")->bindValues(
 			array(':duration'=>$duration,':user_id'=>$user_id))->queryAll();
-			
+		
 		$dates = array();
+		
 		foreach ($list as $d) {array_push($dates,$d['dates']);}
 		$curdate = $from_date;
 		if (count($dates)==0 || strcmp($dates[0],$curdate) != 0) array_unshift($dates,$curdate);

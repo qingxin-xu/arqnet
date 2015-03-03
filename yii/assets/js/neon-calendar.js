@@ -30,7 +30,7 @@ $.fullCalendar.views['day'] = {type:'myDayView',duration:{days:1}};
  */
 $.fullCalendar.views.myWeekView = $.fullCalendar.views.agenda.extend({
 	// Sets the display range and computes all necessary dates
-	setRange: function(range) {
+	setRange: function(range) { 
 		range.start = $.fullCalendar.moment().clone().stripTime();
 		range.intervalStart = range.start
 		range.end =  range.intervalStart.clone().add(1,'week');
@@ -44,6 +44,8 @@ $.fullCalendar.views.myWeekView = $.fullCalendar.views.agenda.extend({
 	}
 });
 $.fullCalendar.views['_week'] = {type:'myWeekView',duration:{weeks:1}};
+
+
 
 var neonCalendar = neonCalendar || {};
 var calendar;
