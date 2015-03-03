@@ -1,0 +1,30 @@
+.mceLinkList, .mceAnchorList, #targetlist {width:280px;}
+.mceActionPanel {margin-top:7px;}
+.panel_wrapper div.current {height:320px;}
+#prev {margin:0; border:1px solid #000; width:428px; height:225px; overflow:auto;}
+#classlist, #title, #href {width:280px;}
+#popupurl, #popupname {width:200px;}
+#popupwidth, #popupheight, #popupleft, #popuptop {width:30px;vertical-align:middle;text-align:center;}
+#id, #style, #classes, #target, #dir, #hreflang, #lang, #charset, #type, #rel, #rev, #tabindex, #accesskey {width:200px;}
+#events_panel input {width:200px;}
+
+.throbber-round {
+        display:inline-block;
+        background:transparent url(../images/throbber-round.gif) no-repeat scroll center center;
+        width:31px;
+        height:31px;
+}
+
+.throbber-bar-small {
+        display:inline-block;
+        background:transparent url(../images/throbber-bar-small.gif) no-repeat scroll center center;^M
+        width:16px;
+        height:20px;
+}
+
+.throbber-bar-large {
+        display:inline-block;
+        background:transparent url(../images/throbber-bar-large.gif) no-repeat scroll center center;^M
+        width:220px;
+        height:20px;
+}

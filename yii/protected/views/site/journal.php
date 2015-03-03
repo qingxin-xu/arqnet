@@ -35,7 +35,9 @@ jQuery(document).ready(function($){
 
 	tinymce.init({
 	    selector: "textarea",
-	    content_css:'assets/css/custom.css'
+	    content_css:'assets/css/custom.css',
+	    plugins:['jbimages'],
+	    relative_urls:false
 	 });
 	$('input[name=publish_time]').timepicker();
 	$('#myThinker').dialog({
@@ -212,13 +214,14 @@ jQuery(document).ready(function($){
 						<div>";
 					}
 					?>
-					
+					<!--  
 					<label for="btn_myFileInput" style='width:95px;'>No file choosen...</label>
 					<span class="btn btn-white btn-file">
 					<button type='button' id="btn_myFileInput" style='outline:none;'>Select image</button>
 			
 					<input type="file" name='note_image' accept="image/*" />
 					</span>
+					-->
 					</div>
 					
 				</div>
