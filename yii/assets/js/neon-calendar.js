@@ -187,15 +187,22 @@ var eventRender = {
 			element.find('.fc-content').addClass('eventIcon facebook_event');
 		} else if(event.notesFrom  == "arq") {
 			element.find('.fc-content').addClass('eventIcon arq_event');
+		} else if(event.notesFrom  == "week"){
+					
 		} else {
 			element.find('.fc-content').addClass('eventIcon event');
 			//formFactory._renderTitleTooltip(event);
 		}
 
 		
-	}
+	},
+	
 	
 };
+
+
+
+
 
 function submitCalendarEvent(data,input,appendTo)
 {
@@ -286,103 +293,7 @@ function submitCalendarEvent(data,input,appendTo)
 			if($.isFunction($.fn.fullCalendar))
 			{
 				
-				calendar = $('#calendar');
-				
-				calendar.fullCalendar({
-					header: {
-						left: 'title',
-						right: 'month,agendaWeek,agendaDay, today, prev,next'
-					},
-				
-					//defaultView: 'basicWeek',
-					theme:true,
-					editable: true,
-					firstDay: 1,
-					height: 600,
-					droppable: true,
-					drop: function(date, allDay) {
-						
-							var $this = $(this),
-							eventObject = {
-								event_id:$this.attr('id'),
-								title: $this.text(),
-								start: date,
-								allDay: allDay,
-								description:'blah',
-								quantity:1,
-								className: 'color-green'//$this.data('event-class')
-							};
-							
-						var myEvent = $(this).data('eventObj');
-						
-						var myFields = [];
-
-						for (var i in myEvent.data)
-						{
-							myFields.push(Fields.createField(myEvent.data[i]));
-						}
-
-						formFactory.create(myEvent.data,eventObject,$(this));
-
-					},
-					eventClick:function(event,jsEvent,view) {
-
-						if (!event) return;
-						if (event.subcategory && eventHandler[event.subcategory]) {
-							eventHandler[event.subcategory](event);
-						} else {
-							eventHandler['Tracker'](event);
-						}
-
-					},
-					events:function(start,end,timezone,callback) {
-						eventRender.unRegisterEvents();
-						$.ajax({
-							url:'/calendarActivities',
-							dataType:'json',
-							type:'POST',
-							data:{start:start.toISOString(),end:end.toISOString()},
-							success:function(d) {
-								if ('success' in d && d['success']==1 && 'events' in d) {
-									$.each(d['events'],function(index,value) {
-										value.allDay = 0;
-										value = $.extend(value,{className:['color-green']});
-										eventRender.setTimeSlot(value);
-									});
-									callback(d['events']);
-								} else {
-									console.log('unable to load events',d);
-									callback([]);
-								}
-							},
-							error:function(e) {
-								console.log('Error',e);
-								callback([]);
-							},
-						});
-					},
-
-					eventRender:function(event,element,view) {
-						//console.log('event render',view.name,view);
-						if (eventRender && event.subcategory) {
-							eventRender.registerEvent(element,event,view);
-						}
-
-						if (view.name == 'agendaDay'||view.name=='day') {
-							//console.log('event',event);
-							//eventRender.setTimeSlot(event);
-							event.allDay = 0;
-							//console.log('event element',element);
-							element.removeClass('color-green');
-							element.addClass('color-agendaDay');
-						} 
-						//element.qtip({content:'this is another test'});
-					}/*,
-					
-					eventAfterRender:function(event,element,view) {
-						element.tooltip({content:'this is a test',disabled:false});
-					}*/
-				});
+				//removed by daniel
 				
 				$("#draggable_events li a").draggable({
 					zIndex: 999,

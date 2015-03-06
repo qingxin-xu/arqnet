@@ -651,15 +651,15 @@ jQuery(document).ready(function($){
 
 			//Render events on the calendar
 			var toRender = <?php echo json_encode($data);?>,
-				eventClass = {events:'color-primary',tracker:'color-green'},
+				eventClass = {events:'color-primary',tracker:'color-green',facebook:"color-blue",arq:"color-black"},
 				myEvents = [];
 			for (var i in toRender) {
 				for (var j = 0; j < toRender[i].length; j++) {
 					if (toRender[i][j].event_date) {
 
 						var event_date = new Date(toRender[i][j].event_date);
-						event_date.setTime(event_date.getTime() + event_date.getTimezoneOffset() * 60 * 1000);
-
+						event_date.setTime(event_date.getTime() + event_date.getTimezoneOffset());
+						
 
 						var obj = {
 							title: toRender[i][j].event_name,
@@ -668,7 +668,7 @@ jQuery(document).ready(function($){
 							videos: toRender[i][j].videos,
 							start: event_date,
 							allDay: false,
-							className: [eventClass[i]],
+							className: [eventClass[toRender[i][j].notesFrom]],
 							event_id: toRender[i][j].calendar_event_id,
 							subcategory: 'typeInEvents',
 							notesFrom: toRender[i][j].notesFrom
@@ -683,26 +683,180 @@ jQuery(document).ready(function($){
 			 for (var i = 0;i<toRender.length;i++) {
 			 myEvents.push($.extend(toRender[i],{className:[eventClass['events']]}));
 			 }
+			 //$('#calendar').fullCalendar( 'addEventSource', myEvents );
 			 for (var i = 0;i<myEvents.length;i++)
 			 {
-				 $('#calendar').fullCalendar('renderEvent',myEvents[i],true);
-
+			 	//$('#calendar').fullCalendar( 'addEventSource', source )
+				 //$('#calendar').fullCalendar('renderEvent',myEvents[i],true);
 			 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+			
+			var toRenderForMonth = <?php echo json_encode($dataForWeek);?>,
+							eventClass = {events:'color-primary',tracker:'color-green',facebook:"color-blue",arq:"color-black"},
+							myEventsForMonth = [];
+						for (var i in toRenderForMonth) {
+							for (var j = 0; j < toRenderForMonth[i].length; j++) {
+								if (toRenderForMonth[i][j].event_date) {
+			
+									var event_date = new Date(toRenderForMonth[i][j].event_date);
+									event_date.setTime(event_date.getTime() + event_date.getTimezoneOffset());
+			
+			
+									var obj = {
+										title: toRenderForMonth[i][j].event_name,
+										description: toRenderForMonth[i][j].description,
+										images: toRenderForMonth[i][j].images,
+										videos: toRenderForMonth[i][j].videos,
+										start: event_date,
+										allDay: false,
+										className: [eventClass[toRenderForMonth[i][j].notesFrom]],
+										event_id: toRenderForMonth[i][j].calendar_event_id,
+										subcategory: 'typeInEvents',
+										//week view 的icon暂时去除，空间不够
+										notesFrom: "week"
+			
+			
+									};
+									myEventsForMonth.push(obj);
+								}
+							}
+						}
+			
+						 for (var i = 0;i<toRenderForMonth.length;i++) {
+						 	myEventsForMonth.push($.extend(toRenderForMonth[i],{className:[eventClassForMonth['events']]}));
+						 }
+			
+			
+			
+			
+			
+			
+			
+			
+			
+				
+			 calendar = $('#calendar');
+			 								
+			 								calendar.fullCalendar({
+			 									header: {
+			 										left: 'title',
+			 										right: 'month,agendaWeek,agendaDay, today, prev,next'
+			 									},
+			 								
+			 									//defaultView: 'basicWeek',
+			 									theme:true,
+			 									editable: true,
+			 									firstDay: 1,
+			 									height: 600,
+			 									droppable: true,
+			 									drop: function(date, allDay) {
+			 										
+			 											var $this = $(this),
+			 											eventObject = {
+			 												event_id:$this.attr('id'),
+			 												title: $this.text(),
+			 												start: date,
+			 												allDay: allDay,
+			 												description:'blah',
+			 												quantity:1,
+			 												className: 'color-green'//$this.data('event-class')
+			 											};
+			 											
+			 										var myEvent = $(this).data('eventObj');
+			 										
+			 										var myFields = [];
+			 				
+			 										for (var i in myEvent.data)
+			 										{
+			 											myFields.push(Fields.createField(myEvent.data[i]));
+			 										}
+			 				
+			 										formFactory.create(myEvent.data,eventObject,$(this));
+			 				
+			 									},
+												
+			 									eventClick:function(event,jsEvent,view) {
+			 										if (!event) return;
+			 										if (event.subcategory && eventHandler[event.subcategory]) {
+			 											eventHandler[event.subcategory](event);
+			 										} else {
+			
+			 											eventHandler['Tracker'](event);
+			 										}
+			 				
+			 									},
+			 									events:function(start,end,timezone,callback) {
+			 										eventRender.unRegisterEvents();
+			 										$.ajax({
+			 											url:'/calendarActivities',
+			 											dataType:'json',
+			 											type:'POST',
+			 											data:{start:start.toISOString(),end:end.toISOString()},
+			 											success:function(d) {
+			 												if ('success' in d && d['success']==1 && 'events' in d) {
+			 													$.each(d['events'],function(index,value) {
+			 														value.allDay = 0;
+			 														value = $.extend(value,{className:['color-green']});
+			 														eventRender.setTimeSlot(value);
+			 													});
+			 													callback(d['events']);
+			 												} else {
+			 													console.log('unable to load events',d);
+			 													callback([]);
+			 												}
+			 											},
+			 											error:function(e) {
+			 												console.log('Error',e);
+			 												callback([]);
+			 											},
+			 										});
+			 									},
+			 				
+			 									eventRender:function(event,element,view) {
+			 									//console.log('event render',view.name,view);
+			 										if (eventRender && event.subcategory) {
+			 											eventRender.registerEvent(element,event,view);
+			 										}
+			 				
+			 										if (view.name == 'agendaDay'||view.name=='day') {
+			 											//console.log('event',event);
+			 											//eventRender.setTimeSlot(event);
+			 											event.allDay = 0;
+			 											//console.log('event element',element);
+			 											//element.removeClass('color-green');
+			 											//element.addClass('color-agendaDay');
+			 										} 
+			 										
+			 										//element.qtip({content:'this is another test'});
+			 									},
+												
+			 									viewRender:function(view, element ){
+												 	
+			 										if(view.name == 'agendaWeek' || view.name == 'agendaDay') {
+													 	
+														calendar.fullCalendar('removeEventSource', myEvents);
+														calendar.fullCalendar('removeEventSource', myEventsForMonth);
+			 											calendar.fullCalendar('addEventSource', myEventsForMonth);
+			 										} else if(view.name == 'month') {
+			 											 calendar.fullCalendar('removeEventSource', myEventsForMonth);
+														 calendar.fullCalendar('removeEventSource', myEvents);
+														 calendar.fullCalendar('addEventSource', myEvents);
+			 										}
+			 									},
+			 									
+			 									
+			 									
+			 									
+			 									
+			 									
+			 									
+			 									/*,
+			 									
+			 									eventAfterRender:function(event,element,view) {
+			 										element.tooltip({content:'this is a test',disabled:false});
+			 									}*/
+			 							});
+			
+			
 
 			if (initialDate) {
 				var tmp = initialDate.split(/_/);

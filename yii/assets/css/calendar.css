@@ -141,6 +141,11 @@ button[type=button].ui-button,.calendar-env .calendar-body .fc-header .fc-button
 	border:1px solid #00a651;
 }
 
+.fc-event.color-black {
+	background:#363C36;
+	border:1px solid #363C36;
+}
+
 .fc-event.color-agendaDay {
 	background:#4e3a73;
 	border:1px solid #4e3a73;	

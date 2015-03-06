@@ -7741,12 +7741,13 @@ function Header(calendar, options) {
 					else {
 						if (calendar[buttonName]) { // a calendar method
 							buttonClick = function() {
+							
 								calendar[buttonName]();
 							};
 						}
 						else if (calendar.isValidViewType(buttonName)) { // a view type
-							buttonClick = function() {
-								calendar.changeView(buttonName);
+							buttonClick = function() {							
+							calendar.changeView(buttonName);
 							};
 							viewsWithButtons.push(buttonName);
 							viewText = calendar.getViewButtonText(buttonName);
