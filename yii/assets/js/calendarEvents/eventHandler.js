@@ -102,11 +102,23 @@ var eventHandler = {
 	},
 	// by daniel click to third_party
 	typeInEvents:function(event) {
-		$('#calendar').fullCalendar('gotoDate', event.start);
-		$('#calendar').fullCalendar('changeView', "agendaWeek");
+		$('.qtip-wrapper').hide();
+		$('.qtip-tip').hide();
+		var currentView = $('#calendar').fullCalendar('getView');
+		if(currentView.name == "month") {
+			$('#calendar').fullCalendar('gotoDate', event.start);
+			$('#calendar').fullCalendar('changeView', "basicWeek");
+			//$('#fc-agendaWeek-button').addClass('ui-state-hover');
+			//$('#fc-agendaWeek-button').addClass('ui-state-active');
+		} else if(currentView.name == "basicWeek") {
+			$('#calendar').fullCalendar('gotoDate', event.start);
+			$('#calendar').fullCalendar('changeView', "basicDay");
+		}
+	
+		
 	},
 	
-	createTooltip:function(element,event,registeredEvent) {
+	createTooltip:function(element,event,registeredEvent) {		
 			if (!element) return;	
 			if (!element.qtip) return;	
 			
@@ -123,6 +135,12 @@ var eventHandler = {
 				var tipContent = registeredEvent?formFactory._renderRegisteredEventTooltip(event,registeredEvent):formFactory._renderTitleTooltip(event);
 			}
 			if (tipContent) {
+			var view = $('#calendar').fullCalendar( 'getView' );
+				if(view.name == 'basicDay') {
+					var target = "topCenter";
+				} else {
+					var target = "topRight";
+				}
 							var myTip = element.qtip({
 								   content:{text:tipContent},
 								   hide:{
@@ -136,24 +154,26 @@ var eventHandler = {
 								      color: '#FFFFFF',
 								      textAlign: 'center',
 								      border: {
-								         width: 7,
+								         width: 17,
 								         radius: 5,
+									 
 								         color: '#181818'
 								      },
 								      tip: 'bottomLeft',
 								      //name: 'dark' // Inherit the rest of the attributes from the preset dark style
 								   },
+								   
 								   position:{
-									  target:element,
-								      corner: {
-								          target: 'topRight',
-								          tooltip: 'bottomLeft'
-								       },
-								       adjust:{
-								    	   x:-100
-								       }
-								   }
-								});
+								   	target:element,
+								   	corner: {
+								   		target: target,
+								   		tooltip: 'bottomLeft'
+								   	},
+									adjust:{
+								   		x:-100
+									}
+								}
+							});
 							var self = this;
 							
 							if (event && event.subcategory && $.inArray(event.subcategory,this.otherEvents)<0) {

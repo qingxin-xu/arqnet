@@ -79,6 +79,7 @@ var eventRender = {
 		if (!this[event.subcategory][myD]) {
 			this[event.subcategory][myD] = {element:element,count:1,html:'',ids:{},index:myD,sc:event.subcategory};
 			this['render'+event.subcategory](element,event,view);
+			
 			/*
 			element.find('.fc-content').addClass('monthViewIcon');
 			element.removeClass('color-green');
@@ -109,6 +110,7 @@ var eventRender = {
 				event.date_created = event.start;
 			} else return;
 		}
+		
 		var start_time = event.date_created.split(/\s+/)[1],
 			start_minutes = start_time.split(/:/)[1],
 			start_hours = start_time.split(/:/)[0],
@@ -121,7 +123,8 @@ var eventRender = {
 			new_end = endMoment.format("YYYY-MM-DD HH:mm:ss");//start_date+' '+start_hours+':'+end_minutes+':'+start_seconds,
 
 		event.start = new_start;
-		event['end']= new_end;
+		//todo delete the end date by daniel
+		//event['end']= new_end;
 	},
 	
 	roundTime:function(minutes) {
@@ -182,6 +185,10 @@ var eventRender = {
 	},
 	
 	renderEvent:function(element,event) {
+		var view = $('#calendar').fullCalendar( 'getView' );
+		if(view.name == 'basicDay') {
+			element.find('.fc-time').show();
+		}
 		if (!element || !event) return;
 		if(event.notesFrom  == "facebook") {
 			element.find('.fc-content').addClass('eventIcon facebook_event');

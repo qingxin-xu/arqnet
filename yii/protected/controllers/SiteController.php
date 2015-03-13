@@ -695,13 +695,28 @@ class SiteController extends Controller
 
 
         $events = array();
-        $sql = "select *, count(*)
+        $sqlForFB = "select *, count(*)
 						from note
-						where user_id=$user_id
+						where user_id=$user_id and fb_message_id is not null
 						group by DATE_FORMAT(date_created,'%Y-%m-%d')
 						";
-        $allYourNotes = Yii::app()->db->createCommand($sql)->queryAll();
-        $eventsHash = $this->diffViewDate($allYourNotes,'month');
+        $allYourNotesForFB = Yii::app()->db->createCommand($sqlForFB)->queryAll();
+        $eventsHashForFB = $this->diffViewDate($allYourNotesForFB,'month');
+	
+	$sqlForArq = "select *, count(*)
+				from note
+				where user_id=$user_id and fb_message_id is null
+				group by DATE_FORMAT(date_created,'%Y-%m-%d')
+							";
+	$allYourNotesForArq = Yii::app()->db->createCommand($sqlForArq)->queryAll();
+	$eventsHashForArq = $this->diffViewDate($allYourNotesForArq,'month');
+	
+	$eventsHash = array_merge_recursive($eventsHashForFB, $eventsHashForArq);
+	//var_dump($eventsHash);exit;
+	
+	
+	
+	
 
 
         if (isset($userIcon['path'])) {

@@ -667,6 +667,7 @@ jQuery(document).ready(function($){
 							images: toRender[i][j].images,
 							videos: toRender[i][j].videos,
 							start: event_date,
+							
 							allDay: false,
 							className: [eventClass[toRender[i][j].notesFrom]],
 							event_id: toRender[i][j].calendar_event_id,
@@ -707,12 +708,13 @@ jQuery(document).ready(function($){
 										images: toRenderForMonth[i][j].images,
 										videos: toRenderForMonth[i][j].videos,
 										start: event_date,
+										
 										allDay: false,
 										className: [eventClass[toRenderForMonth[i][j].notesFrom]],
 										event_id: toRenderForMonth[i][j].calendar_event_id,
 										subcategory: 'typeInEvents',
 										//week view 的icon暂时去除，空间不够
-										notesFrom: "week"
+										notesFrom: toRenderForMonth[i][j].notesFrom
 			
 			
 									};
@@ -739,7 +741,7 @@ jQuery(document).ready(function($){
 			 								calendar.fullCalendar({
 			 									header: {
 			 										left: 'title',
-			 										right: 'month,agendaWeek,agendaDay, today, prev,next'
+			 										right: 'month,basicWeek,basicDay, today, prev,next'
 			 									},
 			 								
 			 									//defaultView: 'basicWeek',
@@ -748,8 +750,8 @@ jQuery(document).ready(function($){
 			 									firstDay: 1,
 			 									height: 600,
 			 									droppable: true,
+												
 			 									drop: function(date, allDay) {
-			 										
 			 											var $this = $(this),
 			 											eventObject = {
 			 												event_id:$this.attr('id'),
@@ -791,13 +793,15 @@ jQuery(document).ready(function($){
 			 											dataType:'json',
 			 											type:'POST',
 			 											data:{start:start.toISOString(),end:end.toISOString()},
-			 											success:function(d) {
+			 											success:function(d) { 
 			 												if ('success' in d && d['success']==1 && 'events' in d) {
 			 													$.each(d['events'],function(index,value) {
 			 														value.allDay = 0;
 			 														value = $.extend(value,{className:['color-green']});
 			 														eventRender.setTimeSlot(value);
+																	 
 			 													});
+																 
 			 													callback(d['events']);
 			 												} else {
 			 													console.log('unable to load events',d);
@@ -812,15 +816,19 @@ jQuery(document).ready(function($){
 			 									},
 			 				
 			 									eventRender:function(event,element,view) {
+												 
 			 									//console.log('event render',view.name,view);
 			 										if (eventRender && event.subcategory) {
 			 											eventRender.registerEvent(element,event,view);
 			 										}
 			 				
-			 										if (view.name == 'agendaDay'||view.name=='day') {
-			 											//console.log('event',event);
+			 										if (view.name == 'basicDay'||view.name=='day') {
+													 
+			 											//console.log($('.eventIcon'));
+														 
 			 											//eventRender.setTimeSlot(event);
 			 											event.allDay = 0;
+														
 			 											//console.log('event element',element);
 			 											//element.removeClass('color-green');
 			 											//element.addClass('color-agendaDay');
@@ -830,19 +838,19 @@ jQuery(document).ready(function($){
 			 									},
 												
 			 									viewRender:function(view, element ){
-												 	
-			 										if(view.name == 'agendaWeek' || view.name == 'agendaDay') {
-													 	
-														calendar.fullCalendar('removeEventSource', myEvents);
+												 
+												 	if(view.name == 'basicWeek' || view.name == 'basicDay') {
+													 	calendar.fullCalendar('removeEventSource', myEvents);
 														calendar.fullCalendar('removeEventSource', myEventsForMonth);
 			 											calendar.fullCalendar('addEventSource', myEventsForMonth);
+														
 			 										} else if(view.name == 'month') {
 			 											 calendar.fullCalendar('removeEventSource', myEventsForMonth);
 														 calendar.fullCalendar('removeEventSource', myEvents);
 														 calendar.fullCalendar('addEventSource', myEvents);
 			 										}
+													
 			 									},
-			 									
 			 									
 			 									
 			 									
@@ -864,7 +872,7 @@ jQuery(document).ready(function($){
 				var myMoment = $.fullCalendar.moment(initialDate.replace(/_/g,'-'));
 				//$('#calendar').fullCalendar('gotoDate',tmp[0],tmp[1],tmp[2]);
 				$('#calendar').fullCalendar('gotoDate',myMoment);
-				$('#calendar').fullCalendar('changeView','agendaDay')
+				$('#calendar').fullCalendar('changeView','basicDay')
 			}
 		});
 

@@ -135,6 +135,7 @@ class FBLoginController extends Controller
 
 				//settings点击sync 同步facebook信息
 				if (Yii::app()->session['for_import'] == 1) {
+				
 					Yii::app()->session['for_import'] = 0;
 					//判断当前facebook账户是否为 arq当前绑定的账户
 					$is_bound = BindingAccount::model()->findAllByAttributes(array(
@@ -160,7 +161,7 @@ class FBLoginController extends Controller
 							$fql.= " ORDER BY created_time DESC LIMIT 1000000";
 						}
 						
-						
+					
 						
 						$param = array('method' => 'fql.query',
 								'query' => $fql
@@ -472,9 +473,11 @@ class FBLoginController extends Controller
 
 
 						}
-
-
-
+						
+						//如果为链接
+						if($blogList['attachment']['fb_object_type'] == "link") {
+							$blogList['message'] = $blogList['message'].$blogList['attachment']['media'][0]['href'];
+						}
 					}
 
 					if(empty($blogList['message'])) {
@@ -561,7 +564,7 @@ class FBLoginController extends Controller
 //					$statuse = $facebook->api($param);
 			
 			$statuse = Yii::app()->session['your_statuse'];
-	
+			
 			if (empty($statuse)) {
 				echo CJSON::encode(array(
 					'success' => 0,
@@ -632,10 +635,16 @@ class FBLoginController extends Controller
 
 
 					}
+					//如果为分享的链接
+									
+					if($statuse[$key]['attachment']['fb_object_type'] == "link") {
+						$statuse[$key]['message'] = $statuse[$key]['message'].$statuse[$key]['attachment']['media'][0]['href'];
+					}
 				}
 				$note->user_id = Yii::app()->user->Id;
-				$facebookNote = $statuse[$key]['message'];
 				
+				
+				$facebookNote = $statuse[$key]['message'];
 				//如果没有message 判断是否存在照片
 				if(empty($statuse[$key]['message'])) {
 					if(isset($statuse[$key]['attachment']['fb_object_type'])) {
