@@ -6,6 +6,8 @@ var QuestionAnalysis = {
 	answerDeleteService:'/deleteAnswer',
 	
 	id:null,
+	/* Reference to jScrollpane API */
+	jspAPI:null,
 	questions:null,
 	placeHolder:null,
 	mainDisplay:null,
@@ -164,6 +166,37 @@ var QuestionAnalysis = {
 		this.display(this.placeHolder,this.questions,this.areAnswers);
 	},
 	
+	/**
+	 * Search the questions array for the occurrence of the specified id and return
+	 * its index in the question array
+	 */
+	findQuestionIndex:function(search_id) {
+		for (var i = 0;i<this.questions.length;i++) {
+			if (this.questions[i].question.question_id == question_id) {
+				return i;
+			}
+		}
+		return 0;
+	},
+	
+	/**
+	 * Search the questions array for the occurrence of the specified id, adding up the
+	 * heights of each question row up to that this id and return the accumulated height
+	 */
+	calculateOffsetToQuestion:function(search_id) {
+		if (!search_id) return 0;
+		var offset = 0;
+		for (var i = 0;i<this.questions.length;i++) {
+			
+			if (this.questions[i].question.question_id == question_id) {
+				return offset;
+			} else {
+				offset = offset + $(this.placeHolder+' .question_id_'+this.questions[i].question.question_id).height();
+			}
+		}
+		return offset;
+	},
+	
 	setDateTime:function(dateString) {
 		if (!dateString) return '';
 
@@ -190,7 +223,7 @@ var QuestionAnalysis = {
 		if (!question) return '';
 		if (index==null) index = 1;
 		var rowClass = index%2==0?'even':'odd';
-		var row = '<tr class="rowClass rowNumber'+index+'" >';
+		var row = '<tr class="rowClass rowNumber'+index+' question_id_'+question.question_id+'" >';
 		var date_created = '';
 		var buttonTitle = areAnswers?'Delete my answer':'Delete my question';
 		if (question.date_created) date_created = this.setDateTime(question.date_created);
@@ -764,7 +797,7 @@ var QuestionAnalysis = {
 	 * or answered on this date.  The determination of whether or not we sort by 
 	 * answered or asked questions is determined the the sortByDateParameter class property
 	 */
-	sortByDate:function(sortDate) {
+	_sortByDate:function(sortDate) {
 		if (!sortDate) return;
 		if (!this.questions) return;
 		var sortDateQuestions = [],
@@ -781,6 +814,24 @@ var QuestionAnalysis = {
 		
 		this.questions = sortDateQuestions.concat(otherQuestions);
 		this.display(this.placeHolder,this.questions,this.areAnswers);
+	},
+	
+	sortByDate:function(sortDate) {
+		if (!sortDate) return;
+		if (!this.questions) return;
+		var sortDateQuestions = [],
+			otherQuestions = [];
+		for (var i = 0;i<this.questions.length;i++) {
+			var value = this.getSortByDateValue(this.questions[i]) || null;
+			if (value) {
+				var question_date = value.split(/\s+/)[0];
+				if (question_date == sortDate) {
+					sortDateQuestions.push(this.questions[i]);
+				} else otherQuestions.push(this.questions[i]);
+			} else otherQuestions.push(this.questions[i]);
+		}
+		
+		return sortDateQuestions[0].question;
 	},
 	
 	sort:function(property,redraw) {		

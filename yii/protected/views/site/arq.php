@@ -86,18 +86,20 @@ jQuery(document).ready(function($){
 
 	$('a[href=#ViewQuestionsAskedPane]').on('shown.bs.tab',function() {
 		if ($(askedQuestions.placeHolder).jScrollPane) {
-			$(askedQuestions.placeHolder).jScrollPane({
+			var el = $(askedQuestions.placeHolder).jScrollPane({
 				verticalDragMinHeight: 50
 			});
+			askedQuestions.jspAPI  = el.data('jsp');
 			askedQuestions.placeHolder = askedQuestions.placeHolder+' .jspPane';
 		}
 	});
 
 	$('a[href=#ViewQuestionsAnsweredPane]').on('shown.bs.tab',function() {
 		if ($(answeredQuestions.placeHolder).jScrollPane) {
-			$(answeredQuestions.placeHolder).jScrollPane({
+			var el = $(answeredQuestions.placeHolder).jScrollPane({
 				verticalDragMinHeight: 50
 			});
+			answeredQuestions.jspAPI = el.data('jsp');
 			answeredQuestions.placeHolder = answeredQuestions.placeHolder+' .jspPane';
 		}
 	});
@@ -110,12 +112,24 @@ jQuery(document).ready(function($){
 		
 		if (initialTab in availableTabs) {
 			$('a[href='+availableTabs[initialTab]+']').tab('show');
+			/*
+				Scroll to the first occurrence of date in the specified tab
+			*/
 			if (sortByDate) {
+				var firstQuestion,				
+					offset = 0,
+					tabObj;
 				if (initialTab == 'myAnswers') {
-					answeredQuestions.sortByDate(sortByDate);
+					tabObj = answeredQuestions;
+					firstQuestion = answeredQuestions.sortByDate(sortByDate);
 				} else if (initialTab == 'myQuestions') {
-					askedQuestions.sortByDate(sortByDate);
+					tabObj = askedQuestions;
+					firstQuestion =askedQuestions.sortByDate(sortByDate);
+					
 				}
+				question_id = firstQuestion.question_id;								
+				offset = tabObj.calculateOffsetToQuestion(question_id)+$(tabObj.placeHolder+' thead').height();				
+				tabObj.jspAPI.scrollBy(0,offset);
 			}
 		}
 	}

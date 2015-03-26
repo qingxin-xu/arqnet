@@ -17,7 +17,8 @@ var AnsweredQuestions = {
 			var myAnswer = questionObj.myAnswer;
 			if (index==null) index = 1;
 			var rowClass = index%2==0?'even':'odd';
-			var row = '<tr class="rowClass rowNumber'+index+'" >';
+			//var row = '<tr class="rowClass rowNumber'+index+'" >';
+			var row = '<tr class="rowClass rowNumber'+index+' question_id_'+question.question_id+'" >';
 			var date_created = '';
 			var buttonTitle = areAnswers?'Delete my answer':'Delete my question';
 			if (myAnswer.date_created) date_created = this.setDateTime(myAnswer.date_created);
