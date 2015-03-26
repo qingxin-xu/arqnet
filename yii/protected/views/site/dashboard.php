@@ -135,7 +135,7 @@ function initializeMainSlider(range,dateRangeAverages)
 		paddingMin:trackerOffset+42+Tracker.trackerPlot.getPlotOffset().left-8,
 		paddingMax:paddingMax,//$('#trackers-tab').width()-$('#trackerChart').width()+20,
 		step:values.length>1?values[1]-values[0]:0,
-		animate:true,
+		animate:'fast',
 		min:values.length>1?values[0]:0,
 		max:values.length>1?values[values.length-1]:0.1,
 		values:values,
