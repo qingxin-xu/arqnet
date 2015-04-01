@@ -185,22 +185,58 @@ var eventRender = {
 	},
 	
 	renderEvent:function(element,event) {
+	
 		var view = $('#calendar').fullCalendar( 'getView' );
 		if(view.name == 'basicDay') {
 			element.find('.fc-time').show();
+			
 		}
 		if (!element || !event) return;
-		if(event.notesFrom  == "facebook") {
-			element.find('.fc-content').addClass('eventIcon facebook_event');
-		} else if(event.notesFrom  == "arq") {
-			element.find('.fc-content').addClass('eventIcon arq_event');
-		} else if(event.notesFrom  == "week"){
-					
+		
+		if(view.name == 'month') {
+			
+			element.find('.fc-content').parent().removeClass("fc-day-grid-event fc-event fc-start fc-end color-blue fc-draggable");
+			
+		
+			element.find('.fc-title').hide();
+			element.find('.fc-time').hide();
+			if(event.notesFrom  == "facebook") {
+				element.find('.fc-content').addClass('eventIconForMonth facebook_month_icon'+event.title);	
+				if(parseInt(event.title) >= 10) {
+					element.find('.fc-content').addClass('eventIconForMonth facebook_month_icon9p');	
+				}
+			} else if(event.notesFrom  == "arq") {
+				element.find('.fc-content').addClass('eventIconForMonth arq_month_icon'+event.title);
+					if(parseInt(event.title) >= 10) {
+						element.find('.fc-content').addClass('eventIconForMonth arq_month_icon9p');	
+					}	
+			} else if(event.notesFrom  == "Track"){			
+				element.find('.fc-content').addClass('eventIconForMonth track_month_icon'+event.title);
+					if(parseInt(event.title) >= 10) {
+						element.find('.fc-content').addClass('eventIconForMonth track_month_icon9p');	
+					}		
+			}
+			
+			
 		} else {
-			element.find('.fc-content').addClass('eventIcon event');
-			//formFactory._renderTitleTooltip(event);
+			if(event.notesFrom  == "facebook") {
+				element.find('.fc-content').addClass('eventIcon facebook_event');
+						
+					} else if(event.notesFrom  == "arq") {
+						element.find('.fc-content').addClass('eventIcon arq_event');
+					} else if(event.notesFrom  == "week"){
+								
+					} else {
+						element.find('.fc-content').addClass('eventIcon event');
+						//formFactory._renderTitleTooltip(event);
+					}	
+		
+		
 		}
+					
+		
 
+		
 		
 	},
 	

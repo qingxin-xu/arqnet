@@ -106,13 +106,22 @@ var eventHandler = {
 		$('.qtip-tip').hide();
 		var currentView = $('#calendar').fullCalendar('getView');
 		if(currentView.name == "month") {
+		
 			$('#calendar').fullCalendar('gotoDate', event.start);
-			$('#calendar').fullCalendar('changeView', "basicWeek");
-			//$('#fc-agendaWeek-button').addClass('ui-state-hover');
+			$('#calendar').fullCalendar('changeView', "basicDay");
+			
+			//$('.fc-basicDay-button').removeClass('ui-button'); 
+			//$('.fc-month-button').removeClass('ui-state-default');
+			//$('#fc-month-button').removeClass('ui-state-active');
 			//$('#fc-agendaWeek-button').addClass('ui-state-active');
 		} else if(currentView.name == "basicWeek") {
 			$('#calendar').fullCalendar('gotoDate', event.start);
 			$('#calendar').fullCalendar('changeView', "basicDay");
+		} else if(currentView.name == "basicDay") {
+			
+			if(event.notesFrom == "arq"){window.open("myJournals?journal_id="+event.note_id,'_blank');}
+			if(event.notesFrom == "facebook"){window.open("http://www.facebook.com",'_blank');}
+			
 		}
 	
 		
@@ -121,7 +130,8 @@ var eventHandler = {
 	createTooltip:function(element,event,registeredEvent) {		
 			if (!element) return;	
 			if (!element.qtip) return;	
-			
+			var view = $('#calendar').fullCalendar( 'getView' );
+			if(view.name == "month") return;
 			if(event.subcategory == "typeInEvents") {
 				tipContent = event.description;
 				if(event.images){

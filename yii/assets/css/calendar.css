@@ -163,10 +163,20 @@ hr.ui-widget-header {
 	display:block;
 	background-position:left center;
 	background-repeat:no-repeat;
-	/*height:24px;*/
+	height:20px;
 	padding:3px 0 0 26px;
 	word-break:break-word;
 	background-size:22px 22px;
+}
+
+.eventIconForMonth {
+	display:block;
+	background-position:left center;
+	background-repeat:no-repeat;
+	height:20px;
+	padding:3px 0 0 26px;
+	word-break:break-word;
+	background-size:35px 23px;
 }
 
 .monthViewWrapper {
@@ -212,6 +222,105 @@ hr.ui-widget-header {
 .arq_event {
 	background-image:url('/assets/images/arq_event.png');
 }
+
+.facebook_month_icon1 {
+	background-image:url('/assets/images/button/fb/fb1.PNG');
+}
+.facebook_month_icon2 {
+	background-image:url('/assets/images/button/fb/fb2.PNG');
+}
+.facebook_month_icon3 {
+	background-image:url('/assets/images/button/fb/fb3.PNG');
+}
+.facebook_month_icon4 {
+	background-image:url('/assets/images/button/fb/fb4.PNG');
+}
+.facebook_month_icon5 {
+	background-image:url('/assets/images/button/fb/fb5.PNG');
+}
+.facebook_month_icon6 {
+	background-image:url('/assets/images/button/fb/fb6.PNG');
+}
+.facebook_month_icon7 {
+	background-image:url('/assets/images/button/fb/fb7.PNG');
+}
+.facebook_month_icon8 {
+	background-image:url('/assets/images/button/fb/fb8.PNG');
+}
+.facebook_month_icon9 {
+	background-image:url('/assets/images/button/fb/fb9.PNG');
+}
+.facebook_month_icon9p {
+	background-image:url('/assets/images/button/fb/fbm.PNG');
+}
+.arq_month_icon1 {
+	background-image:url('/assets/images/button/arq/ARQ1.PNG');	
+}
+.arq_month_icon2 {
+	background-image:url('/assets/images/button/arq/ARQ2.PNG');	
+}
+.arq_month_icon3 {
+	background-image:url('/assets/images/button/arq/ARQ3.PNG');	
+}
+.arq_month_icon4 {
+	background-image:url('/assets/images/button/arq/ARQ4.PNG');	
+}
+.arq_month_icon5 {
+	background-image:url('/assets/images/button/arq/ARQ5.PNG');	
+}
+.arq_month_icon6 {
+	background-image:url('/assets/images/button/arq/ARQ6.PNG');	
+}
+.arq_month_icon7 {
+	background-image:url('/assets/images/button/arq/ARQ7.PNG');	
+}
+.arq_month_icon8 {
+	background-image:url('/assets/images/button/arq/ARQ8.PNG');	
+}
+.arq_month_icon9 {
+	background-image:url('/assets/images/button/arq/ARQ9.PNG');	
+}
+.arq_month_icon9p {
+	background-image:url('/assets/images/button/arq/arqm.PNG');	
+}
+.track_month_icon1 {
+	background-image:url('/assets/images/button/track/track1.PNG');	
+}
+.track_month_icon2 {
+	background-image:url('/assets/images/button/track/track2.PNG');	
+}
+.track_month_icon3 {
+	background-image:url('/assets/images/button/track/track3.PNG');	
+}
+.track_month_icon4 {
+	background-image:url('/assets/images/button/track/track4.PNG');	
+}
+.track_month_icon5 {
+	background-image:url('/assets/images/button/track/track5.PNG');	
+}
+.track_month_icon6 {
+	background-image:url('/assets/images/button/track/track6.PNG');	
+}
+.track_month_icon7 {
+	background-image:url('/assets/images/button/track/track7.PNG');	
+}
+.track_month_icon8 {
+	background-image:url('/assets/images/button/track/track8.PNG');	
+}
+.track_month_icon9 {
+	background-image:url('/assets/images/button/track/track9.PNG');	
+}
+.track_month_icon9p {
+	background-image:url('/assets/images/button/track/trackm.PNG');	
+}
+
+
+
+
+
+
+
+
 
 div.tooltip_btn_wrapper {
 	margin:7px 0;
