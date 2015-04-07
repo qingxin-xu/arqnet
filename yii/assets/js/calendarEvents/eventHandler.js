@@ -69,7 +69,7 @@ var eventHandler = {
 	
 	deleteService:'deleteCalendarEvent',
 	
-	removeEvent:function(event,dialog) {
+	removeEvent:function(event,dialog) { 
 		if (!event) {
 			if (dialog && dialog.id) $(dialog.id).dialog('close');
 			return;

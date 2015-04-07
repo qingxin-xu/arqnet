@@ -788,6 +788,7 @@ jQuery(document).ready(function($){
 			 				
 			 									},
 			 									events:function(start,end,timezone,callback) {
+												 		 	
 			 										eventRender.unRegisterEvents();
 			 										$.ajax({
 			 											url:'/calendarActivities',
@@ -799,7 +800,7 @@ jQuery(document).ready(function($){
 			 													$.each(d['events'],function(index,value) {
 			 														value.allDay = 0;
 			 														value = $.extend(value,{className:['color-green']});
-			 														eventRender.setTimeSlot(value);
+			 														//eventRender.setTimeSlot(value);
 																	 
 			 													});
 																 

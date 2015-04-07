@@ -650,21 +650,23 @@ class SiteController extends Controller
 		    	
 		    }
             }
-        }
+        } else {
+		$myEvents = array();
+	}
 
         $eventsHash = array('tracker' => array(), 'events' => array(), 'other' => array());
-        
+       
         //判断notes来源以及类型
-        foreach ($myEvents as $ev) {
-            if (strcmp($ev['event_type'], 'tracker') == 0) {
-                array_push($eventsHash['tracker'], $ev);
-            } else if (strcmp($ev['event_type'], 'events') == 0) {
-                array_push($eventsHash['events'], $ev);
-            } else {
-                array_push($eventsHash['other'], $ev);
-            }
-        }
-	
+                foreach ($myEvents as $ev) {
+                    if (strcmp($ev['event_type'], 'tracker') == 0) {
+                        array_push($eventsHash['tracker'], $ev);
+                    } else if (strcmp($ev['event_type'], 'events') == 0) {
+                        array_push($eventsHash['events'], $ev);
+                    } else {
+                        array_push($eventsHash['other'], $ev);
+                    }
+                }
+        	
         return $eventsHash;
     }
 
@@ -700,7 +702,9 @@ class SiteController extends Controller
 
         $start_date = date('Y-m-d', strtotime('-1 month', strtotime($end_date)));
         $myEvents = $this->calendarActivities($start_date, $end_date, $user_id);
-
+	$myEvents = array();
+	
+//var_dump($myEvents);exit;
         //todo add by daniel
         //$events = CalendarEvent::getEvents(Yii::app()->user->Id);
 
@@ -752,7 +756,7 @@ class SiteController extends Controller
 
         $this->layout = 'arqLayout2';
         $this->setPageTitle('Calendar');
-	
+
         $this->render('calendar', array(
             'data' => $eventsHash,
             'dataForWeek' => $eventsHashForWeek,
@@ -2569,13 +2573,22 @@ private function getMyJournalsByID($note_id){
         $cal = new CalendarEvent();
         $cal->user_id = $user_id;
         $start = Yii::app()->request->getPost('start', '');
+	
         $end = Yii::app()->request->getPost('end', '');
         $all_day = Yii::app()->request->getPost('all_day', '');
-
+ 
         if ($start) {
             $start = DateTime::createFromFormat('Y-m-d\TH:i:s.uZ', $start);
-            $start = $start->format('Y-m-d H:i:s');
+	    $start = $start->format('Y-m-d H:i:s');
+	    $startArr = explode(' ',$start);
+	    
+	    if($startArr[1] == "00:00:00") {
+	    	$start = $startArr[0].' '.date('h:i:s',time());
+	    }
             $cal->start_date = $start;
+	    
+	    
+	    //$cal->start_date = $start;
         }
         if ($end) {
             $end = DateTime::createFromFormat('Y-m-d\TH:i:s.uZ', $end);
@@ -2585,6 +2598,7 @@ private function getMyJournalsByID($note_id){
 
         $cal->all_day = $all_day;
         $cal->date_created = new CDbExpression('NOW()');
+	
         $cal->save();
         $cal_id = $cal->calendar_event_id;
 
@@ -2634,7 +2648,7 @@ private function getMyJournalsByID($note_id){
                 }
             }
         }
-
+//var_dump($cal->date_created);exit;
         echo CJSON::encode(array(
             'success' => 1,
             'calendar_event_id' => $cal->calendar_event_id,
@@ -4316,9 +4330,11 @@ where user_id = $user_id
         #MyStuff::Log('CALENAER ACTIVITIES '.$start_date.' '.$end_date);
         $myEvents = array();
         $calendarEvents = CalendarEvent::model()->findAll(array('order' => 't.start_date DESC', 'condition' => 't.user_id=:_user_id and date(t.start_date)<=date(:end_date) and date(t.start_date)>=date(:start_date)', 'params' => array(':_user_id' => $user_id, ':start_date' => $start_date, ':end_date' => $end_date)));
-        foreach ($calendarEvents as $ce) {
+        //var_dump($calendarEvents);exit;
+	foreach ($calendarEvents as $ce) {
             $eventValues = $eventValues = EventValue::model()->with('calendarEvent', 'eventNote', 'eventQuestion')->findAll('t.calendar_event_id=:_id', array(':_id' => $ce->calendar_event_id));
             $description = array();
+	    
             foreach ($eventValues as $ev) {
                 $eventDefn = EventDefinition::model()->with('eventSubcategory')->find('t.event_definition_id=:_id', array(':_id' => $ev->event_definition_id));
                 $subcategory = EventSubcategory::model()->findByPk($eventDefn->event_subcategory_id);
@@ -4351,7 +4367,9 @@ where user_id = $user_id
                     'editable' => false
                 ));
             }
+	    
         }
+	
         return $myEvents;
     }
 

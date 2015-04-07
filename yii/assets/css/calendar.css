@@ -173,10 +173,10 @@ hr.ui-widget-header {
 	display:block;
 	background-position:left center;
 	background-repeat:no-repeat;
-	height:20px;
+	height:30px;
 	padding:3px 0 0 26px;
 	word-break:break-word;
-	background-size:35px 23px;
+	background-size:40px 28px;
 }
 
 .monthViewWrapper {
@@ -313,14 +313,13 @@ hr.ui-widget-header {
 .track_month_icon9p {
 	background-image:url('/assets/images/button/track/trackm.PNG');	
 }
-
-
-
-
-
-
-
-
+.text_position {
+	position:absolute; 
+	left:120px;
+	width: 720px;
+	height:50px;
+	overflow:hidden;
+}
 
 div.tooltip_btn_wrapper {
 	margin:7px 0;
