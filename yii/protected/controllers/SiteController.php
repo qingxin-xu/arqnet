@@ -593,61 +593,80 @@ class SiteController extends Controller
         }
     }
 
-    public function diffViewDate($data,$view)
+    public function diffViewDate($data,$view, $drag=null)
     {
+    	
 
         if (!empty($data)) {
             foreach ($data as $key => $YourNotes) {
-                if (empty($YourNotes['title'])) {
-                    $YourNotes['title'] = $YourNotes['content'];
-                }
-                $yourImage = "";
-                $notesFrom = "arq";
-                if (!empty($YourNotes['fb_message_id'])) {
-                    $notesFrom = "facebook";
-                }
-                if (!empty($YourNotes['fb_image_ids'])) {
-                    $yourImage = Image::model()->findByAttributes(array('image_id' => $YourNotes['fb_image_ids']));
-                }
-                $yourVideo = "";
-                if (!empty($YourNotes['fb_video_ids'])) {
-                    $yourVideo = Image::model()->findByAttributes(array('image_id' => $YourNotes['fb_video_ids']));
-                }
-                $myEvents[$key]['videos'] = empty($yourVideo) ? "" : $yourVideo['path'];
-                $myEvents[$key]['images'] = empty($yourImage) ? "" : $yourImage['path'];
-                $day_event = explode(" ", $YourNotes['date_created']);
-                $myEvents[$key]['event_date'] = $YourNotes['date_created'];
-                $myEvents[$key]['day_event'] = $day_event[0];
-                $myEvents[$key]['event_type'] = 'typeInEvents';
-                $myEvents[$key]['event_name'] = strip_tags($YourNotes['title']);
-                $myEvents[$key]['description'] = strip_tags($YourNotes['content']);
-                if($view=="month") {
-                    $myEvents[$key]['event_name'] = $YourNotes['count(*)'];
-                    $myEvents[$key]['description'] = "goto week view to see more";
-                    if ($YourNotes['count(*)'] == 1) {
-                        $myEvents[$key]['event_name'] = strip_tags($YourNotes['title']);
-                        $myEvents[$key]['description'] = strip_tags($YourNotes['content']);
-                    }
-                }
-
-                $myEvents[$key]['notesFrom'] = $notesFrom;
-
+	    	if($drag) {
+		    	$notesFrom = "Track";
+			$YourNotes['title'] = $YourNotes['value'];
+			$day_event = explode(" ", $YourNotes['start_date']);
+			$myEvents[$key]['event_date'] = $YourNotes['start_date'];
+			$myEvents[$key]['day_event'] = $day_event[0];
+			$myEvents[$key]['event_type'] = 'typeInEvents';
+			$myEvents[$key]['event_name'] = strip_tags($YourNotes['value']);
+			$myEvents[$key]['description'] = strip_tags($YourNotes['value']);
+			$myEvents[$key]['note_id'] = $YourNotes['calendar_event_id'];
+			$myEvents[$key]['event_name'] = $YourNotes['count(*)'];
+			$myEvents[$key]['notesFrom'] = $notesFrom;
+		} else {
+			if (empty($YourNotes['title'])) {
+		                $YourNotes['title'] = $YourNotes['content'];
+				 $myEvents[$key]['description'] = "goto week view to see more";
+		        }
+		        $yourImage = "";
+		        $notesFrom = "arq";
+		        if (!empty($YourNotes['fb_message_id'])) {
+		        	$notesFrom = "facebook";
+		        }
+		        if (!empty($YourNotes['fb_image_ids'])) {
+		        	$yourImage = Image::model()->findByAttributes(array('image_id' => $YourNotes['fb_image_ids']));
+		        }
+			$yourVideo = "";
+		        if (!empty($YourNotes['fb_video_ids'])) {
+		                $yourVideo = Image::model()->findByAttributes(array('image_id' => $YourNotes['fb_video_ids']));
+		        }
+		        $myEvents[$key]['videos'] = empty($yourVideo) ? "" : $yourVideo['path'];
+		        $myEvents[$key]['images'] = empty($yourImage) ? "" : $yourImage['path'];
+		        $day_event = explode(" ", $YourNotes['date_created']);
+		        $myEvents[$key]['event_date'] = $YourNotes['date_created'];
+		        $myEvents[$key]['day_event'] = $day_event[0];
+		        $myEvents[$key]['event_type'] = 'typeInEvents';
+		        $myEvents[$key]['event_name'] = strip_tags($YourNotes['title']);
+		        $myEvents[$key]['description'] = strip_tags($YourNotes['content']);
+			$myEvents[$key]['note_id'] = $YourNotes['note_id'];
+		        if($view=="month") {
+		                $myEvents[$key]['event_name'] = $YourNotes['count(*)'];
+		                $myEvents[$key]['description'] = "goto week view to see more";
+		                        /*if ($YourNotes['count(*)'] == 1) {
+		                            $myEvents[$key]['event_name'] = strip_tags($YourNotes['title']);
+		                            $myEvents[$key]['description'] = strip_tags($YourNotes['content']);
+		                        }*/
+		        }
+		    
+		        $myEvents[$key]['notesFrom'] = $notesFrom;
+		    	
+		    }
             }
-        }
+        } else {
+		$myEvents = array();
+	}
 
         $eventsHash = array('tracker' => array(), 'events' => array(), 'other' => array());
-        
+       
         //判断notes来源以及类型
-        foreach ($myEvents as $ev) {
-            if (strcmp($ev['event_type'], 'tracker') == 0) {
-                array_push($eventsHash['tracker'], $ev);
-            } else if (strcmp($ev['event_type'], 'events') == 0) {
-                array_push($eventsHash['events'], $ev);
-            } else {
-                array_push($eventsHash['other'], $ev);
-            }
-        }
-	
+                foreach ($myEvents as $ev) {
+                    if (strcmp($ev['event_type'], 'tracker') == 0) {
+                        array_push($eventsHash['tracker'], $ev);
+                    } else if (strcmp($ev['event_type'], 'events') == 0) {
+                        array_push($eventsHash['events'], $ev);
+                    } else {
+                        array_push($eventsHash['other'], $ev);
+                    }
+                }
+        	
         return $eventsHash;
     }
 
@@ -683,7 +702,9 @@ class SiteController extends Controller
 
         $start_date = date('Y-m-d', strtotime('-1 month', strtotime($end_date)));
         $myEvents = $this->calendarActivities($start_date, $end_date, $user_id);
-
+	$myEvents = array();
+	
+//var_dump($myEvents);exit;
         //todo add by daniel
         //$events = CalendarEvent::getEvents(Yii::app()->user->Id);
 
@@ -691,7 +712,7 @@ class SiteController extends Controller
 
         $allYourNotesForWeek = Note::model()->findAllByAttributes(array('user_id' => $userId));
         $eventsHashForWeek = $this->diffViewDate($allYourNotesForWeek, 'week');
-
+	
 
 
         $events = array();
@@ -714,10 +735,15 @@ class SiteController extends Controller
 	$eventsHash = array_merge_recursive($eventsHashForFB, $eventsHashForArq);
 	//var_dump($eventsHash);exit;
 	
-	
-	
-	
-
+	//month view data drag event 
+	$sqlForDrag = "select *, count(*) from calendar_event as c LEFT JOIN event_value as e 
+		      	on c.calendar_event_id = e.calendar_event_id
+			where c.user_id=$user_id
+			group by DATE_FORMAT(c.start_date,'%Y-%m-%d')";
+			
+	$allYourNotesForDrag = Yii::app()->db->createCommand($sqlForDrag)->queryAll();
+	$eventsHashForDrag = $this->diffViewDate($allYourNotesForDrag,'month','drag');	
+	$eventsHash = array_merge_recursive($eventsHash, $eventsHashForDrag);
 
         if (isset($userIcon['path'])) {
             $fromFacebook = strpos($userIcon['path'], "https://");
@@ -739,6 +765,7 @@ class SiteController extends Controller
             'milestones' => $milestones,
             'categories' => $categories,
             'myEvents' => $myEvents,
+	    'third_part' => '',
         ));
 
 //		$this->render('calendar',array(
@@ -1123,7 +1150,8 @@ class SiteController extends Controller
 
         $activities = $this->calendarActivities($end_date, $today, $user_id);
         $journalDates = $this->getJournalDates();
-        $renderNotes;
+        
+	$renderNotes = $this->journalPager(0, null);
         if (isset($_GET['goto'])) {
             $goto = explode('-', $_GET['goto']);
             if (count($goto) > 0) {
@@ -1133,9 +1161,14 @@ class SiteController extends Controller
                 $renderNotes = $this->journalPager(0, null);
             }
 
-        } else {
-            $renderNotes = $this->journalPager(0, null);
-        }
+        } 
+	
+	if(isset($_GET['journal_id'])) {
+		$renderNotes = $this->getMyJournalsByID($_GET['journal_id']);
+	}
+	
+	
+	
 
         $this->render('my-journals', array(
             'activities' => $activities,
@@ -1146,6 +1179,28 @@ class SiteController extends Controller
         ));
     }
 
+private function getMyJournalsByID($note_id){
+		$user_id = Yii::app()->user->id;
+		$offset = 0;
+		$limit = 5;
+		$condition = 'user_id = '.$user_id.' and note_id='.$note_id;
+		$criteria = new CDbCriteria(
+			array(
+				'condition'=>$condition,
+				'limit'=>$limit,
+				'offset'=>$offset,
+				'order'=>'publish_date DESC, publish_time DESC'
+			)
+		);
+		$notes = Note::model()->findAll($criteria);
+		//$notes = NoteStatus::model()->findByAttributes(array('note_id'=>$note_id));
+		$results = array('limit'=>$limit,'count'=>count($notes),'nData'=>count($notes),'offset'=>$offset,'data'=>array());
+		$results['data'] = $this->unrollNotes($notes);
+		return $results;
+
+	}
+	    
+	     
     public function actionGetMyJournals()
     {
         if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
@@ -1724,6 +1779,7 @@ class SiteController extends Controller
         $publish_date = DateTime::createFromFormat('D, d F Y', $get_publish_date);
         $note->publish_date = $publish_date->format('Y-m-d');
         $get_publish_time = Yii::app()->request->getPost('publish_time', '');
+	
         $note->publish_time = $get_publish_time;
         /* 
 		 * Check if post is in the future 
@@ -1731,6 +1787,7 @@ class SiteController extends Controller
 		 * Otherwise use posted status for note status
 		 */
         $publish_datetime = strtotime($get_publish_date . ' ' . $get_publish_time);
+	
         $current_datetime = strtotime(date('Y-m-d h:i:s a'));
         if ($current_datetime >= $publish_datetime) {
             $note_status_id = Yii::app()->request->getPost('status');
@@ -1973,7 +2030,7 @@ class SiteController extends Controller
         if ($entries) {
             $ae_response_id = $this->createAEResponse(strip_tags($entries['total_content']));
             $ajd->ae_response_id = $ae_response_id;
-            //todo add bu daniel
+            //todo add by daniel
             $ajd->is_active = 1;
             $ajd->save();
 
@@ -2516,13 +2573,22 @@ class SiteController extends Controller
         $cal = new CalendarEvent();
         $cal->user_id = $user_id;
         $start = Yii::app()->request->getPost('start', '');
+	
         $end = Yii::app()->request->getPost('end', '');
         $all_day = Yii::app()->request->getPost('all_day', '');
-
+ 
         if ($start) {
             $start = DateTime::createFromFormat('Y-m-d\TH:i:s.uZ', $start);
-            $start = $start->format('Y-m-d H:i:s');
+	    $start = $start->format('Y-m-d H:i:s');
+	    $startArr = explode(' ',$start);
+	    
+	    if($startArr[1] == "00:00:00") {
+	    	$start = $startArr[0].' '.date('h:i:s',time());
+	    }
             $cal->start_date = $start;
+	    
+	    
+	    //$cal->start_date = $start;
         }
         if ($end) {
             $end = DateTime::createFromFormat('Y-m-d\TH:i:s.uZ', $end);
@@ -2532,6 +2598,7 @@ class SiteController extends Controller
 
         $cal->all_day = $all_day;
         $cal->date_created = new CDbExpression('NOW()');
+	
         $cal->save();
         $cal_id = $cal->calendar_event_id;
 
@@ -2581,7 +2648,7 @@ class SiteController extends Controller
                 }
             }
         }
-
+//var_dump($cal->date_created);exit;
         echo CJSON::encode(array(
             'success' => 1,
             'calendar_event_id' => $cal->calendar_event_id,
@@ -4263,9 +4330,11 @@ where user_id = $user_id
         #MyStuff::Log('CALENAER ACTIVITIES '.$start_date.' '.$end_date);
         $myEvents = array();
         $calendarEvents = CalendarEvent::model()->findAll(array('order' => 't.start_date DESC', 'condition' => 't.user_id=:_user_id and date(t.start_date)<=date(:end_date) and date(t.start_date)>=date(:start_date)', 'params' => array(':_user_id' => $user_id, ':start_date' => $start_date, ':end_date' => $end_date)));
-        foreach ($calendarEvents as $ce) {
+        //var_dump($calendarEvents);exit;
+	foreach ($calendarEvents as $ce) {
             $eventValues = $eventValues = EventValue::model()->with('calendarEvent', 'eventNote', 'eventQuestion')->findAll('t.calendar_event_id=:_id', array(':_id' => $ce->calendar_event_id));
             $description = array();
+	    
             foreach ($eventValues as $ev) {
                 $eventDefn = EventDefinition::model()->with('eventSubcategory')->find('t.event_definition_id=:_id', array(':_id' => $ev->event_definition_id));
                 $subcategory = EventSubcategory::model()->findByPk($eventDefn->event_subcategory_id);
@@ -4298,7 +4367,9 @@ where user_id = $user_id
                     'editable' => false
                 ));
             }
+	    
         }
+	
         return $myEvents;
     }
 

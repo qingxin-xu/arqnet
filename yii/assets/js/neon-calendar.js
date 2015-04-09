@@ -186,21 +186,56 @@ var eventRender = {
 	
 	renderEvent:function(element,event) {
 		var view = $('#calendar').fullCalendar( 'getView' );
+		
 		if(view.name == 'basicDay') {
-			element.find('.fc-time').show();
-		}
-		if (!element || !event) return;
-		if(event.notesFrom  == "facebook") {
-			element.find('.fc-content').addClass('eventIcon facebook_event');
-		} else if(event.notesFrom  == "arq") {
-			element.find('.fc-content').addClass('eventIcon arq_event');
-		} else if(event.notesFrom  == "week"){
+					element.find('.fc-time').show();
+					element.find('.fc-title').addClass('text_position');
 					
-		} else {
-			element.find('.fc-content').addClass('eventIcon event');
-			//formFactory._renderTitleTooltip(event);
-		}
+				}
+				if (!element || !event) return;		
+				if(view.name == 'month') {
+					
+					element.find('.fc-content').parent().removeClass("fc-day-grid-event fc-event fc-start fc-end color-blue fc-draggable");
+		
+					element.find('.fc-title').hide();
+					element.find('.fc-time').hide();
+					if(event.notesFrom  == "facebook") {
+						element.find('.fc-content').addClass('eventIconForMonth facebook_month_icon'+event.title);	
+						if(parseInt(event.title) >= 10) {
+							element.find('.fc-content').addClass('eventIconForMonth facebook_month_icon9p');	
+						}
+					} else if(event.notesFrom  == "arq") {
+						element.find('.fc-content').addClass('eventIconForMonth arq_month_icon'+event.title);
+							if(parseInt(event.title) >= 10) {
+								element.find('.fc-content').addClass('eventIconForMonth arq_month_icon9p');	
+							}	
+					} else if(event.notesFrom  == "Track"){			
+						element.find('.fc-content').addClass('eventIconForMonth track_month_icon'+event.title);
+							if(parseInt(event.title) >= 10) {
+								element.find('.fc-content').addClass('eventIconForMonth track_month_icon9p');	
+							}		
+					}
+					
+					
+				} else {
+					if(event.notesFrom  == "facebook") {
+						element.find('.fc-content').addClass('eventIcon facebook_event');
+								
+							} else if(event.notesFrom  == "arq") {
+								element.find('.fc-content').addClass('eventIcon arq_event');
+							} else if(event.notesFrom  == "week"){
+										
+							} else {
+								element.find('.fc-content').addClass('eventIcon event');
+								//formFactory._renderTitleTooltip(event);
+							}	
+				
+				
+				}
+					
+		
 
+		
 		
 	},
 	
@@ -209,10 +244,12 @@ var eventRender = {
 
 
 
-
+/*
+create the drag event need go to the <formfactory.js>
+*/
 
 function submitCalendarEvent(data,input,appendTo)
-{
+{  
 	$.ajax({
 		
 		url:'/createCalendarEvent',
@@ -228,7 +265,7 @@ function submitCalendarEvent(data,input,appendTo)
 			if (response && response.success != null)
 			{
 				if (response.success>0)
-				{
+				{	
 					var classes = ['', 'color-green', 'color-blue', 'color-orange', 'color-primary', ''],
 					_class = classes[ Math.floor(classes.length * Math.random()) ],
 					$event = $('<li><a id="'+response.calendar_event_id+'" href="#"></a></li>');
@@ -255,6 +292,7 @@ function submitCalendarEvent(data,input,appendTo)
 						$('.myErrorMsg_msg').text('Unable to create event/task at this time');
 						$('#myErrorMsg').dialog('open');
 					}
+					
 			} 
 		}
 	});
@@ -299,9 +337,6 @@ function submitCalendarEvent(data,input,appendTo)
 			// Setup Calendar
 			if($.isFunction($.fn.fullCalendar))
 			{
-				
-				//removed by daniel
-				
 				$("#draggable_events li a").draggable({
 					zIndex: 999,
 					revert: true,
@@ -341,7 +376,7 @@ function submitCalendarEvent(data,input,appendTo)
 			});
 
 			$("body").on('submit', '#add_task_form', function(ev)
-			{
+			{	
 				ev.preventDefault();
 				
 				var text = $("#add_task_form input");

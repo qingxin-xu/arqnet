@@ -75,7 +75,8 @@ var formFactory = {
 					if (eventRender && eventRender.unRegisterEvents) eventRender.unRegisterEvents();
 					eventObj['title']?eventObj['subcategory'] = eventObj['title']:eventObj['subcategory']='';
 					if ('date_created' in response) {eventObj['date_created'] = response['date_created'];}	
-					$('#calendar').fullCalendar('renderEvent', eventObj, false);
+					$('#calendar').fullCalendar('refetchEvents');					
+					//$('#calendar').fullCalendar('renderEvent', eventObj, false);
 				} else {
 					var msg = 'Unable to create event';
 					if ('msg' in response) msg = response['msg'];

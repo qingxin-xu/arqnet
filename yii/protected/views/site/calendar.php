@@ -703,6 +703,7 @@ jQuery(document).ready(function($){
 			
 			
 									var obj = {
+										note_id: toRenderForMonth[i][j].note_id,
 										title: toRenderForMonth[i][j].event_name,
 										description: toRenderForMonth[i][j].description,
 										images: toRenderForMonth[i][j].images,
@@ -744,7 +745,7 @@ jQuery(document).ready(function($){
 			 										right: 'month,basicWeek,basicDay, today, prev,next'
 			 									},
 			 								
-			 									//defaultView: 'basicWeek',
+			 									defaultView: 'month',
 			 									theme:true,
 			 									editable: true,
 			 									firstDay: 1,
@@ -787,6 +788,7 @@ jQuery(document).ready(function($){
 			 				
 			 									},
 			 									events:function(start,end,timezone,callback) {
+												 		 	
 			 										eventRender.unRegisterEvents();
 			 										$.ajax({
 			 											url:'/calendarActivities',
@@ -798,7 +800,7 @@ jQuery(document).ready(function($){
 			 													$.each(d['events'],function(index,value) {
 			 														value.allDay = 0;
 			 														value = $.extend(value,{className:['color-green']});
-			 														eventRender.setTimeSlot(value);
+			 														//eventRender.setTimeSlot(value);
 																	 
 			 													});
 																 
@@ -875,7 +877,11 @@ jQuery(document).ready(function($){
 				$('#calendar').fullCalendar('changeView','basicDay')
 			}
 		});
-
+		
+/*$('.fc-month-button').click(function() {
+	var moment = $('#calendar').fullCalendar('getDate');
+	alert("The current date of the calendar is " + moment.format());
+});*/
 	</script>
 	<style type='text/css'>
 	.tooltip-inner {
