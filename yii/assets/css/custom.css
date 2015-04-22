@@ -13,8 +13,8 @@ footer.main {
 }
 
 h3 {
-	font-family: 'Roboto', sans-serif;
-	font-weight:bold;
+	font-family: arial;
+	/*font-weight:bold;*/
 }
 .addG-progress.arq-progress {
 	border:none;
@@ -41,11 +41,13 @@ h3 {
 .arqText1 {
 	font-family: 'Roboto', sans-serif;
 	font-weight:100;
+	
 }
 .arqText1,.arqText2 {
 	color:#fff;
 	font-size:16px;
 	font-weight:bold;
+	font-family: Arial;
 }
 .col-sm-4.clearfix.addG-progresswrap {
 	height:45px;
@@ -142,6 +144,7 @@ h3 {
 }
 .tile-block .tile-content,.addG-tile-header {
 	background:#181818;
+	font-family: Arial;
 }
 .addG-tileblock,.addG-darkBG,textarea.wysihtml5,input.input-lg {
 	background-color:#181818;
@@ -266,18 +269,21 @@ form input[value=Cancel],button.image_upload,button.next,button.previous,button.
 	text-transform:uppercase;
 }
 .boxHeader {
-	font-size:23px;
+	font-size:14px;
 	text-transform:uppercase;
+	font-family: Arial;
 }
 
 .boxHeader .word1{
 	color:#FFFFFF;
-	font-family: 'Roboto', sans-serif;
+	font-family: Arial;
 	font-weight:100;
 }
 
 .purpleLabel,.boxHeader .word2,.journalEntryTitle  {
 	color:#6A44A9;
+	font-family: arial;
+	font-size: 24px;
 }
 
 .lowercase {
@@ -299,6 +305,7 @@ form input[value=Cancel],button.image_upload,button.next,button.previous,button.
 
 .form-group h3 {
 	color:#FFF;
+	font-size:15px;
 }
 
 .input-group input {
@@ -410,7 +417,13 @@ a.logout {
 	font-size:16px;
 	line-height:32px;
 	margin:15px 0;
+	
 }
+.journalEntryContent p {
+	font-family:arial;
+	font-size:15px;
+}
+
 
 .breadcrumb > li {
 	margin:0 7px;

@@ -956,7 +956,7 @@ function getRandomInt(min, max)
 			
 					<div class="tab-content">
 						<div class="tab-pane active" id="overview">							
-							<div id="overview-tab" class="" style="height: 300px">
+							<div id="overview-tab" class="" style="height: 300px; font-family: Arial;">
 								<div class="addG-lefttab1">
 									<p class='allcaps'>Thinking</p>
 								</div>

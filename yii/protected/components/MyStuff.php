@@ -36,6 +36,7 @@ class MyStuff {
 			$data_string = '';
 			foreach($postdata as $key=>$value) { $data_string .= $key.'='.$value.'&'; }
 			rtrim($data_string, '&');
+			
 			curl_setopt($ch, CURLOPT_POST, count($postdata));
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
 		}

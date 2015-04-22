@@ -840,16 +840,18 @@ jQuery(document).ready(function($){
 			 									},
 												
 			 									viewRender:function(view, element ){
-												 
+												 	
 												 	if(view.name == 'basicWeek' || view.name == 'basicDay') {
 													 	calendar.fullCalendar('removeEventSource', myEvents);
 														calendar.fullCalendar('removeEventSource', myEventsForMonth);
 			 											calendar.fullCalendar('addEventSource', myEventsForMonth);
 														
 			 										} else if(view.name == 'month') {
+													 	 
 			 											 calendar.fullCalendar('removeEventSource', myEventsForMonth);
 														 calendar.fullCalendar('removeEventSource', myEvents);
 														 calendar.fullCalendar('addEventSource', myEvents);
+														 //location.reload();return;
 			 										}
 													
 			 									},
