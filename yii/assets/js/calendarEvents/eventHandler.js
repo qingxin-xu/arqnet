@@ -169,18 +169,20 @@ var eventHandler = {
 									 
 								         color: '#181818'
 								      },
-								      tip: 'bottomLeft',
+								      tip: 'topLeft',
 								      //name: 'dark' // Inherit the rest of the attributes from the preset dark style
 								   },
 								   
 								   position:{
 								   	target:element,
 								   	corner: {
-								   		target: target,
-								   		tooltip: 'bottomLeft'
+								   		target: target
 								   	},
+								
 									adjust:{
-								   		x:-100
+								   		x:-100,
+										y:20
+										
 									}
 								}
 							});

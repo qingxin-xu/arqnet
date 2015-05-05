@@ -1716,6 +1716,53 @@ private function getMyJournalsByID($note_id){
             }
         } else {
             // Create
+	    ///-----test by daniel
+	    //Call the C# interface to deal with the data storage logic for the return json after call the engine.
+	    $stripped_content = strip_tags(Yii::app()->request->getPost('stripped_content', ''));
+	    $get_publish_date = Yii::app()->request->getPost('publish_date', '');
+	    $get_publish_date = date('D, d F Y', strtotime($get_publish_date));
+	    $publish_date = DateTime::createFromFormat('D, d F Y', $get_publish_date);
+	    $publish_date = $publish_date->format('Y-m-d');
+	    $post_data = array(
+	    "title"=>$title,
+	    "note_id"=>0,
+	    "content"=>Yii::app()->request->getPost('post_content', ''),
+	    "publish_date"=>$publish_date,
+	    "publish_time"=>Yii::app()->request->getPost('publish_time', ''),
+	    "status_id"=>Yii::app()->request->getPost('status'),
+	    "visibility_id"=>Yii::app()->request->getPost('visibility'),
+	    "user_id"=>Yii::app()->user->Id,
+	    "date_created"=>date('Y-m-d H:i:s',time()),
+	    "stripped_content"=>$stripped_content,
+	    );
+	    $post_data = json_encode($post_data);
+	    
+	    $url = Yii::app()->params['call_multithreading'];
+	   	    
+	        
+	   	    $ch = curl_init();
+	   	    curl_setopt($ch, CURLOPT_URL, $url);
+		    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	   	    curl_setopt($ch, CURLOPT_POST, 1);
+	   	    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+	   	    $return = curl_exec($ch);
+	   	    curl_close($ch);
+	$noteImg = "";	     
+	   	   
+	header('Content-type: application/json');
+        echo CJSON::encode(array(
+            'success' => 1,
+            'redirect' => '/recentJournals',
+            'IMAGE' => $noteImg
+        ));
+        Yii::app()->end();exit;
+	//-----test by daniel    
+	   
+	    
+	    
+	    
+	    
+	    
             $note = new Note();
             if (!Yii::app()->user->Id > 0) {
                 header('Content-type: application/json');
@@ -1787,9 +1834,11 @@ private function getMyJournalsByID($note_id){
 		 * If it is, ignore posted status and convert it to 'In Queue'
 		 * Otherwise use posted status for note status
 		 */
+	
         $publish_datetime = strtotime($get_publish_date . ' ' . $get_publish_time);
 	
         $current_datetime = strtotime(date('Y-m-d h:i:s a'));
+	
         if ($current_datetime >= $publish_datetime) {
             $note_status_id = Yii::app()->request->getPost('status');
             $note->status_id = $note_status_id;
@@ -2889,7 +2938,7 @@ private function getMyJournalsByID($note_id){
                 'condition' => 'user_id=' . $user_id . ' and status_id=' . $note_status->status_id,
                 'limit' => $limit,
                 'offset' => $offset,
-                'order' => 'publish_date DESC, publish_time DESC'
+                'order' => 'date_modified desc'
             )
         );
         $notes = Note::model()->findAll($criteria);
@@ -2897,6 +2946,7 @@ private function getMyJournalsByID($note_id){
         $results = array('count' => count($count), 'nData' => count($notes), 'offset' => $offset, 'data' => array());
         $results['data'] = $this->unrollNotes($notes);
         return $results;
+	
     }
 
     private function unrollNotes($notes)

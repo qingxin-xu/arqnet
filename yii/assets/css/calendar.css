@@ -167,6 +167,7 @@ hr.ui-widget-header {
 	padding:3px 0 0 26px;
 	word-break:break-word;
 	background-size:22px 22px;
+	font-size: 14px;
 }
 
 .eventIconForMonth {
@@ -212,15 +213,15 @@ hr.ui-widget-header {
 }
 
 .event {
-	background-image:url('/assets/images/dashboard/tracker.png');
+	background-image:url('/assets/images/button/track/track.png');
 }
 
 .facebook_event {
-	background-image:url('/assets/images/facebook_event.png');
+	background-image:url('/assets/images/button/fb/fb.png');
 }
 
 .arq_event {
-	background-image:url('/assets/images/arq_event.png');
+	background-image:url('/assets/images/button/arq/arq.png');
 }
 
 .facebook_month_icon1 {
@@ -317,7 +318,7 @@ hr.ui-widget-header {
 	position:absolute; 
 	left:120px;
 	width: 720px;
-	height:50px;
+	height:20px;
 	overflow:hidden;
 }
 

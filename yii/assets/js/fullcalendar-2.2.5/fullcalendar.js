@@ -42,7 +42,7 @@ var defaults = {
 	//editable: false,
 	
 	// event ajax
-	lazyFetching: true,
+	lazyFetching: false,
 	startParam: 'start',
 	endParam: 'end',
 	timezoneParam: 'timezone',

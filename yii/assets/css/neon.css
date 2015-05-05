@@ -11418,6 +11418,7 @@ button.toast-close-button {
 .page-container .sidebar-menu #main-menu li {
   position: relative;
   margin: 0;
+  font-family: Arial;
   font-size: 12px;
   border-bottom: 1px solid rgba(69, 74, 84, 0.7);
 }
