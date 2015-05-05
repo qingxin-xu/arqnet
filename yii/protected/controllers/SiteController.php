@@ -330,8 +330,8 @@ class SiteController extends Controller
         $current_time = date('h:i a');
         $activities = $this->calendarActivities($end_date, $today, $user_id);
 
-        $dashboardData = $this->getDashboardData(30, null, $today, $user_id);
-
+        $dashboardData = $this->getDashboardData(array('minDate'=>$this->getEarliestNoteDate())/*30, null, $today*/, $user_id);
+        //$dashboardData = $this->getDashboardData(30, null, $today, $user_id);
         $event_units = EventUnit::model()->findall();
         $units = array();
         foreach ($event_units as $eu) {
@@ -405,7 +405,8 @@ class SiteController extends Controller
         $diff = $diff / (24 * 60 * 60);
         #MyStuff::Log('CHANGE DATE RANGE '.$diff.' '.$end_date);
         //$responses = $this->getDashboardResponses($diff,$end_date,$user_id);
-        $dashboardData = $this->getDashboardData($diff, $start_date, $end_date, $user_id);
+        //$dashboardData = $this->getDashboardData($diff, $start_date, $end_date, $user_id);
+        $dashboardData = $this->getDashboardData(array('duration'=>$diff,'from_date'=>$end_date,'to_date'=>$start_date),$user_id);
         echo CJSON::encode(array(
             'success' => 1,
             'responses' => $dashboardData{'eventData'},
@@ -4167,24 +4168,34 @@ where user_id = $user_id
 	 * d5=>empty array,
 	 * d6=>empty array
 	 */
-    private function getDashboardData($duration, $from_date, $to_date, $user_id)
+    private function getDashboardData(/*$duration, $from_date, $to_date, */$dateObj,$user_id)
     {
 
         if (!$user_id) return array();
-        if (!$duration) $duration = 30;
-        if (!$to_date) $to_date = date('Y-m-d');
-        if (!$from_date) {
-            $day = 24 * 3600;
-            $from_date = date('Y-m-d', strtotime($to_date) - $duration * $day);
+        /*
+        $type = 'activity';
+        if (array_key_exists('type',$dateObj)) {
+        	$type = $dateObj['type'];
         }
-        $_dates = AeResponse::getResponseDate($duration, $to_date, $user_id);
-
-        $responses = $this->getDashboardResponses($duration, $to_date, $user_id);
-
-        $trackerInfo = $this->trackerData($from_date, $to_date, $user_id);
-
+        if (strcmp('activity',$type) == 0) {
+        	
+        } else {
+	        if (!$duration) $duration = 30;
+	        if (!$to_date) $to_date = date('Y-m-d');
+	        if (!$from_date) {
+	            $day = 24 * 3600;
+	            $from_date = date('Y-m-d', strtotime($to_date) - $duration * $day);
+	        }
+        }
+        */
+        $_dates = AeResponse::getResponseDate($dateObj/*$duration, $to_date*/, $user_id);
+		
+        $responses = $this->getDashboardResponses($dateObj/*$duration, $to_date*/, $user_id);
+        
+        $trackerInfo = $this->trackerData($dateObj/*$from_date, $to_date*/, $user_id);
+        
         $all_dates = array_merge($trackerInfo{'trackerDates'});
-
+		
         foreach ($responses{'avg'} as $r) {
             if (!in_array($r{'date'}, $all_dates)) array_push($all_dates, $r{'date'});
         }
@@ -4230,20 +4241,36 @@ where user_id = $user_id
         return array('journals' => $journals);
     }
 
-    private function trackerData($start_date, $end_date, $user_id)
+    private function trackerData($dateObj/*$start_date, $end_date*/, $user_id)
     {
         $tracker_dates = array();
         $dates = array();
-        $myCurrent = $start_date;
-        while (strcmp($myCurrent, $end_date) <= 0) {
-            $dates{$myCurrent} = 1;
-            $myCurrent = date('Y-m-d', strtotime('+1 day', strtotime($myCurrent)));
+        
+        $start_date = null;
+        $end_date = null;
+        if (array_key_exists('from_date',$dateObj)) {
+        	if (array_key_exists('duration',$dateObj)) $duration = $dateObj['duration'];
+        	else $duration = 30;
+        	$start_date = $dateObj['from_date'];
+        	$myCurrent = $start_date;
+        	while (strcmp($myCurrent, $end_date) <= 0) {
+        		$dates{$myCurrent} = 1;
+        		$myCurrent = date('Y-m-d', strtotime('+1 day', strtotime($myCurrent)));
+        	}
+        } else {
+        	$myCurrent = $dateObj['minDate'];
+        	$end_date = date('Y-m-d');
+        	while(strcmp($myCurrent, $end_date) <= 0) {
+        		$dates{$myCurrent} = 1;
+        		$myCurrent = date('Y-m-d', strtotime('+1 day', strtotime($myCurrent)));
+        	}
         }
+
 
         $bar = array('_no_input_', 'boolean');
         $line = array('scale_1_to_10', 'quantity', 'weight', 'height', 'minutes', 'distance');
 
-        $quantifiable = array('_no_input_', 'boolean', 'scale_1_to_10', 'quantity', 'weight', 'height', 'minutes', 'distance');
+        $quantifiable = array('_no_input_', 'boolean', 'scale_1_to_10', 'quantity', 'weight', 'height', 'minutes', 'distance','time');
 
         $condition = '';
         foreach ($quantifiable as $qty) {
@@ -4254,7 +4281,16 @@ where user_id = $user_id
 
         $tracker = array('cappable_events' => array(), 'non_cappable_events' => array());
         /* All calendar events within the specified date range */
-        $calendarEvents = CalendarEvent::model()->findAll('t.user_id=:_user_id and date(t.start_date)<=date(:end_date) and date(t.start_date)>=date(:start_date)', array(':_user_id' => $user_id, ':start_date' => $start_date, ':end_date' => $end_date));
+        if ($start_date) {
+        	$calendarEvents = CalendarEvent::model()->findAll('t.user_id=:_user_id and date(t.start_date)<=date(:end_date) and date(t.start_date)>=date(:start_date)', array(':_user_id' => $user_id, ':start_date' => $start_date, ':end_date' => $end_date));
+        } else {
+	        $criteria = new CDbCriteria;
+	        $criteria->condition = 't.user_id='.$user_id;
+	        //$criteria->params = array(':_user_id' => $user_id);
+	        $criteria->order='date(start_date) DESC';
+	        $criteria->limit=30;
+	        $calendarEvents = CalendarEvent::model()->findAll($criteria);
+        }
         foreach ($calendarEvents as $ce) {
             /* The corresponding event values for each calendar event */
             $eventValues = $eventValues = EventValue::model()->with('calendarEvent')->findAll('t.calendar_event_id=:_id', array(':_id' => $ce->calendar_event_id));
@@ -4373,14 +4409,12 @@ where user_id = $user_id
         return $myEvents;
     }
 
-    private function getDashboardResponses($duration, $from_date, $user_id)
+    private function getDashboardResponses($dateObj/*$duration, $from_date*/, $user_id)
     {
         if (!$user_id) return null;
-        if (!$from_date) $from_date = date('Y-m-d');
-        if ($duration) $duration = 30;
 
-        $_dates = AeResponse::getResponseDate($duration, $from_date, $user_id);
-
+        $_dates = AeResponse::getResponseDate($dateObj/*$duration, $from_date*/, $user_id);
+		
         /*
 		$_dates = array();
 		//while( strcmp($myCurrent,$end_date) <= 0) {
@@ -4390,23 +4424,34 @@ where user_id = $user_id
 			$myCurrent = date('Y-m-d',strtotime('-1 day',strtotime($myCurrent) ) );
 		}
 		*/
-        $avg = $this->mean_score_per_day($duration, $from_date);
-
+        $avg = $this->mean_score_per_day($dateObj/*$duration, $from_date*/);
+		//MyStuff::Log("DATES 420 PM ");MyStuff::Log($_dates);
         $avgResponses = array();
-        $sliderCount = count($_dates);
+        $targetArr = $_dates;
+        if (count($avg)<count($_dates)) {
+        	$targetArr = array();
+        	$index = 0;
+        	foreach ($avg as $key => $avgValue) {
+        		$targetArr[$index] = $key;
+        		$index++;
+        	}
+        }
+        $sliderCount = count($targetArr);
         $increments = 0;
+        
         if ($sliderCount > 0) $increments = intVal(1000 / $sliderCount);
         /* Sort dates in ascending order */
         $myDates = array();
-        foreach ($_dates as $key => $dateValue) {
+        foreach ($targetArr as $key => $dateValue) {   	
             $myDates[$key] = $dateValue;
         }
 
-        array_multisort($myDates, SORT_ASC, $_dates);
+        array_multisort($myDates, SORT_ASC, $targetArr);
         /* And then generate response hash */
         $index = 0;
-
-        foreach ($_dates as $date) {
+		
+        foreach ($targetArr as $date) {
+        	MyStuff::Log("TARGET DATE 419PM ".$date);
             $avgResponses[/*$increments**/
             ($index)] = $avg[$date];
             $avgResponses[/*$increments**/
@@ -4415,6 +4460,7 @@ where user_id = $user_id
         }
 
         $responses = array('avg' => $avgResponses, 'responseCount' => $sliderCount);
+ 
         return $responses;
     }
 
@@ -4567,52 +4613,144 @@ order by avg_rank desc";
         return Yii::app()->db->createCommand($sql)->queryAll();
     }
 
-    private function mean_score_per_day($days_back = 0, $from_date)
+    private function get_mean_score_per_day($dateObj) {
+    	if (array_key_exists('from_date',$dateObj) && array_key_exists('days_back',$dateObj)) {
+    		return $this->mean_score_per_day($dateObj['days_back'],$dateObj['from_date']);
+    	} else {
+    		return $this->mean_score_per_day_of_activity($dateObj);
+    	}
+    }
+
+    private function mean_score_per_day($dateObj/*$days_back = 0, $from_date*/)
     {
-
-        if (!$from_date) $from_date = date('Y-m-d');
+		$from_date = null;
+		$days_back = null;
+		if (array_key_exists('from_date',$dateObj)) {
+			if (array_key_exists('duration',$dateObj)) $days_back = $dateObj['duration'];
+			else $days_back = 30;
+			$from_date = $dateObj['from_date'];
+		}
+		
         $return = array();
-        $sql = "select report_date
-				from date_dim
-				where report_date<=date('" . $from_date . "')
-  				and report_date>=date_sub(date('" . $from_date . "'), interval $days_back day)
-				order by report_date desc";
-        #MyStuff::Log('DAY');
-        #MyStuff::Log($days_back);
-        #MyStuff::Log($from_date);
-        #MyStuff::Log(Yii::app()->db->createCommand($sql)->queryAll());
-        foreach (Yii::app()->db->createCommand($sql)->queryAll() as $day) {
-
-            #MyStuff::Log($day);
-            $return[$day['report_date']] = array(
-                'top_categories' => array(),
-                'top_people' => array(),
-                'top_words' => array(),
-            );
+        
+        if (!$from_date) {
+        	$return = $this->mean_score_per_day_of_activity($dateObj);
+        } else {
+	        $sql = "select report_date
+					from date_dim
+					where report_date<=date('" . $from_date . "')
+	  				and report_date>=date_sub(date('" . $from_date . "'), interval $days_back day)
+					order by report_date desc";
+	 
+	        foreach (Yii::app()->db->createCommand($sql)->queryAll() as $day) {
+	
+	            #MyStuff::Log($day);
+	            $return[$day['report_date']] = array(
+	                'top_categories' => array(),
+	                'top_people' => array(),
+	                'top_words' => array(),
+	            );
+	        }
+	
+	        foreach ($this->mean_categories_per_day($days_back, $from_date) as $data) {
+	            if ($data['category']) {
+	                $return[$data['date']]['top_categories'][$data['category']] = $data['value'];
+	            }
+	        }
+	
+	        foreach ($this->mean_top_people_per_day($days_back, $from_date) as $data) {
+	            if ($data['person']) {
+	                $return[$data['date']]['top_people'][$data['person']] = $data['person_count'];
+	            }
+	        }
+	
+	        foreach ($this->mean_top_words_per_day($days_back, $from_date) as $data) {
+	            if ($data['word']) {
+	                $return[$data['date']]['top_words'][$data['word']] = $data['word_count'];
+	            }
+	        }
         }
-
-        foreach ($this->mean_categories_per_day($days_back, $from_date) as $data) {
-            if ($data['category']) {
-                $return[$data['date']]['top_categories'][$data['category']] = $data['value'];
-            }
-        }
-
-        foreach ($this->mean_top_people_per_day($days_back, $from_date) as $data) {
-            if ($data['person']) {
-                $return[$data['date']]['top_people'][$data['person']] = $data['person_count'];
-            }
-        }
-
-        foreach ($this->mean_top_words_per_day($days_back, $from_date) as $data) {
-            if ($data['word']) {
-                $return[$data['date']]['top_words'][$data['word']] = $data['word_count'];
-            }
-        }
-
+		
         return $return;
 
     }
 
+    private function mean_score_per_day_of_activity($dateObj) {
+    	$from_date = date('Y-m-d');
+    	$minDate = $dateObj['minDate'];
+    	$return = array();
+    	$categories = $this->mean_categories_per_day_of_activity($from_date,$minDate);
+    	$topwords = $this->mean_top_words_per_day_of_activity($from_date,$minDate);
+    	$toppeople = $this->mean_top_people_per_day_of_activity($from_date,$minDate);
+    	
+    	foreach ($categories as $data) {
+    		if ($data['category']) {
+    			//MyStuff::Log("CATEGORY");MyStuff::Log($data['category']);
+    			if (!array_key_exists($data['date'],$return) ) {
+    				$return[$data['date']] = array(
+    						'top_categories' => array(),
+    						'top_people' => array(),
+    						'top_words' => array(),
+    				);
+    			}
+    			$return[$data['date']]['top_categories'][$data['category']] = $data['value'];
+    			
+    		}
+    	}
+    	
+    	foreach ($topwords as $data) {
+    		if ($data['word']) {
+    			if (!array_key_exists($data['date'],$return) ) {
+    				$return[$data['date']] = array(
+    						'top_categories' => array(),
+    						'top_people' => array(),
+    						'top_words' => array(),
+    				);
+    			}
+    			$return[$data['date']]['top_words'][$data['word']] = $data['word_count'];
+    		}
+    	}
+    	
+    	foreach ($toppeople as $data) {
+    		if ($data['person']) {
+    			if (!array_key_exists($data['date'],$return) ) {
+    				$return[$data['date']] = array(
+    						'top_categories' => array(),
+    						'top_people' => array(),
+    						'top_words' => array(),
+    				);
+    			}
+    			$return[$data['date']]['top_people'][$data['person']] = $data['person_count'];
+    		}
+    	}    	
+    	return $return;
+    }
+    
+    private function mean_categories_per_day_of_activity($from_date,$minDate) {
+    	$user_id = Yii::app()->user->id;
+    	$sql = "select dd.report_date date,
+		res.category,res.display_name,res.category_type,res.value
+		from date_dim dd
+		left join  (
+		select date(ar.date_created) date_created ,
+		c.description category,
+		c.display_name,
+		c.category_type,
+		avg(arc.value) value
+		from ae_journal_daily ar
+		join ae_response_category arc on ar.ae_response_id = arc.ae_response_id
+		join category c on arc.category_id = c.category_id
+		where ar.user_id = $user_id
+		and ar.date_created<=date('$from_date') and ar.date_created>=date('".$minDate."')
+		and ar.is_active = 1
+		group by date_created,c.description,c.display_name,c.category_type
+		order by date_created,value desc
+		) res on dd.report_date = res.date_created
+		where dd.report_date<=date('$from_date') and dd.report_date>=date('".$minDate."')
+		order by dd.report_date desc,res.value desc";
+    	return Yii::app()->db->createCommand($sql)->queryAll();
+    }
+    
     private function mean_categories_per_day($days_back, $from_date)
     {
         $user_id = Yii::app()->user->id;
@@ -4643,6 +4781,28 @@ order by avg_rank desc";
         return Yii::app()->db->createCommand($sql)->queryAll();
     }
 
+    private function mean_top_people_per_day_of_activity($from_date,$minDate) {
+    	$user_id = Yii::app()->user->id;
+    	$sql = "select dd.report_date date,
+    	res.person,
+    	sum(res.person_count) as person_count
+    	from date_dim dd
+    	left join (
+    	select date(ar.date_created) date_created, tp.ae_value person, sum(tp.count) person_count
+    	from ae_journal_daily ar
+    	join top_people tp on ar.ae_response_id = tp.ae_response_id
+    	where ar.user_id = $user_id
+    	and ar.is_active = 1
+    	and ar.date_created<=date('$from_date') and ar.date_created>=date('$minDate')
+    	and tp.ae_value <> 'NA'
+    	group by date_created , tp.ae_value
+    	order by date_created desc, person_count desc) res on dd.report_date = res.date_created
+    	where dd.report_date<=date('$from_date') and dd.report_date>=date('$minDate')
+    	group by dd.report_date,res.person
+    	order by date desc, res.person_count desc";
+    	return Yii::app()->db->createCommand($sql)->queryAll();
+    }
+    
     private function mean_top_people_per_day($days_back, $from_date)
     {
         $user_id = Yii::app()->user->id;
@@ -4668,6 +4828,28 @@ order by avg_rank desc";
         return Yii::app()->db->createCommand($sql)->queryAll();
     }
 
+    private function mean_top_words_per_day_of_activity($from_date,$minDate) {
+    	$user_id = Yii::app()->user->id;
+    	$sql = "select dd.report_date date,
+		res.word,
+		sum(res.word_count) as word_count
+		from date_dim dd
+		left join (
+		select date(ar.date_created) date_created, tw.ae_value word, sum(tw.count) word_count
+		from ae_journal_daily ar
+		join top_words tw on ar.ae_response_id = tw.ae_response_id
+		where ar.user_id = $user_id
+		and ar.is_active = 1
+		and ar.date_created<=date('$from_date') and ar.date_created>=date('$minDate')
+		and tw.ae_value <> 'NA'
+		group by date_created , tw.ae_value
+		order by date_created desc, word_count desc) res on dd.report_date = res.date_created
+		where dd.report_date<=date('$from_date') and dd.report_date>=date('$minDate')
+		group by dd.report_date,res.word
+		order by date desc, res.word_count desc";
+    	return Yii::app()->db->createCommand($sql)->queryAll();
+    }
+    
     private function mean_top_words_per_day($days_back, $from_date)
     {
         $user_id = Yii::app()->user->id;
@@ -4693,6 +4875,18 @@ order by avg_rank desc";
         return Yii::app()->db->createCommand($sql)->queryAll();
     }
 
+    private function getEarliestNoteDate() {
+    	$user_id = Yii::app()->user->id;
+    	$sql = "select min(date_created) as minDate
+				from ae_journal_daily
+				where user_id=$user_id";
+ 		$result = Yii::app()->db->createCommand($sql)->queryAll()[0];
+ 		if (is_null($result) || is_null($result['minDate'])) {
+ 			return new CDbExpression('NOW()');
+ 		} else return $result['minDate'];
+    	
+    	
+    }
     private function deleteAE_Response($ae_response_id, $note)
     {
         if (!$ae_response_id) return;
