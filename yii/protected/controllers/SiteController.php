@@ -4930,10 +4930,15 @@ order by avg_rank desc";
     	$sql = "select min(date_created) as minDate
 				from ae_journal_daily
 				where user_id=$user_id";
- 		$result = Yii::app()->db->createCommand($sql)->queryAll()[0];
- 		if (is_null($result) || is_null($result['minDate'])) {
+ 		$rows = Yii::app()->db->createCommand($sql)->queryAll();
+ 		if (!is_null($rows) && count($rows)>0) {
+ 			$result = $rows[0];
+	 		if (is_null($result) || is_null($result['minDate'])) {
+	 			return new CDbExpression('NOW()');
+	 		} else return $result['minDate'];
+ 		} else {
  			return new CDbExpression('NOW()');
- 		} else return $result['minDate'];
+ 		}
     	
     	
     }
