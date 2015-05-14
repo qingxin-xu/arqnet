@@ -34,7 +34,7 @@ function updateMsg( description,t ) {
 jQuery(document).ready(function($){
 
 	tinymce.init({
-	    selector: "textarea",
+	    selector: "textarea[name=post_content]",
 	    content_css:'assets/css/custom.css',
 	    plugins:['jbimages'],
 	    relative_urls:false

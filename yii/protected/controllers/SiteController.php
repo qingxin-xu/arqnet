@@ -1715,6 +1715,7 @@ private function getMyJournalsByID($note_id){
                 ))->findAll();
             }
         } else {
+        	/*
             // Create
 	    ///-----test by daniel
 	    //Call the C# interface to deal with the data storage logic for the return json after call the engine.
@@ -1759,6 +1760,7 @@ private function getMyJournalsByID($note_id){
 	//-----test by daniel    
 	   
 	    
+	    */
 	    
 	    
 	    
