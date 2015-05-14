@@ -515,7 +515,7 @@ class SiteController extends Controller
         if (isset($userIcon['path'])) {
             $fromFacebook = strpos($userIcon['path'], "https://");
             if ($fromFacebook === false) {
-                $newImage = explode("\\", $userIcon['path']);
+                $newImage = explode(DIRECTORY_SEPARATOR, $userIcon['path']);
                 $userIcon['path'] = "/" . $newImage[1] . '/' . $newImage[2] . '/' . $newImage[3] . '/' . $newImage[5];
             }
         }
