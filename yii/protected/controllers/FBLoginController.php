@@ -1,7 +1,10 @@
 ﻿<?php
+/*
 require_once Yii::app()->basePath . '\Vendor\fb_v321\facebook.php';
 require_once Yii::app()->basePath . '\controllers\SiteController.php';
-
+*/
+Yii::import('application.Vendor.*');
+require_once('fb_v321/facebook.php');
 
 class FBLoginController extends Controller
 {
