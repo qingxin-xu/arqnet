@@ -9,13 +9,20 @@ require_once('fb_v321/facebook.php');
 class FBLoginController extends Controller
 {
 	public $is_bing = null;
+	/* daniel
 	public $config = array(
 		'appId' => '764768786890174',
 		'secret' => '5f8840247c7d387036102430e73339d9',
 		'cookie' => true,
 		'oauth ' => true,
 	);
-
+	*/
+	public $config = array(
+			'appId' => '1593970450870932',
+			'secret' => '27d7c56415b50d1b07230fedacd1a5a9',
+			'cookie' => true,
+			'oauth ' => true,
+	);	
 	public function actionIndex()
 	{
 //		$this->layout = 'arqLayout1';
