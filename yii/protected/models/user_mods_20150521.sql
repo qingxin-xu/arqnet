@@ -1,0 +1,1 @@
+alter table user add column `register_from` varchar(200) DEFAULT NULL;
