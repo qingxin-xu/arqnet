@@ -71,6 +71,8 @@ class FBLoginController extends Controller
 		if ($user_id) {
 			try {
 				$me = $facebook->api('/me');
+                                MyStuff::Log("FB ME ");MyStuff::Log($me);
+                                MyStuff::Log("BINDING ".$binding);
 				//如果单纯绑定，则只需要判断是否已绑定，与登录注册无关
 				if ($binding == 1 && $me) {
 
@@ -261,7 +263,7 @@ class FBLoginController extends Controller
 						$years[] = $i;
 					}
 					$userRegisterArray['from'] = "facebook";
-					$this->render('register', array('ethnicity' => $ethnicity,
+					$this->render('/fblogin/register', array('ethnicity' => $ethnicity,
 						'years' => $years,
 						'userRegisterArray' => $userRegisterArray));
 
