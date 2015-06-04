@@ -4299,6 +4299,14 @@ where user_id = $user_id
     	if (!$user_id || $user_id<=0) return array();
     	$sum = 0;
 		$words = $this->getDailyWordCount(5,$user_id);
+		/*
+		$words['2015-05-31']  = 10;
+		$words['2015-06-01']  = 0;
+		$words['2015-06-02']  = 0;
+		$words['2015-06-03']  = 0;
+		$words['2015-06-04']  = 200;
+		MyStuff::Log("AEJournalDaily");MyStuff::Log($words);
+		*/
 		$percentages = $this->calcPowerBarPercentages($words);
 		if (0.35 * $percentages[0]       > 7)   $sum =   7; else $sum  = 0.35 * $percentages[0];
 		if (0.55 * $percentages[1] + $sum > 18)  $sum =  18; else $sum += 0.55 * $percentages[1];
@@ -4322,7 +4330,7 @@ where user_id = $user_id
  			$i++;
     	}
     	
-    	MyStuff::Log("%");MyStuff::Log($percentages);
+    	//MyStuff::Log("%");MyStuff::Log($percentages);
     	return $percentages;
     }
     
@@ -4353,7 +4361,7 @@ where user_id = $user_id
     		$words[$entry->date_created] = $ae_response->words;
     		//array_push($words,array('date'=>$entry->date_created,'words'=>0));
     	}
-    	MyStuff::Log("AEJournalDaily");MyStuff::Log($words);
+    	
     	return $words;
     }
     
