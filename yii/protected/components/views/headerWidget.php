@@ -57,11 +57,15 @@
 	
 	</div>
 		<div class="col-sm-3 col-sm-4 clearfix addG-progresswrap">
-			
-			<div class='allcaps analysisTextWrapper'><span class='arqText1'>Analysis </span><span class='arqText2'>Power Bar</span></div>
 			<div class="addG-tresh"></div>
+			<div class='allcaps analysisTextWrapper'>
+				<span class='arqText1'>Analysis </span><span class='arqText2'>Power Bar</span></div>
+				
 			<div class="progress progressPowerBar addG-progress arq-progress">
-				<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100";width: 0%"></div>
+				
+				<div class="progress-bar progressBar " role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100";width: 0%">
+					
+				</div>
 				
 			</div>
 			

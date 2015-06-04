@@ -88,10 +88,10 @@ h3 {
 }
 
 .addG-tresh {
-	display:none;
-	top:5%;
+	
+	top:3%;
 	z-index:1001;
-	left:82%;
+	left:386px;
 }
 
 .moodLabel {
@@ -101,13 +101,21 @@ h3 {
 	text-align:center;
 }
 
-.progress-bar-success {
+.progressBar {
 	background-color:transparent;
-	background-image:url('/assets/images/header/progressBarGreen.png');
 	background-size:15px 23px;
 	background-repeat:repeat-x;
 	border-radius:10px 0 0 10px;
+	
 	height:55%;
+}
+
+.progress-bar-success {
+	background-image:url('/assets/images/header/progressBarGreen.png');
+}
+
+.progress-bar-nosuccess {
+	background-image:url('/assets/images/header/progressBarRed.png');
 }
 
 .happymoodProgressBar {

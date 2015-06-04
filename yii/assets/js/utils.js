@@ -17,10 +17,16 @@ $(document).ready(function() {
 		offset = -10;
 	
 	if (powerbar) {
+		
+		if (powerbar<61) {
+			$('.progressBar').addClass('progress-bar-nosuccess');
+		} else {
+			$('.progressBar').addClass('progress-bar-success');
+		}
 		powerbar = Math.round(powerbar)/100;
 		powerbar = powerbar*powerbarWidth;
 		if (powerbar>(powerbarWidth-2)) {
-			$('.progress-bar-success').css('border-radius','12px')
+			$('.progressBar').css('border-radius','10px')
 		}
 		setTimeout(function() {
 		$('.progress-bar').animate({
