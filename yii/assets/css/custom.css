@@ -19,6 +19,7 @@ h3 {
 .addG-progress.arq-progress {
 	border:none;
 	height:40px;
+	width:310px;
 }
 
 .addG-tresh {
@@ -67,14 +68,15 @@ h3 {
 
 .progress{
 	height:38px;
-	background-color:#181818;
+	background-color:#222224;/*#181818;*/
 }
+
 .progress-bar {
 	position:relative;
 	height:100%;
 	top:9px;
-	left:13px;
-	width:75%;
+	left:9px;
+	width:0%;
 }
 .arqHeader {
 	background-color:#222224;
@@ -86,6 +88,7 @@ h3 {
 }
 
 .addG-tresh {
+	display:none;
 	top:5%;
 	z-index:1001;
 	left:82%;

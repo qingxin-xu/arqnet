@@ -2,6 +2,11 @@
 
 class SiteController extends Controller
 {
+	/* The maximum word count for the power bar */
+	var $powerbarMax = 100;
+	/* How many days to average over for the power bar calculation */
+	var $powerbarDays = 5;
+	
     /* How many times a question can be flagged before it is taken out of the pool of questions */
     var $flagThreshold = 10;
     var $defaultQuestionStatus = 'Submitted';
@@ -1715,7 +1720,7 @@ private function getMyJournalsByID($note_id){
                 ))->findAll();
             }
         } else {
-        	/*
+       /* 	
             // Create
 	    ///-----test by daniel
 	    //Call the C# interface to deal with the data storage logic for the return json after call the engine.
@@ -1748,6 +1753,11 @@ private function getMyJournalsByID($note_id){
 	   	    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 	   	    $return = curl_exec($ch);
 	   	    curl_close($ch);
+	   	    MyStuff::Log("RETURN? ");MyStuff::Log($return);
+	   	    MyStuff::Log("POST DATA");MyStuff::Log($post_data);
+	   	    MyStuff::Log("url ".$url);
+	   	    */
+	/*
 	$noteImg = "";	     
 	   	   
 	header('Content-type: application/json');
@@ -4279,6 +4289,91 @@ where user_id = $user_id
         );
     }
 
+    /**
+     * Calculate power bar
+     * It is a running daily average over five days of the number of words entered in the journal
+     * @param unknown $user_id
+     * @return multitype:
+     */
+    public function powerBarCalculation($user_id) {
+    	if (!$user_id || $user_id<=0) return array();
+    	$sum = 0;
+		$words = $this->getDailyWordCount(5,$user_id);
+		$percentages = $this->calcPowerBarPercentages($words);
+		if (0.35 * $percentages[0]       > 7)   $sum =   7; else $sum  = 0.35 * $percentages[0];
+		if (0.55 * $percentages[1] + $sum > 18)  $sum =  18; else $sum += 0.55 * $percentages[1];
+		if (0.85 * $percentages[2] + $sum > 35)  $sum =  35; else $sum += 0.85 * $percentages[2];
+		if (1.30 * $percentages[3] + $sum > 61)  $sum =  61; else $sum += 1.30 * $percentages[3];
+		if (1.95 * $percentages[4] + $sum > 100) $sum = 100; else $sum += 1.95 * $percentages[4];
+		MyStuff::Log("SUM ".$sum);
+		return $sum;
+    }
+    
+    /**
+     * The daily percentages based on word count
+     * @param unknown $words
+     * @return multitype:number
+     */
+    private function calcPowerBarPercentages($words) {
+    	$percentages = array();
+    	$i = 0;
+    	foreach ($words as $key => $value) {
+    		$percentages[$i] = 100.0 * $value/$this->powerbarMax/$this->powerbarDays;
+ 			$i++;
+    	}
+    	
+    	MyStuff::Log("%");MyStuff::Log($percentages);
+    	return $percentages;
+    }
+    
+    /**
+     * The daily word count on journal entries
+     * @param unknown $duration
+     * @param unknown $user_id
+     * @return multitype:number NULL
+     */
+    private function getDailyWordCount($duration,$user_id) {
+    	if (!$duration) $duration = 5;
+    	$words = array();
+    	$days = $this->getLastXDays($duration);
+    	foreach ($days as $day) {
+    		$words[$day['Date']] = 0;
+    		//array_push($words,0);
+    	}
+    	 
+    	$myCondition = "date(t.date_created)>date_sub(curdate(),interval 5 day) ".
+    			"and date(t.date_created)<=curdate() and user_id=".$user_id;
+    	$criteria = new CDbCriteria;
+    	$criteria->condition = $myCondition;
+    	//$criteria->params = array(':_user_id' => $user_id);
+    	$ae_journal_daily = AeJournalDaily::model()->findAll($criteria);
+    	
+    	foreach ($ae_journal_daily as $entry) {
+    		$ae_response = AeResponse::model()->findbyPk($entry->ae_response_id);
+    		$words[$entry->date_created] = $ae_response->words;
+    		//array_push($words,array('date'=>$entry->date_created,'words'=>0));
+    	}
+    	MyStuff::Log("AEJournalDaily");MyStuff::Log($words);
+    	return $words;
+    }
+    
+    /*
+     * a la http://stackoverflow.com/questions/2157282/generate-days-from-date-range?answertab=votes#tab-top
+     */
+    private function getLastXDays($duration) {
+    	if (!$duration) $duration = 5;
+    	$myQuery = "select a.Date
+		from (select curdate() - INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY as Date
+    	from (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as a
+    	cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as b
+    	cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
+		) a
+		where a.Date between date_sub(curdate(),interval :duration day) and date(curdate())
+		order by a.Date ASC";
+    	$myDates = Yii::app()->db->createCommand($myQuery)->bindVAlues(array(':duration'=>$duration-1))->queryAll();
+    	return $myDates;
+    }
+    
     private function recentActivities($from_date, $to_date)
     {
         if (!$from_date) {

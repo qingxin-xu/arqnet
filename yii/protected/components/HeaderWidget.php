@@ -7,6 +7,7 @@ class HeaderWidget extends CWidget {
 		$this->render('headerWidget', array(
 				'user'=>$user,
 				'image'=>$image,
+				'powerbar'=>$this->controller->powerBarCalculation(Yii::app()->user->Id)
 		));
 	}
 	

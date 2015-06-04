@@ -1,3 +1,6 @@
+<script type='text/javascript'>
+	var powerbar = <?php if ($powerbar) echo $powerbar.';'; else echo '0;';?>
+</script>
 <div class="arqHeader row">
 	
 	<!-- Profile Info and Notifications -->
@@ -58,7 +61,7 @@
 			<div class='allcaps analysisTextWrapper'><span class='arqText1'>Analysis </span><span class='arqText2'>Power Bar</span></div>
 			<div class="addG-tresh"></div>
 			<div class="progress progressPowerBar addG-progress arq-progress">
-				<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100";width: 75%"></div>
+				<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100";width: 0%"></div>
 				
 			</div>
 			
