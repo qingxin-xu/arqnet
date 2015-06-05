@@ -44,7 +44,7 @@ var myJournal = myJournal || {};
 			submitHandler:function(ev)
 			{		
 				//$('textarea[name=stripped_content]').html($('textarea[name=post_content]').val().replace(/\<br\>/g,' '));
-				$('textarea[name=stripped_content]').html(tinyMCE.activeEditor.getContent());
+				$('textarea[name=stripped_content]').html(tinyMCE.activeEditor.getContent({format:'text'}));
 				$('textarea[name=post_content]').html(tinyMCE.activeEditor.getContent());
 				var service = '/createOrUpdateJournal';
 				updateMsg($('.validateTips'),'Creating Journal Entry');
