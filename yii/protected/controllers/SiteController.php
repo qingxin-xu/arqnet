@@ -3,7 +3,7 @@
 class SiteController extends Controller
 {
 	/* The maximum word count for the power bar */
-	var $powerbarMax = 100;
+	var $powerbarMax = 600;
 	/* How many days to average over for the power bar calculation */
 	var $powerbarDays = 5;
 	
