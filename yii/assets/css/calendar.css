@@ -209,7 +209,8 @@ hr.ui-widget-header {
 }
 
 .note {
-	background-image:url('/assets/images/journal/note.png');
+	/*background-image:url('/assets/images/journal/note.png');*/
+	background-image:url('/assets/images/dashboard/top-words.png');
 }
 
 .event {

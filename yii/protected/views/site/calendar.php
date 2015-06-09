@@ -647,12 +647,15 @@ jQuery(document).ready(function($){
 
 	<script type='text/javascript'>
 		var initialDate = <?php if ($goto) echo '"'.$goto.'"';else echo 'null';?>;
+		var toRender = <?php echo json_encode($data);?>;
+		var toRenderForMonth = <?php echo json_encode($dataForWeek);?>;
+		var eventClass = {events:'color-primary',tracker:'color-green',facebook:"color-blue",arq:"color-black"};
 		jQuery(document).ready(function($) {
 
 			//Render events on the calendar
-			var toRender = <?php echo json_encode($data);?>,
-				eventClass = {events:'color-primary',tracker:'color-green',facebook:"color-blue",arq:"color-black"},
-				myEvents = [];
+			
+			var myEvents = [];
+
 			for (var i in toRender) {
 				for (var j = 0; j < toRender[i].length; j++) {
 					if (toRender[i][j].event_date) {
@@ -660,7 +663,7 @@ jQuery(document).ready(function($){
 						var event_date = new Date(toRender[i][j].event_date);
 						event_date.setTime(event_date.getTime() + event_date.getTimezoneOffset());
 						
-
+						console.log(i,j,toRender[i][j].note_id,event_date,toRender[i][j].calendar_event_id,toRender[i][j].notesFrom);
 						var obj = {
 							title: toRender[i][j].event_name,
 							description: toRender[i][j].description,
@@ -682,7 +685,7 @@ jQuery(document).ready(function($){
 			}
 
 			 for (var i = 0;i<toRender.length;i++) {
-			 myEvents.push($.extend(toRender[i],{className:[eventClass['events']]}));
+			 	myEvents.push($.extend(toRender[i],{className:[eventClass['events']]}));
 			 }
 			 //$('#calendar').fullCalendar( 'addEventSource', myEvents );
 			 for (var i = 0;i<myEvents.length;i++)
@@ -691,9 +694,9 @@ jQuery(document).ready(function($){
 				 //$('#calendar').fullCalendar('renderEvent',myEvents[i],true);
 			 }
 			
-			var toRenderForMonth = <?php echo json_encode($dataForWeek);?>,
-							eventClass = {events:'color-primary',tracker:'color-green',facebook:"color-blue",arq:"color-black"},
-							myEventsForMonth = [];
+			
+						//var eventClass = {events:'color-primary',tracker:'color-green',facebook:"color-blue",arq:"color-black"},
+						var myEventsForMonth = [];
 						for (var i in toRenderForMonth) {
 							for (var j = 0; j < toRenderForMonth[i].length; j++) {
 								if (toRenderForMonth[i][j].event_date) {
@@ -816,11 +819,9 @@ jQuery(document).ready(function($){
 			 											},
 			 										});
 			 									},
-			 				
 			 									eventRender:function(event,element,view) {
-												 
-			 									//console.log('event render',view.name,view);
 			 										if (eventRender && event.subcategory) {
+			 											
 			 											eventRender.registerEvent(element,event,view);
 			 										}
 			 				
@@ -838,31 +839,24 @@ jQuery(document).ready(function($){
 			 										
 			 										//element.qtip({content:'this is another test'});
 			 									},
-												
+												/*
 			 									viewRender:function(view, element ){
-												 	
 												 	if(view.name == 'basicWeek' || view.name == 'basicDay') {
 													 	calendar.fullCalendar('removeEventSource', myEvents);
 														calendar.fullCalendar('removeEventSource', myEventsForMonth);
 			 											calendar.fullCalendar('addEventSource', myEventsForMonth);
 														
 			 										} else if(view.name == 'month') {
-													 	 
+													 
 			 											 calendar.fullCalendar('removeEventSource', myEventsForMonth);
 														 calendar.fullCalendar('removeEventSource', myEvents);
 														 calendar.fullCalendar('addEventSource', myEvents);
 														 //location.reload();return;
 			 										}
 													
-			 									},
-			 									
-			 									
-			 									
-			 									
-			 									
-			 									
+			 									},			 									
+			 									*/
 			 									/*,
-			 									
 			 									eventAfterRender:function(event,element,view) {
 			 										element.tooltip({content:'this is a test',disabled:false});
 			 									}*/
