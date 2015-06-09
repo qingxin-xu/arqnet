@@ -1654,9 +1654,23 @@ private function getMyJournalsByID($note_id){
         $this->deleteAE_Response($note->ae_response_id, $note);
         NoteTag::model()->deleteAllByAttributes($note_array);
         NoteCategory::model()->deleteAllByAttributes($note_array);
-        //NoteStatus::model()->deleteAllByAttributes($note_array);
-        //NoteVisibility::model()->deleteAllByAttributes($note_array);
+        $eventNote = EventNote::model()->findbyAttributes($note_array);
+        if ($eventNote) {
+        	$eventValue = EventValue::model()->findByPk($eventNote->event_value_id);
+        }
+        if ($eventValue) {
+        	$calendarEvent = CalendarEvent::model()->findByPk($eventValue->calendar_event_id);
+        }
+        
         EventNote::model()->deleteAllByAttributes($note_array);
+        
+        if ($eventNote && $eventNote->hasAttribute('event_value_id')) {
+        	EventValue::model()->deleteByPk($eventNote->event_value_id);
+        }
+        if ($eventValue && $eventValue->hasAttribute('calendar_event_id')) {
+        	CalendarEvent::model()->deleteByPk($eventValue->calendar_event_id);
+        }
+        
         $note_date_created = $note->date_created;
         $note_publish_date = $note->publish_date;
         $note->delete();
