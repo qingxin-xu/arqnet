@@ -1801,6 +1801,7 @@ private function getMyJournalsByID($note_id){
             $note->user_id = Yii::app()->user->Id;
             $note->title = $title;
             $note->content = Yii::app()->request->getPost('post_content', '');
+            $note->stripped_content = Yii::app()->request->getPost('stripped_content','');
 
             $note->date_created = new CDbExpression('NOW()');
             $note->is_active = 1;
@@ -2092,7 +2093,7 @@ private function getMyJournalsByID($note_id){
         };
         $myPublishDate = date('Y-m-d', strtotime($get_date));
 
-        $sql = "select group_concat(content, ' ') total_content
+        $sql = "select group_concat(stripped_content, ' ') total_content
 				from note
 				where user_id=$user_id
 				and status_id='$draft_status->status_id'
@@ -2105,7 +2106,6 @@ private function getMyJournalsByID($note_id){
 
         if ($entries) {
             $ae_response_id = $this->createAEResponse($entries['total_content']);
-            MyStuff::Log("TOTAL CONTENT \n".$entries['total_content']."\n".$ae_response_id);
             $ajd->ae_response_id = $ae_response_id;
             //todo add by daniel
             $ajd->is_active = 1;
@@ -4328,7 +4328,7 @@ where user_id = $user_id
 		if (0.85 * $percentages[2] + $sum > 35)  $sum =  35; else $sum += 0.85 * $percentages[2];
 		if (1.30 * $percentages[3] + $sum > 61)  $sum =  61; else $sum += 1.30 * $percentages[3];
 		if (1.95 * $percentages[4] + $sum > 100) $sum = 100; else $sum += 1.95 * $percentages[4];
-		MyStuff::Log("SUM ".$sum);
+		
 		return $sum;
     }
     
