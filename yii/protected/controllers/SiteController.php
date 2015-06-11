@@ -1154,7 +1154,7 @@ class SiteController extends Controller
             ));
         }
 
-        $activities = $this->calendarActivities($end_date, $today, $user_id);
+        //$activities = $this->calendarActivities($end_date, $today, $user_id);
         $journalDates = $this->getJournalDates();
         
 	$renderNotes = $this->journalPager(0, null);
@@ -1177,7 +1177,7 @@ class SiteController extends Controller
 	
 
         $this->render('my-journals', array(
-            'activities' => $activities,
+            //'activities' => $activities,
             'note_visibility' => $noteVisibility,
             'journalDates' => $journalDates,
             'renderNotes' => $renderNotes,
@@ -2965,7 +2965,7 @@ private function getMyJournalsByID($note_id){
                 'condition' => 'user_id=' . $user_id . ' and status_id=' . $note_status->status_id,
                 'limit' => $limit,
                 'offset' => $offset,
-                'order' => 'date_modified desc'
+                'order' => 'publish_date desc'
             )
         );
         $notes = Note::model()->findAll($criteria);

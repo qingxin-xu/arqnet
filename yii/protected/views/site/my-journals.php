@@ -13,7 +13,7 @@
 <script type='text/javascript' src='/assets/js/myJournals/archiveMgr.js'></script>
 <script type='text/javascript' src='/assets/js/myJournals/tagMgr.js'></script>
 <script type='text/javascript'>
-	var activities = <?php echo(json_encode($activities));?>,
+	var activities = null<?php //echo(json_encode($activities));?>,
 		journalDates = <?php echo json_encode($journalDates);?>,
 		notes = <?php echo json_encode($renderNotes);?>,
 		noteViz = <?php echo json_encode($note_visibility);?>,
