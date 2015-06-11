@@ -1712,6 +1712,7 @@ private function getMyJournalsByID($note_id){
             }
             if ($note->content != Yii::app()->request->getPost('post_content', '')) {
                 $note->content = Yii::app()->request->getPost('post_content', '');
+                $note->strippted_content = Yii::app()->request->getPost('stripped_content', '');
             }
             $get_publish_date = Yii::app()->request->getPost('publish_date', '');
             $publish_date = DateTime::createFromFormat('D, d F Y', $get_publish_date);
