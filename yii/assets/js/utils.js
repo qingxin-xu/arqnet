@@ -32,6 +32,6 @@ $(document).ready(function() {
 		$('.progress-bar').animate({
 			width:powerbar+'px'
 		},1000);
-		},1000);
+		},1);
 	}
 });
