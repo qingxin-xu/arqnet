@@ -241,7 +241,7 @@ hr.ui-widget-header {
 }
 
 .monthViewIcon {
-	padding:26px 0 0 26px;
+	padding:10px 0 0 26px;
 }
 /*
 .qa_asked {
@@ -258,7 +258,7 @@ hr.ui-widget-header {
 	background-image:url('/assets/images/button/arq/ARQ.PNG');
 }
 .qa_asked .monthViewTotal,.qa_answered .monthViewTotal,.event .monthViewTotal {
-	top:9px;
+	top:0px;
 	left:26px;
 }
 .note {
@@ -267,7 +267,7 @@ hr.ui-widget-header {
 }
 
 .note .monthViewTotal {
-	top:4px;
+	top:0px;
 	left:14px;
 }
 .event {
