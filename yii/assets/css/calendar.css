@@ -122,11 +122,11 @@ button[type=button].ui-button,.calendar-env .calendar-body .fc-header .fc-button
    display : none;
 }
 
-/* Hides time on day view */
+/* Hides time on day view
 .fc-time-grid-event.fc-short .fc-time,.eventIcon .fc-time {
 	display:none;
 }
-
+ */
 .fc-ltr .fc-day-view .fc-time-grid .fc-event-container,
 .fc-ltr .fc-agendaDay-view .fc-time-grid .fc-event-container {
 	margin:0 75% 0 2px;
@@ -146,6 +146,11 @@ button[type=button].ui-button,.calendar-env .calendar-body .fc-header .fc-button
 	border:1px solid #363C36;
 }
 
+.fc-event.monthViewElement.color-black {
+	background:none;
+	border:none;
+}
+
 .fc-event.color-agendaDay {
 	background:#4e3a73;
 	border:1px solid #4e3a73;	
@@ -159,6 +164,9 @@ hr.ui-widget-header {
 	display:none;
 }
 
+/*
+	Rendering of icons in month view on calendar
+*/
 .eventIcon {
 	display:block;
 	background-position:left center;
@@ -170,6 +178,13 @@ hr.ui-widget-header {
 	font-size: 14px;
 }
 
+.eventIcon.event,.eventIcon.qa_answered,.eventIcon.qa_asked {
+	background-position:0% 33%;
+}
+
+/*
+	deprecated?
+*/
 .eventIconForMonth {
 	display:block;
 	background-position:left center;
@@ -178,6 +193,20 @@ hr.ui-widget-header {
 	padding:3px 0 0 26px;
 	word-break:break-word;
 	background-size:40px 28px;
+}
+
+/*
+	Rendering of icon on day/week view of calendar
+*/
+.eventIcon.closeView {
+	display:block;
+	background-position:left center;
+	background-repeat:no-repeat;
+	height:20px;
+	padding:3px 0 0 26px;
+	word-break:break-word;
+	background-size:22px 22px;
+	font-size: 14px;		
 }
 
 .monthViewWrapper {
@@ -189,8 +218,22 @@ hr.ui-widget-header {
 	position:absolute;
 	top:0;
 	left:17px;
+	/*
 	border:1px solid #00a651;
 	background:#00a651;
+	*//*
+	border:1px solid #c61717;
+	background:#c61717;*/
+	width:14px;
+	text-align:center;
+	height:14px;
+	/*
+ 	background: linear-gradient(rgba(198,23,23,0.25),rgba(198,23,23,1.0));
+ 	*/
+    background: -webkit-linear-gradient(#f96b6b,#c61717); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#f96b6b,#c61717); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#f96b6b,#c61717); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#f96b6b,#c61717); /* Standard syntax (must be last) */
 	font-size:10px;
 	border-radius:3em;
 	border-right-width:0.5em;
@@ -200,6 +243,7 @@ hr.ui-widget-header {
 .monthViewIcon {
 	padding:26px 0 0 26px;
 }
+/*
 .qa_asked {
 	background-image:url('/assets/images/Arq/create_question.png');
 }
@@ -207,14 +251,40 @@ hr.ui-widget-header {
 .qa_answered {
 	background-image:url('/assets/images/Arq/your_answers.png');
 }
-
+*/
+.qa_asked,.qa_answered {
+	height:30px;
+	background-size:40px 28px;
+	background-image:url('/assets/images/button/arq/ARQ.PNG');
+}
+.qa_asked .monthViewTotal,.qa_answered .monthViewTotal,.event .monthViewTotal {
+	top:9px;
+	left:26px;
+}
 .note {
 	/*background-image:url('/assets/images/journal/note.png');*/
 	background-image:url('/assets/images/dashboard/top-words.png');
 }
 
+.note .monthViewTotal {
+	top:4px;
+	left:20px;
+}
 .event {
-	background-image:url('/assets/images/button/track/track.png');
+	height:30px;
+	background-size:40px 28px;
+	background-image:url('/assets/images/button/track/TRACK.PNG');
+}
+
+/* 
+	We will use a different icon when a tracker/event item is rendered in day/week view 
+*/
+.eventIcon.closeView.event {
+	background-image:url('/assets/images/button/track/track.PNG');
+}
+
+.eventIcon.closeView.qa_answered,.eventIcon.closeView.qa_asked {
+	background-image:url('/assets/images/button/arq/arq.PNG');
 }
 
 .facebook_event {

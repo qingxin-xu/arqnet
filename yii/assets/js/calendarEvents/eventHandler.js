@@ -118,9 +118,16 @@ var eventHandler = {
 			$('#calendar').fullCalendar('gotoDate', event.start);
 			$('#calendar').fullCalendar('changeView', "basicDay");
 		} else if(currentView.name == "basicDay") {
-			
+			if (event.subcategory && eventHandler[event.subcategory]) {
+				this[event.subcategory](event);
+			} else {
+
+				this['Tracker'](event);
+			}
+			/*
 			if(event.notesFrom == "arq"){window.open("myJournals?journal_id="+event.note_id,'_blank');}
 			if(event.notesFrom == "facebook"){window.open("http://www.facebook.com",'_blank');}
+			*/
 			
 		}
 	

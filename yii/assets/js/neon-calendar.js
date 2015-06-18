@@ -54,15 +54,19 @@ var eventRender = {
 	QA_Asked:{},
 	QA_Answered:{},
 	Note:{},
+	Tracker:{},
 	
 	unRegisterEvents:function() {
 		this['QA_Asked'] = {};
 		this['QA_Answered'] = {};
 		this['Note'] = {};
+		this['Tracker'] = {};
 	},
 	
 	registerEvent:function(element,event,view) {
-		if (view.name != 'month' || !event.subcategory || !this[event.subcategory]) {
+		if (view.name != 'month' || !event.subcategory /*|| !this[event.subcategory]*/) {
+			element.find('.fc-content').addClass('closeView');
+			if (view.name == 'basicDay') element.find('.fc-title').addClass('text_position');
 			if (this['render'+event.subcategory]) this['render'+event.subcategory](element,event,view);
 			else this.renderEvent(element,event,view);
 			if (eventHandler && eventHandler.createTooltip) {
@@ -74,27 +78,24 @@ var eventRender = {
 		
 		if (!event || !event.subcategory) return ;
 		if (!event.start || !event.start._i) return ;
-		if (!this[event.subcategory]) return ;
+		//if (!this[event.subcategory]) return ;
+		var subcategory = this[event.subcategory]?event.subcategory:'Tracker';
 		var myD = event.start._i.split(/\s+/)[0];
-		if (!this[event.subcategory][myD]) {
-			this[event.subcategory][myD] = {element:element,count:1,html:'',ids:{},index:myD,sc:event.subcategory};
-			this['render'+event.subcategory](element,event,view);
+		if (!this[subcategory][myD]) {
 			
-			/*
-			element.find('.fc-content').addClass('monthViewIcon');
-			element.removeClass('color-green');
-			element.addClass('monthViewWrapper');
-			element.find('.fc-content').html('<span class="monthViewTotal">1</span>');
-			*/
+			this[subcategory][myD] = {element:element,count:1,html:'',ids:{},index:myD,sc:subcategory};
+			if (this['render'+subcategory]) this['render'+event.subcategory](element,event,view);
+			else this.renderEvent(element,event);
 			this.createCounter(element);
 		} else {
 			this.updateCounter(element, event.subcategory, myD)
 			element.css('display','none');
 		}
+		/*
 		if (eventHandler && eventHandler.createTooltip) {
 			eventHandler.createTooltip(this[event.subcategory][myD].element,event,this[event.subcategory][myD]);
 		}
-
+		*/
 	},
 	
 	/*
@@ -128,26 +129,6 @@ var eventRender = {
 	},
 	
 	roundTime:function(minutes) {
-		/*
-		if (minutes>30) {
-			if (minutes>37) {
-				return '45';
-			} else { 
-				return '30';
-			}
-		} else {
-			if (minutes>22) {
-				return '30';
-			} else {
-				if (minutes > 15) {
-					return '15';
-				} else {
-					if (minutes > 7) return '15';
-					else return '00';
-				}
-			}
-		}
-		*/
 		if (minutes >30 ) return '30';
 		else return '00';
 	},
@@ -156,6 +137,7 @@ var eventRender = {
 		if (!element) return;
 		element.find('.fc-content').addClass('monthViewIcon').html('');
 		element.removeClass('color-green');
+		element.addClass("monthViewElement");
 		element.addClass('monthViewWrapper');
 		element.find('.fc-content').html('<span class="monthViewTotal">1</span>');		
 	},
@@ -176,18 +158,29 @@ var eventRender = {
 	renderQA_Asked:function(element,event) {
 		if (!element || !event) return;
 		if (!event.description || !event.description.length|| event.description.length<=0) return;
-		element.find('.fc-content').addClass('eventIcon qa_asked').html('Asked: '+event.description[0].value);
+		element.find('.fc-content').addClass('eventIcon qa_asked');//.html('Asked: '+event.description[0].value);
+		element.find('.fc-title').html("Asked "+event.description[0].value);
 	},
 	renderQA_Answered:function(element,event) {
 		if (!element || !event) return;
 		if (!event.description || event.description.length<=0) return;
-		element.find('.fc-content').addClass('eventIcon qa_answered').html('Answered: '+event.description[0].value);
+		element.find('.fc-content').addClass('eventIcon qa_answered');//.html('Answered: '+event.description[0].value);
+		element.find('.fc-title').html("Answered "+event.description[0].value);
 	},
 	
 	renderNote:function(element,event) {
-		//console.log("RENDER NOTE ",event);
 		if (!element || !event) return;
-		element.find('.fc-content').addClass('eventIcon note').html('Note: '+event.description[0].value);
+		var noteStr = "Note: "+event.description[0].value;
+		try {
+			noteStr = $(event.description[0].value).text();
+		} catch(e) {
+			noteStr = "Note "+event.description[0].value;
+			
+		}
+		finally {
+			element.find('.fc-content').addClass('eventIcon note');//html('Note: '+event.description[0].value);
+			element.find('.fc-title').html(noteStr);
+		}
 	},
 	
 	renderFBNote:function(element,event) {
@@ -209,23 +202,17 @@ var eventRender = {
 	},
 	
 	renderEvent:function(element,event) {
-		//console.log("RENDER EVENT ",event);
 		if (!element || !event) return;		
 		var view = $('#calendar').fullCalendar( 'getView' );
 		
 		if(view.name == 'basicDay') {
-					element.find('.fc-time').show();
-					element.find('.fc-title').addClass('text_position');
-					
+			element.find('.fc-time').show();
 		}
 		
-				
 		if(view.name == 'month') {
-					
-			element.find('.fc-content').parent().removeClass("fc-day-grid-event fc-event fc-start fc-end color-blue fc-draggable");
-	
 			element.find('.fc-title').hide();
 			element.find('.fc-time').hide();
+			/*
 			if(event.notesFrom  == "facebook") {
 				element.find('.fc-content').addClass('eventIconForMonth facebook_month_icon'+event.title);	
 				if(parseInt(event.title) >= 10) {
@@ -242,7 +229,8 @@ var eventRender = {
 						element.find('.fc-content').addClass('eventIconForMonth track_month_icon9p');	
 					}		
 			}
-					
+			*/
+			element.find('.fc-content').addClass('eventIcon event');
 					
 		} else {
 			if(event.notesFrom  == "facebook") {
@@ -256,17 +244,8 @@ var eventRender = {
 						element.find('.fc-content').addClass('eventIcon event');
 						//formFactory._renderTitleTooltip(event);
 					}	
-		
-		
 		}
-					
-		
-
-		
-		
 	},
-	
-	
 };
 
 

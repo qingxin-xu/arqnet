@@ -663,7 +663,7 @@ jQuery(document).ready(function($){
 						var event_date = new Date(toRender[i][j].event_date);
 						event_date.setTime(event_date.getTime() + event_date.getTimezoneOffset());
 						
-						console.log(i,j,toRender[i][j].note_id,event_date,toRender[i][j].calendar_event_id,toRender[i][j].notesFrom);
+						//console.log(i,j,toRender[i][j].note_id,event_date,toRender[i][j].calendar_event_id,toRender[i][j].notesFrom);
 						var obj = {
 							title: toRender[i][j].event_name,
 							description: toRender[i][j].description,
@@ -747,7 +747,6 @@ jQuery(document).ready(function($){
 			 										left: 'title',
 			 										right: 'month,basicWeek,basicDay, today, prev,next'
 			 									},
-			 								
 			 									defaultView: 'month',
 			 									theme:true,
 			 									editable: true,
@@ -782,12 +781,15 @@ jQuery(document).ready(function($){
 												
 			 									eventClick:function(event,jsEvent,view) {
 			 										if (!event) return;
+			 										/*
 			 										if (event.subcategory && eventHandler[event.subcategory]) {
 			 											eventHandler[event.subcategory](event);
 			 										} else {
 			
 			 											eventHandler['Tracker'](event);
 			 										}
+			 										*/
+			 										eventHandler['typeInEvents'](event);
 			 				
 			 									},
 			 									events:function(start,end,timezone,callback) {
@@ -801,8 +803,8 @@ jQuery(document).ready(function($){
 			 											success:function(d) { 
 			 												if ('success' in d && d['success']==1 && 'events' in d) {
 			 													$.each(d['events'],function(index,value) {
-			 														value.allDay = 0;
-			 														value = $.extend(value,{className:['color-green']});
+			 														value.allDay = false;
+			 														value = $.extend(value,{className:['color-black']});
 			 														//eventRender.setTimeSlot(value);
 																	 
 			 													});
@@ -830,7 +832,7 @@ jQuery(document).ready(function($){
 			 											//console.log($('.eventIcon'));
 														 
 			 											//eventRender.setTimeSlot(event);
-			 											event.allDay = 0;
+			 											event.allDay = false;
 														
 			 											//console.log('event element',element);
 			 											//element.removeClass('color-green');
