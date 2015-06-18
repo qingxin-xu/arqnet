@@ -224,9 +224,9 @@ hr.ui-widget-header {
 	*//*
 	border:1px solid #c61717;
 	background:#c61717;*/
-	width:14px;
+	width:18px;
 	text-align:center;
-	height:14px;
+	height:18px;
 	/*
  	background: linear-gradient(rgba(198,23,23,0.25),rgba(198,23,23,1.0));
  	*/
@@ -234,7 +234,7 @@ hr.ui-widget-header {
     background: -o-linear-gradient(#f96b6b,#c61717); /* For Opera 11.1 to 12.0 */
     background: -moz-linear-gradient(#f96b6b,#c61717); /* For Firefox 3.6 to 15 */
     background: linear-gradient(#f96b6b,#c61717); /* Standard syntax (must be last) */
-	font-size:10px;
+	font-size:16px;
 	border-radius:3em;
 	border-right-width:0.5em;
 	border-left-width:0.5em;
@@ -268,7 +268,7 @@ hr.ui-widget-header {
 
 .note .monthViewTotal {
 	top:4px;
-	left:20px;
+	left:14px;
 }
 .event {
 	height:30px;
