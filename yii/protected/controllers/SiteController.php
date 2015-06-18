@@ -1819,7 +1819,7 @@ private function getMyJournalsByID($note_id){
                 if ($title) {
                     $myValue = $title;
                 } else {
-                    $myValue = $note->content;
+                    $myValue = $note->stripped_content;
                 }
 
                 $myValue = substr($myValue, 0, 15) . '...';
@@ -4538,7 +4538,7 @@ where user_id = $user_id
         $myEvents = array();
         $calendarEvents = CalendarEvent::model()->findAll(array('order' => 't.start_date DESC', 'condition' => 't.user_id=:_user_id and date(t.start_date)<=date(:end_date) and date(t.start_date)>=date(:start_date)', 'params' => array(':_user_id' => $user_id, ':start_date' => $start_date, ':end_date' => $end_date)));
         //var_dump($calendarEvents);exit;
-	foreach ($calendarEvents as $ce) {
+		foreach ($calendarEvents as $ce) {
             $eventValues = $eventValues = EventValue::model()->with('calendarEvent', 'eventNote', 'eventQuestion')->findAll('t.calendar_event_id=:_id', array(':_id' => $ce->calendar_event_id));
             $description = array();
 	    
