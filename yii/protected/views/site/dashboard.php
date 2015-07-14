@@ -7,6 +7,7 @@
 <?php 
 /**
  * Transfer main values to JavaScript
+ * var testData ='.json_encode($testData).';
  */
 	if ($responseCount > 0)
 	{
@@ -17,6 +18,7 @@
  			var __avg = '.json_encode($avg).';
 			var activitiy = '.json_encode($recentActivity).';
  			var _pairs = '.json_encode($_pairs).';
+			
  			var responseCount = '.$responseCount.';
  			var _avg;
 		</script>';		
@@ -45,8 +47,6 @@ var topics_donut_chart,
 	current='current',
 	currentRangeValue = <?php echo $default_range; ?>,
 	defaultRange = <?php echo $default_range; ?>,
-	ranges = [<?php echo implode(',',$date_ranges);?>],
-	range_labels = [<?php echo implode(',',$range_labels);?>],
 	trackerActivities =  <?php echo json_encode($activities);?>,
 	trackerData = <?php echo json_encode($trackerData);?>,
 	eventUnits = <?php echo json_encode($event_units); ?>,
@@ -63,6 +63,9 @@ var topics_donut_chart,
 	morris_donut_label_color='#ffffff',
 	moodSpiderGraph=null,
 	trackerSpiderGraph=null,
+	// The slider values, including the
+	allSliderValues = [],
+	slideDate = null,
 	//What time it is at the server
 	server_time = new Date(<?php echo "'".date('Y-m-d')." ";; if ($current_time) echo $current_time;else echo date('h:i a'); echo "'";?>);
 
@@ -70,16 +73,22 @@ var topics_donut_chart,
 		var value = parseFloat(parseFloat(y).toFixed(2))*100;
 		return value+'%';
 	};
+
+function testTracker() {
+	var myDateStr = '2015-07-10';
+	var myAvg = {0:{date:myDateStr}};
+	var myTrackerData = {cappable_events:[],non_cappable_events:{'Time Woke Up':{'2015-07-10':'11:30 am'}}};
+	Tracker.updateRight(trackerSelection,myTrackerData,myAvg);
+}
+
 /**
  * Set the slider range, values, redraw tabs
  */
 function initializeMainSlider(range,dateRangeAverages)
 {
-	//if (!myResponses || myResponses.length<=0) return;
-	if (!dateRangeAverages && (!__avg || __avg.length<=0)) return;
+	//if (!dateRangeAverages && (!__avg || __avg.length<=0)) return;
 	if (!range && !defaultRange) return;
 
-	//$('#trackerChart').css('width',0.75*$('.tab-pane.active').width()+'px');
 	_avg = {};
 	var minValue = 0,
 		myRange = range?range:defaultRange,
@@ -87,64 +96,124 @@ function initializeMainSlider(range,dateRangeAverages)
 		sliderValues=[],
 		maxValue,
 		maxStep,
+		slideTimer = null,
+		slidingRight = null,
+		slidingLeft = null,
+		startIndex=-999,
 		nData = responseCount;//_dates.length;//myResponses.length;
-		
-	if (!$.inArray(ranges,myRange)) return;
+
+	// This array is a clone of the values fed to the slider
+	// We will use it to navigate the slider programmatically
+	allSliderValues = [];
+	//if (!$.inArray(ranges,myRange)) return;
 	
 	if (dateRangeAverages) __avg = dateRangeAverages;
-	//Use default range for initalization of slider, unless we don't have enough data
-	//for that range
-	if (nData>=myRange) {
-		var start = nData - myRange;
-		increments = parseInt(1000/nData);
-		for (var i = 0;i<myRange;i++)
-		{
-			_avg[/*increments**/i] = __avg[/*increments**/(i+start)];
-			sliderValues.push(increments*i);
-		}
-		minValue = 0;
-		maxValue = sliderValues[sliderValues.length-1];
-	} else
-	{
-		var start = 0;
-		increments = parseInt(1000/nData);
-		for (var i = 0;i<nData;i++)
-		{
-			_avg[/*increments**/i] = __avg[/*increments**/(i+start)];
-			sliderValues.push(increments*i);
-		}
-		//sliderValues.push(1000);
-		minValue = 0;
-		maxValue = sliderValues[sliderValues.length-1];
+
+	//Take last 30 entries - by date - to use for initial slider values
+	_avg = [];
+	var index = 0;
+	for (var i = 60;i<__avg.length;i++) {
+		_avg[index] = __avg[i];
+		index++;
 	}
 
-	/*
-	var selection = {};
-	for (var i  in trackerData) {
-		selection[i] = [];
-		for (var j in trackerData[i]) selection[i].push(j);
-	}
-	*/
-	
+	// Draw plot - if necessary
 	Tracker._draw(trackerSelection);
-	var values = Tracker.generateSliderValues(nData>=myRange?myRange:nData);
-	maxStep = increments;
 	
-	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width() - trackerOffset;
+	var values = Tracker.generateSliderValues(/*nData>=myRange?myRange:nData*/defaultRange,$('#trackerChart').width());
+
+	/*
+		Set up slider
+		We get the padding first
+		Then we add on a value to the beginning and end to allow the slider to change the date range
+	*/
+	maxStep = increments;
+	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width() - trackerOffset-values[1],
+		paddingMin = trackerOffset+42+Tracker.trackerPlot.getPlotOffset().left-8 - values[1];
+
+	// This adds a value before the 0th spot
+	// When we slide all the way to the left, we grab new data (from previous days) and redraw the slider
+	values.unshift(-values[1]);
+
+	// This adds a value at the end
+	var lastValue = values[values.length-1]+values[2];
+	values.push(lastValue);
+	
+	for (var i = 0;i<values.length;i++) allSliderValues.push(values[i]);
+
+	// Set some options for the slider
 	$('#slider1').slider('option',{
-		paddingMin:trackerOffset+42+Tracker.trackerPlot.getPlotOffset().left-8,
+		paddingMin:paddingMin,
 		paddingMax:paddingMax,//$('#trackers-tab').width()-$('#trackerChart').width()+20,
 		step:values.length>1?values[1]-values[0]:0,
 		animate:'fast',
 		min:values.length>1?values[0]:0,
 		max:values.length>1?values[values.length-1]:0.1,
-		values:values,
-		create:function(event,ui) {/*$('#slider1').slider('value',values[values.length-1]);*/}/*,
-		hooks: {drawOverlay: [Tracker.drawOverlayLine]}*/
+		values:values
 	});
+	
 	$('#slider1').slider({
 		slide: function( event, ui ) {
 			$('#slider1 .ui-label').html('');
+			// Get the index of where we are sliding; it will help determine if we need to change the range of data
+			var index = -5;
+			for (var i = 0;i<allSliderValues.length;i++) {
+				if (Math.abs(ui.value - allSliderValues[i])<=5) {
+					index = i;
+					break;
+				}
+			}
+
+			/*
+				The slider timer tells us whether or not we are already animating the changing of the data range
+			*/
+			if (!slideTimer) {
+				// Slide data to the left - i.e., add dates/data to the left end of the plot
+				if (startIndex != 0 && index == 0) {
+					slideTimer = setInterval(function() {
+						slidingLeft = true;
+						var prevDayStr = getPrevDayStr();
+						Tracker.updateLeft(trackerSelection,trackerData,[{date:prevDayStr}]);
+						slideDate = prevDayStr;
+						$('#slider1 .ui-label').html(slideDate);
+						
+					},300);
+				// Slide data to the right - i.e., add dates/data to the right end of the plot
+				} else if (startIndex != (defaultRange+1) && index == (defaultRange+1)) {
+					slideTimer = setInterval(function() {
+						slidingRight = true;
+						var nextDayStr = getNextDayStr();
+						if (nextDayStr) {
+							Tracker.updateRight(trackerSelection,trackerData,[{date:nextDayStr}]);
+							slideDate = nextDayStr;
+							$('#slider1 .ui-label').html(slideDate);
+						}
+					},300);
+				}
+			} else {
+
+			}
+		},
+		start:function(event,ui) {
+			if (slideTimer) clearInterval(slideTimer);
+			startIndex = $.inArray(ui.value,allSliderValues);
+		},
+		stop:function(event,ui) {
+			if (slideTimer) {
+				clearInterval(slideTimer);
+				if (slideDate) {
+					if (slidingLeft) resetSliderValues(slideDate);
+					else resetRightSliderValues(slideDate);
+				} else {
+					if (!slidingLeft) $('#slider1').slider('values',0,allSliderValues[allSliderValues.length-2]);
+					else $('#slider1').slider('values',0,allSliderValues[1]);
+				}
+			}
+			slideTimer = null;
+			slideDate = null;
+			slidingRight = null;
+			slidingLeft = null;
+			var index = $.inArray(ui.value,allSliderValues);
 		}
 	});
 
@@ -157,8 +226,103 @@ function initializeMainSlider(range,dateRangeAverages)
 		tmp[1] = tmp[1];
 		window.open('/calendar?atDate='+tmp[0]+'_'+tmp[1]+'_'+tmp[2],'_blank');
 	});
-	onMainSliderChange({value:0});
+	//onMainSliderChange({value:0});
 	
+	setTimeout(function() {
+		if (values.length>1) $('#slider1').slider('values',0,values[values.length-2]);
+	},1);
+}
+
+/*
+ * Get the day previous to the one specified by the global slideDate - or today if slideDate is null
+ */
+function getPrevDayStr() {
+	var current_date = slideDate?new Date(slideDate+"T23:59:59"):new Date(_avg[0]['date']+"T23:59:59");
+	var prev_day = new Date();
+	prev_day.setTime(current_date.getTime()-24*3600*1000);
+	var m = prev_day.getMonth()+1;
+	if (m<10) m = '0'+m;
+	var d = prev_day.getDate();
+	if (d<10) d = '0'+d;
+	var prevDayStr = prev_day.getFullYear()+'-'+m+'-'+d;
+	return prevDayStr;
+}
+
+/*
+ * Set this date object's time to midnight
+ */
+function setToMidnight(myDate) {
+	myDate.setHours(23);
+	myDate.setMinutes(59);
+	myDate.setSeconds(59);
+}
+
+/*
+ * Get the day after the one specified by the global slideDate - or today if slideDate is null
+ */
+function getNextDayStr() {
+	var current_date = slideDate?new Date(slideDate+"T23:59:59"):new Date(_avg[defaultRange-1]['date']+"T23:59:59");
+	var next_day = new Date();
+	var today = new Date();
+	next_day.setTime(current_date.getTime()+24*3600*1000);
+	setToMidnight(next_day);
+	setToMidnight(today);
+	if (next_day.getTime()>today.getTime()) return null;
+	var m = next_day.getMonth()+1;
+	if (m<10) m = '0'+m;
+	var d = next_day.getDate();
+	if (d<10) d = '0'+d;
+	var nextDayStr = next_day.getFullYear()+'-'+m+'-'+d;
+	return nextDayStr;	
+}
+
+/*
+ * Change the range of data represented by the plot after the user has moved the date range forward in time
+ */
+function resetRightSliderValues(newDateStr) {
+	_avg = [];
+	var endIndex = getDataIndex(newDateStr)+1,
+		startIndex = endIndex-defaultRange,
+		index = 0;
+	
+	for (var i = startIndex;i<endIndex;i++) {
+		_avg[index] = __avg[i];
+		index++;
+	}	
+	setTimeout(function() {
+		$('#slider1').slider('values',0,allSliderValues[allSliderValues.length-2]);
+	},1);	
+}
+
+/*
+ * Change the range of data represented by the plot data after the user has moved the date backward in time
+ */
+function resetSliderValues(newDateStr) {
+	_avg = [];
+	var startIndex = getDataIndex(newDateStr),
+		endIndex = startIndex+defaultRange,
+		middleIndex = parseInt((startIndex+endIndex)/2);
+		index = 0;
+	
+	for (var i = startIndex;i<endIndex;i++) {
+		_avg[index] = __avg[i];
+		index++;
+	}	
+	
+	setTimeout(function() {
+		$('#slider1').slider('values',0,allSliderValues[1]);
+	},1);
+}
+
+function getDataIndex(newDateStr) {
+	var index = 60;
+	if (!newDateStr) return index;
+	for (var i = 0;i<__avg.length;i++) {
+		if (newDateStr == __avg[i]['date']) {
+			return i;
+		}
+	}
+	return index;
 }
 
 function sortTopicValues(response)
@@ -404,6 +568,7 @@ function setTopWordsView(response)
 	if (!response) return;
 	if ( !('top_words' in response) ) return;
 	response = response['top_words'];
+	
 	var topWords = [];
 	
 	for (var i in response)
@@ -702,9 +867,19 @@ function onMainSliderChange(ui)
 	if (!ui) return;
 	if (ui.value == null) return;
 	var value = Tracker.getSliderValue(ui.value);
+	
+	if (value<0) {
+		var index = $.inArray(ui.value,allSliderValues);
+		if (index == 0) {
+			//console.log("SLIDING LEFT");
+		} else if (index == allSliderValues.length-1) {
+			//console.log("SLIDING RIGHT");
+		}
+		return;
+	}
 	ui = $.extend(ui,{trackerOffset:trackerOffset||0});
 	//if (!responses || !responses[value]) return;
-	if (!_avg || !_avg[value]) return;
+	//if (!_avg || !_avg[value]) return;
 	var response = _avg[value];//responses[value];
 	currentValue = value;
 	setDateDisplay(response);
@@ -790,6 +965,7 @@ jQuery(document).ready(function($)
 		});
 		//Listen for slider changes to redraw tabs
 		$('#slider1').on('slidechange',function(event,ui) {
+			
 			onMainSliderChange(ui);
 		});
 	
@@ -1149,16 +1325,12 @@ function getRandomInt(min, max)
 
 		<div class="form-group">
 						<!-- <label class="col-sm-3 control-label">Date Range Inline</label> -->
-						
-<ul class="pagination dashboard">
+						<!--  
+						<ul class="pagination dashboard">
 							<li ><a href="javascript:decrementRange()"><i class="entypo-left-open-mini"></i></a></li>
-<!--  
-							<li class='range1 <?php if ($default_range ==1) echo 'active';?>'><a href="javascript:changeRange(1);">1</a></li>
-							<li class="range3 <?php if ($default_range ==3) echo 'active';?>"><a href="javascript:changeRange(3)">3</a></li>
-							<li class='range7 <?php if ($default_range ==7) echo 'active';?>'><a href="javascript:changeRange(7)">7</a></li>
-							<li class="range30 <?php if ($default_range ==30) echo 'active';?>"><a href="javascript:changeRange(30)">30</a></li>
--->
+
 							<?php 
+								/*
 								foreach ($date_ranges as $index=>$cr)
 								{
 									echo '<li class="range'.$cr; 
@@ -1166,12 +1338,13 @@ function getRandomInt(min, max)
 									else echo '"';
 									echo '</li><a href="javascript:changeRange('.$cr.');">'.$range_labels[$index].'</a></li>'; 
 								}
+								*/
 							?>
 						
 							<li ><a href="javascript:incrementRange()"><i class="entypo-right-open-mini"></i></a></li>
 							<li><a href='javascript:viewCustomRangeSelect()'>Custom</a>
 						</ul>
-
+						-->
 			<div class='customRange' style='display:none;'>
 			<p>Select a range of up to 3 months</p>
 			<p>Date Start:</p>

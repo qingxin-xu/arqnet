@@ -5,7 +5,9 @@ var Tracker = {
 		plotMax:50,
 		plotColors:['#FF0000','#0066FF','#009933','#FF3399','#660033'],
 		maxPlots:5,
-	
+		plotData:[],
+		plotSpecifications:{},
+		
 		/*
 		 * Used to map responses from dashboard service to points on the slider
 		 */
@@ -95,35 +97,212 @@ var Tracker = {
 		},
 		
 		/*
-		 * plots looks like:
-		 * {
-		 *   cappable_events:{},
-		 *   non_cappable_events:{}
+		 * Take plot data, shift the indices in plot data one spot to the left
 		 */
-		_draw:function(selection)
-		{
-			if (this.trackerPlot) {
-				this.trackerPlot.shutdown();
-				this.trackerPlot.destroy();
+		shiftDataLeft:function(plotData) {
+			var entry;
+			for (var i = 0;i<plotData.data.length;i++) {
+				entry = plotData.data[i];
+				entry[0]++;
 			}
-			var plotData = [];
-			if (!selection) return;
-			// Globally defined
-			if (!trackerData) return;
-			if (!_avg) return;
+		},
+
+		/*
+		 * Take plot data, shift the indices in plot data one spot to the right
+		 */		
+		shiftDataRight:function(plotData) {
+			var entry;
+			for (var i = 0;i<plotData.data.length;i++) {
+				entry = plotData.data[i];
+				entry[0]--;
+			}			
+		},
+		
+		/*
+		 * Chop off the last data point in the plot and add a new one to the beginning
+		 * TODO: NOT IMPLEMENTED FOR CAPPED EVENTS YET
+		 */
+		updateLeft:function(selection,_trackerData,_averages) {
+			if (!selection || !_trackerData||!_averages||!this.trackerPlot||!this.plotData||this.plotData.length<=0) return;
 			
-			var nPlots = 0,
-				range,
+			if (this.plotData[0].data.length>0) {
+				this.plotData[0].data.pop();
+				this.plotData[0].originalData.pop();
+				//this.plotData[1].data.slice(0,this.plotData.length);
+				//this.plotData[1].originalData.slice(0,this.plotData.length);
+				this.shiftDataLeft(this.plotData[0]);
+			}
+				
+			var nPlots = this.getNumberOfPlots(selection),
+				range = this.plotMax/nPlots,
 				index = 0,
 				capped = selection['cappable_events'],
 				uncapped = selection['non_cappable_events'];
+			//console.log("EVENTS ",capped,uncapped);
+			for (var i in capped/*var i = 0;i<capped.length;i++*/) {
+				var values = [],
+				data=[],
+				originalValues = [];
+				for (var j in _averages) {
+					var _date = _averages[j]['date'];
+					values.push(_trackerData['cappable_events'][i][_date]);
+				}
+				
+				for (var v = 0;v<values.length;v++) 
+				{
+					if (values[v] == 0) {
+						data.push([v,null]);
+						originalValues.push(values[v]);
+				    } else {
+				    	data.push([v,values[v]+index*range+(range/2),index*range]);
+				    	originalValues.push(values[v]/*+index*range+(range/2)*/);
+				    }
+				}
+				/* Add on original data so we can normalize the new value */
+				for (var i = 0;i<this.plotData[0].originalData.length;i++) values.push(this.plotData[0].originalData[i]);
+				values = this.normalizeValues(values, eventUnits||null, index*range,range);
+				values = [values.shift()];				
+				for (var v = 0;v<data.length;v++) this.plotData[0].data.unshift(data[v]);
+				for (var v = 0;v<originalValues.length;v++) this.plotData[0].originalData.unshift(originalValues[v]);
+				index++;
+			}
+			
+			for (var i in uncapped/*var i = 0;i<uncapped.length;i++*/) {
+				var values = [],data=[],originalValues = [];
+				for (var j in _averages) {
+					var _date = _averages[j]['date'];
+					values.push(_trackerData['non_cappable_events'][i][_date]);
+					originalValues.push(_trackerData['non_cappable_events'][i][_date]);
+				}
+				/* Add on original data so we can normalize the new value */
+				for (var i = 0;i<this.plotData[0].originalData.length;i++) values.push(this.plotData[0].originalData[i]);
+				values = this.normalizeValues(values, eventUnits||null, index*range,range);
+				values = [values.shift()];
+				
+				for (var v = 0;v<values.length;v++) 
+				{
+					data.push([v,values[v]]);
+				}
+				//console.log("UPDATE LEFT NEW VALUES? ",data);
+				for (var v = 0;v<data.length;v++) this.plotData[0].data.unshift(data[v]);
+				for (var v = 0;v<originalValues.length;v++) this.plotData[0].originalData.unshift(originalValues[v]);
+				
+				//this.plotData.unshift({data:data,color:uncapped[i],tipLabel:i,originalData:originalValues});
+				index++;
+			}
+			
+			this.trackerPlot.setData(this.plotData);
+			this.trackerPlot.draw();
+		},
+		
+		/*
+		 * Chop off the first data point in the plot and add a new one to the end
+		 * TODO: NOT IMPLEMENTED FOR CAPPED EVENTS YET
+		 */		
+		updateRight:function(selection,_trackerData,_averages) {
+			if (!selection || !_trackerData||!_averages||!this.trackerPlot||!this.plotData||this.plotData.length<=0) return;
+			if (this.plotData.length>0) {
+				this.plotData[0].originalData.shift();
+				this.plotData[0].data.shift();
+				this.shiftDataRight(this.plotData[0]);
+			}	
+			var nPlots = this.getNumberOfPlots(selection),
+				range = this.plotMax/nPlots,
+				index = 0,
+				capped = selection['cappable_events'],
+				uncapped = selection['non_cappable_events'];
+			
+			for (var i in capped) {
+				var values = [],
+				data=[],
+				originalValues = [];
+				for (var j in _averages) {
+					var _date = _averages[j]['date'];
+					values.push(_trackerData['cappable_events'][i][_date]);
+				}
+				
+				for (var v = 0;v<values.length;v++) 
+				{
+					if (values[v] == 0) {
+						data.push([v,null]);
+						originalValues.push(values[v]);
+				    } else {
+				    	data.push([v,values[v]+index*range+(range/2),index*range]);
+				    	originalValues.push(values[v]/*+index*range+(range/2)*/);
+				    }
+				}
+				/* Add on original data so we can normalize the new value */
+				for (var i = 0;i<this.plotData[0].originalData.length;i++) values.push(this.plotData[0].originalData[i]);
+				values = this.normalizeValues(values, eventUnits||null, index*range,range);
+				values = [values.shift()];				
+				for (var v = 0;v<data.length;v++) this.plotData[0].data.push(data[v]);
+				for (var v = 0;v<originalValues.length;v++) this.plotData[0].originalData.push(originalValues[v]);
+				index++;
+			}
+			
+			for (var i in uncapped/*var i = 0;i<uncapped.length;i++*/) {
+				var values = [],data=[],originalValues = [];
+				for (var j in _averages) {
+					var _date = _averages[j]['date'];
+					values.push(_trackerData['non_cappable_events'][i][_date]);
+					originalValues.push(_trackerData['non_cappable_events'][i][_date]);
+				}
+				/* Add on original data so we can normalize the new value */
+				for (var i = 0;i<this.plotData[0].originalData.length;i++) values.push(this.plotData[0].originalData[i]);
+				values = this.normalizeValues(values, eventUnits||null, index*range,range);
+				values = [values.shift()];
+				
+				for (var v = 0;v<values.length;v++) 
+				{
+					data.push([this.plotData[0].data.length,values[v]]);
+				}
+				//console.log("UPDATE LEFT NEW VALUES? ",data);
+				for (var v = 0;v<data.length;v++) this.plotData[0].data.push(data[v]);
+				for (var v = 0;v<originalValues.length;v++) this.plotData[0].originalData.push(originalValues[v]);
+				
+				//this.plotData.unshift({data:data,color:uncapped[i],tipLabel:i,originalData:originalValues});
+				index++;
+			}
+			
+			this.trackerPlot.setData(this.plotData);
+			this.trackerPlot.draw();			
+		},
+		
+		getNumberOfPlots:function(selection) {
+			var nPlots = 0;
 			for (var i in selection) {
 				for (var j in selection[i])
 				nPlots++;
 			}
-			
-			range = this.plotMax/nPlots;
+			return nPlots;
+		},
 		
+		/**
+		 * Get plot data based on specified selection
+		 */
+		getPlotData:function(selection) {
+			if (!selection) return;
+			// Globally defined
+			if (!trackerData) return;
+			if (!_avg) return;
+			/*
+			if (this.plotData.length>0) {
+				this.plotData.slice(1);
+			}
+			*/
+			this.plotData = [];
+			var nPlots = 0,
+			range,
+			index = 0,
+			capped = selection['cappable_events'],
+			uncapped = selection['non_cappable_events'];
+			for (var i in selection) {
+				for (var j in selection[i])
+				nPlots++;
+			}
+		
+			range = this.plotMax/nPlots;
+			
 			for (var i in capped/*var i = 0;i<capped.length;i++*/) {
 				var values = [],data=[],originalValues = [];
 				for (var j in _avg) {
@@ -143,7 +322,7 @@ var Tracker = {
 				    }
 				}
 				
-				plotData.push({
+				this.plotData.push({
 					data:data,
 					color:capped[i],
 					tipLabel:i,
@@ -171,11 +350,95 @@ var Tracker = {
 				{
 					data.push([v,values[v]]);
 				}
-				plotData.push({data:data,color:uncapped[i],tipLabel:i,originalData:originalValues});
+				this.plotData.push({data:data,color:uncapped[i],tipLabel:i,originalData:originalValues});
+				index++;
+			}
+			return this.plotData;
+		},
+		
+		/*
+		 * plots looks like:
+		 * {
+		 *   cappable_events:{},
+		 *   non_cappable_events:{}
+		 */
+		_draw:function(selection)
+		{
+			if (this.trackerPlot) {
+				this.trackerPlot.shutdown();
+				this.trackerPlot.destroy();
+			}
+			/*
+			var plotData = [];
+			if (!selection) return;
+			// Globally defined
+			if (!trackerData) return;
+			if (!_avg) return;
+			
+			var nPlots = 0,
+				range,
+				index = 0,
+				capped = selection['cappable_events'],
+				uncapped = selection['non_cappable_events'];
+			for (var i in selection) {
+				for (var j in selection[i])
+				nPlots++;
+			}
+			
+			range = this.plotMax/nPlots;
+		
+			for (var i in capped) {
+				var values = [],data=[],originalValues = [];
+				for (var j in _avg) {
+					var _date = _avg[j]['date'];
+					values.push(trackerData['cappable_events'][i][_date]);
+				}
+				//values = this.normalizeValues(values, eventUnits||null, index*range);
+				
+				for (var v = 0;v<values.length;v++) 
+				{
+					if (values[v] == 0) {
+						data.push([v,null]);
+						originalValues.push(values[v]);
+				    } else {
+				    	data.push([v,values[v]+index*range+(range/2),index*range]);
+				    	originalValues.push(values[v]);//*+index*range+(range/2)*);
+				    }
+				}
+				
+				plotData.push({
+					data:data,
+					color:capped[i],
+					tipLabel:i,
+					capped:true,
+					originalData:originalValues,
+					lines:{
+						fill:1,
+						fillColor:capped[i]
+					}
+						
+				});
 				index++;
 			}
 			
-			this.trackerPlot = $.plot(this.placeholder, plotData, {
+			for (var i in uncapped) {
+				var values = [],data=[],originalValues = [];
+				for (var j in _avg) {
+					var _date = _avg[j]['date'];
+					values.push(trackerData['non_cappable_events'][i][_date]);
+					originalValues.push(trackerData['non_cappable_events'][i][_date]);
+				}
+				
+				values = this.normalizeValues(values, eventUnits||null, index*range,range);
+				for (var v = 0;v<values.length;v++) 
+				{
+					data.push([v,values[v]]);
+				}
+				plotData.push({data:data,color:uncapped[i],tipLabel:i,originalData:originalValues});
+				index++;
+			}
+			*/
+			this.trackerPlot = $.plot(this.placeholder, this.getPlotData(selection), {
           		series: {
           			lines: {
           				show: true
@@ -202,7 +465,7 @@ var Tracker = {
 		},
 		
 		draw:function(range) {
-			console.log("DRAW1");
+
 			if (this.trackerPlot) {
 				this.trackerPlot.shutdown();
 				this.trackerPlot.destroy();
@@ -253,18 +516,27 @@ var Tracker = {
 			});
 		},
 		
-		generateSliderValues:function(range) {
+		generateSliderValues:function(range,plotWidth) {
 			if (!this.trackerPlot) this.draw(null,range);
 			var offset = this.trackerPlot.getPlotOffset(),
 				values = [],
 				xaxis = this.trackerPlot.getAxes()['xaxis']||null;
 			
+			if (this.plotData.length<=0 && plotWidth) {
+				var increment = plotWidth/range;
+			
+				for (var i = 0;i<range;i++) {
+					values[i] = increment*i;
+				}
+			} else {
 				if (!xaxis) return [];
+				
 				for (var i = 0;i<range;i++) {
 					values.push(xaxis.p2c(i)/*+offset.left*/);
 				}
-				this.sliderValues = $.extend({},values);
-				return values;	
+			}
+			this.sliderValues = $.extend({},values);
+			return values;	
 		},
 		
 		adjustSliderHandle:function(handle)
@@ -285,7 +557,7 @@ var Tracker = {
 			{
 				if (v.toFixed(2) == this.sliderValues[i].toFixed(2)) return parseInt(i);
 			}
-			return 0;
+			return -1;
 		},
 		
 		normalizeValues:function(values,units,displacement,range) {
@@ -336,6 +608,25 @@ var Tracker = {
 					} else return tmp[0];
 				} else return tmp[0];
 			} else {return value;}
+		},
+		
+		convert_am:function(value) {
+			return this.convert_time(value);
+		},
+		
+		convert_pm:function(value) {
+			return this.convert_time(value);
+		},
+		
+		convert_time:function(value) {
+			if (!value) return 0;
+			var baseDate = new Date();
+			baseDate.setHours(0);
+			baseDate.setMinutes(0);
+			baseDate.setSeconds(0);
+			var myD = new Date(baseDate.toDateString()+", "+value);
+			var diff = Math.abs(baseDate.getTime() - myD.getTime());
+			return diff/(1000*60);
 		},
 		
 		convert_hours:function(value) {

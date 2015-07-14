@@ -16,7 +16,7 @@ class SiteController extends Controller
     /* 
 	 * The default range of dates to show on the dashboard slider
 	 */
-    var $dashboardRangeDefault = 1;
+    var $dashboardRangeDefault = 30;
     /* 
 	 * probably should be deprecated 
 	 * These were used for encoding top people before sending to AE
@@ -315,12 +315,7 @@ class SiteController extends Controller
         $user_id = Yii::app()->user->id;
 
         $myCurrent = date('Y-m-d');
-        //$responseCount = count($_dates);
-        $date_ranges = array();
-        $range_labels = array();
         $default_range = $this->dashboardRangeDefault;
-        $range_labels = array(1, 3, 7, 15, 30);
-        $date_ranges = array(1, 3, 7, 15, 30);
 
         $showTracker = null;
         if (isset($_GET['goto'])) {
@@ -335,8 +330,10 @@ class SiteController extends Controller
         $current_time = date('h:i a');
         $activities = $this->calendarActivities($end_date, $today, $user_id);
 
-        $dashboardData = $this->getDashboardData(array('minDate'=>$this->getEarliestNoteDate())/*30, null, $today*/, $user_id);
+        //$dashboardData = array('eventData'=>array(),'trackerData'=>array());//$this->getDashboardData(array('minDate'=>$this->getEarliestNoteDate())/*30, null, $today*/, $user_id);
         //$dashboardData = $this->getDashboardData(30, null, $today, $user_id);
+        // Get all tracker and AE data for the past 90 days
+        $dashboardData = $this->_getDashboardData(90,$user_id);
         $event_units = EventUnit::model()->findall();
         $units = array();
         foreach ($event_units as $eu) {
@@ -356,12 +353,10 @@ class SiteController extends Controller
 
         $this->render('dashboard',
             array(
-                'range_labels' => $range_labels,
-                'date_ranges' => $date_ranges,
                 '_pairs' => array('thinking' => 'feeling', 'reality' => 'fantasy', 'negative' => 'positive', 'proactive' => 'passive', 'connected' => 'disconnected'),
                 'moods' => array("angry", "happy", "sad", "anxious"),
-                'responseCount' => count($dashboardData{'eventData'}),//$responses{'responseCount'},//$sliderCount,
-                'avg' => $dashboardData{'eventData'},//$responses{'avg'},//$avgResponses,
+                'responseCount' => $this->dashboardRangeDefault,//count($dashboardData{'eventData'}),//$responses{'responseCount'},//$sliderCount,
+                'avg' => $dashboardData{'eventData'},//$dashboardData{'eventData'},//$responses{'avg'},//$avgResponses,
                 /* The default number of days to display on main slider */
                 'default_range' => $default_range,
                 'topics' => $this->dashboard_topics,
@@ -370,14 +365,13 @@ class SiteController extends Controller
                 'post_visibility' => NoteVisibility::model()->findByAttributes(array('name' => 'Public')),
                 'recentActivity' => $this->recentActivities($today, $yesterday),
                 'activities' => $activities,
-                'trackerData' => $dashboardData{'trackerData'},
+                'trackerData' => $dashboardData{'trackerData'},//$dashboardData{'trackerData'},
                 //'trackerDates'=>$trackerInfo{'trackerDates'},
                 'event_units' => $units,
                 'randomQuestion' => $randomQuestion,
                 'question_flags' => $this->getQuestionFlags(),
                 'current_time' => $current_time,
-                'showTracker' => $showTracker
-                //'_dates'=>$eventData
+                'showTracker' => $showTracker,
             )
         );
     }
@@ -750,7 +744,6 @@ class SiteController extends Controller
 	$allYourNotesForDrag = Yii::app()->db->createCommand($sqlForDrag)->queryAll();
 	$eventsHashForDrag = $this->diffViewDate($allYourNotesForDrag,'month','drag');
 	$eventsHash = array_merge_recursive($eventsHash, $eventsHashForDrag);
-	//MyStuff::Log("COUNTS ".count($eventsHashForFB['other']).' '.count($eventsHashForArq['other']).' '.count($eventsHashForDrag['other']).' '.count($eventsHash['other']));
         if (isset($userIcon['path'])) {
             $fromFacebook = strpos($userIcon['path'], "https://");
             if ($fromFacebook === false) {
@@ -907,19 +900,16 @@ class SiteController extends Controller
         $this->setPageTitle('Questions & Answers');
         //$question = $this->getRandomQuestion();
         $categories = $this->getQuestionCategories();
-        MyStuff::Log('CATEGORIES');
         $randomQuestions = array();
 
         foreach ($categories as $c => $category) {
             $randomQuestions{$category{'name'}} = $this->getRandomQuestionByCategory($category);
         }
-        MyStuff::Log('Random questions0');
         $randomQuestion = null;
         while (!$randomQuestion) {
             $randInt = rand(0, count($categories) - 1);
             $randomQuestion = $this->getRandomQuestionByCategory($categories{$randInt});
         }
-        MyStuff::Log('Random questions');
         $goto = null;
         if (isset($_GET['goto'])) {
             $goto = $_GET['goto'];
@@ -2782,9 +2772,7 @@ private function getMyJournalsByID($note_id){
             ));
             Yii::app()->end();
         } catch (Exception $e) {
-            MyStuff::Log('BEGIN Error deleting event ' . $calendar_event_id);
-            MyStuff::Log($e);
-            MyStuff::Log('END Error deleting event ' . $calendar_event_id);
+
             echo CJSON::encode(array(
                 'success' => -1,
                 'msg' => 'Failed to delete selected calendar event'
@@ -3044,7 +3032,7 @@ private function getMyJournalsByID($note_id){
                 }
             }
         }
-        MyStuff::Log($dateHash);
+        
         return $dateHash;
     }
 
@@ -4227,6 +4215,41 @@ where user_id = $user_id
         return $formattedDate;
     }
 
+    private function _getDashboardData($duration=90,$user_id) {
+    	if (!$user_id) return array();
+    	$to_date = date('Y-m-d');
+        $day = 24 * 3600;
+        $from_date = date('Y-m-d', strtotime($to_date) - $duration * $day);
+        $_dates = $this->getLastXDays($duration);
+        
+        $responses = $this->_getDashboardResponses($duration, $to_date,$_dates,$user_id);
+        
+        $trackerInfo = $this->_trackerData($from_date, $to_date, $user_id);
+        
+        $all_dates = array_merge($trackerInfo{'trackerDates'});
+       
+        foreach ($responses{'avg'} as $r) {
+        	if (!in_array($r{'date'}, $all_dates)) array_push($all_dates, $r{'date'});
+        }
+        sort($all_dates);
+     	
+        //Intervleave tracker data and AE response data
+        $eventData = array();
+        foreach ($all_dates as $eventDate) {
+        	foreach ($responses{'avg'} as $r) {
+        		if (strcmp($r{'date'}, $eventDate) == 0) {
+        			array_push($eventData, $r);
+        			break;
+        		}
+        	}
+
+        }
+        return array(
+            'eventData' => $eventData,
+            'trackerData' => $trackerInfo{'trackerData'},
+            'dates'=>$_dates
+        );
+    }
     /*
 	 * Get dashboard data - top words, top categories, etc. for the specified amount of days
 	 * Mix in tracker data
@@ -4412,6 +4435,99 @@ where user_id = $user_id
         return array('journals' => $journals);
     }
 
+    private function _trackerData($start_date,$end_date,$user_id) {
+    	$tracker_dates = array();
+    	$dates = array();
+    	$myCurrent = $start_date;
+    	while (strcmp($myCurrent, $end_date) <= 0) {
+    		$dates{$myCurrent} = 1;
+    		$myCurrent = date('Y-m-d', strtotime('+1 day', strtotime($myCurrent)));
+    	}
+    	
+    	$bar = array('_no_input_', 'boolean');
+    	$line = array('scale_1_to_10', 'quantity', 'weight', 'height', 'minutes', 'distance');
+    	
+    	//$quantifiable = array('_no_input_', 'boolean', 'scale_1_to_10', 'quantity', 'weight', 'height', 'minutes', 'distance');
+    	$quantifiable = array('_no_input_', 'boolean', 'scale_1_to_10', 'quantity', 'weight', 'height', 'minutes', 'distance','time');
+    	$condition = '';
+    	foreach ($quantifiable as $qty) {
+    		$condition = $condition . " parameter = '" . $qty . "' or";
+    	}
+    	
+    	$condition = preg_replace('/or$/', '', $condition);
+    	
+    	$tracker = array('cappable_events' => array(), 'non_cappable_events' => array());
+    	/* All calendar events within the specified date range */
+    	$calendarEvents = CalendarEvent::model()->findAll('t.user_id=:_user_id and date(t.start_date)<=date(:end_date) and date(t.start_date)>=date(:start_date)', array(':_user_id' => $user_id, ':start_date' => $start_date, ':end_date' => $end_date));
+    	foreach ($calendarEvents as $ce) {
+    		/* The corresponding event values for each calendar event */
+    		$eventValues = $eventValues = EventValue::model()->with('calendarEvent')->findAll('t.calendar_event_id=:_id', array(':_id' => $ce->calendar_event_id));
+    	
+    		foreach ($eventValues as $ev) {
+    			
+    			/* Event definitions that correspond to the event values and that are quantifiable */
+    			$eventDefn = EventDefinition::model()->with('eventSubcategory')->find("t.event_definition_id=:_id and ( " . $condition . ")", array(':_id' => $ev->event_definition_id));
+    			if ($eventDefn) {
+    				$subcategory = EventSubcategory::model()->findByPk($eventDefn->event_subcategory_id);
+    				if (!$subcategory->cap_event) {
+    					/*
+    					 * Where to hash results:
+    					* if it is an event that cannot be finished, it is non-cappable
+    					* if it is an event that can end, like a vacation or job, it is cappable
+    					*/
+    					$hash = &$tracker{'non_cappable_events'};
+    					if ($subcategory->capping_subcategory_id) {
+    						$hash = &$tracker{'cappable_events'};
+    					}
+    	
+    					$cap_date = '';
+    					if (!array_key_exists($subcategory->name, $hash)) {
+    						$hash{$subcategory->name} = array();
+    	
+    						if ($subcategory->capping_subcategory_id) {
+    							if ($ev->capped_event_value_id) {
+    								$capping_event_value = EventValue::model()->findByAttributes(array('event_value_id' => $ev->capped_event_value_id));
+    								if ($capping_event_value) {
+    									$capping_calendar_event = CalendarEvent::model()->findByPk($capping_event_value->calendar_event_id);
+    									if ($capping_calendar_event) {
+    										$cap_date = date('Y-m-d', strtotime($capping_calendar_event->start_date));
+    									}
+    								}
+    							}
+    						}
+    					}
+    	
+    					$event_date = date('Y-m-d', strtotime($ce->start_date));
+    					if (!in_array($event_date, $tracker_dates)) array_push($tracker_dates, $event_date);
+    					if (in_array($eventDefn->parameter, $bar)) {
+    						$hash{$subcategory->name}{$event_date} = 1;
+    					} else {
+    						$hash{$subcategory->name}{$event_date} = str_replace($eventDefn->label . ' ', '', $ev->value);
+    					}
+    	
+    					/* Cap cappable events */
+    					foreach ($dates as $key => $d) {
+    						if (!array_key_exists($key, $hash{$subcategory->name})) {
+    							if ($cap_date) {
+    								if (strcmp($key, $event_date) >= 0 && strcmp($key, $cap_date) <= 0) {
+    									$hash{$subcategory->name}{$key} = 1;
+    								}
+    	
+    							} else if ($subcategory->capping_subcategory_id) {
+    								//The event is still opened up to and including, possibly, today's date
+    								if (strcmp($key, $event_date) >= 0) $hash{$subcategory->name}{$key} = 1;
+    	
+    							}
+    							//else {$hash{$subcategory->name}{$key} = 0;}
+    						}
+    					}
+    				}
+    			}
+    		}
+    	}
+    	return array('trackerData' => $tracker, 'trackerDates' => $tracker_dates);    	
+    }
+    
     private function trackerData($dateObj/*$start_date, $end_date*/, $user_id)
     {
         $tracker_dates = array();
@@ -4512,7 +4628,6 @@ where user_id = $user_id
                             if (!array_key_exists($key, $hash{$subcategory->name})) {
                                 if ($cap_date) {
                                     if (strcmp($key, $event_date) >= 0 && strcmp($key, $cap_date) <= 0) {
-                                        MyStuff::Log('KEY DATE ' . $key . ' ' . $event_date . ' ' . $cap_date);
                                         $hash{$subcategory->name}{$key} = 1;
                                     }
 
@@ -4580,6 +4695,44 @@ where user_id = $user_id
         return $myEvents;
     }
 
+    private function _getDashboardResponses($duration,$from_date,$_dates,$user_id) {
+    	if (!$user_id) return null;
+    	$avg = $this->_mean_score_per_day($duration, $from_date);
+    	$avgResponses = array();
+    	$targetArr = $_dates;
+    	if (count($avg)<count($_dates)) {
+    		$targetArr = array();
+    		$index = 0;
+    		foreach ($avg as $key => $avgValue) {
+    			$targetArr[$index] = $key;
+    			$index++;
+    		}
+    	}
+    	$sliderCount = count($targetArr);
+    	$increments = 0;
+    	
+    	if ($sliderCount > 0) $increments = intVal(1000 / $sliderCount);
+    	/* Sort dates in ascending order */
+    	$myDates = array();
+    	foreach ($targetArr as $key => $dateValue) {
+    		$myDates[$key] = $dateValue;
+    	}
+    	array_multisort($myDates, SORT_ASC, $targetArr);
+    	/* And then generate response hash */
+    	$index = 0;
+    	foreach ($targetArr as $entry) {
+    		$date = $entry['Date'];
+    		$avgResponses[/*$increments**/
+    		($index)] = $avg[$date];
+    		$avgResponses[/*$increments**/
+    		($index)]{'date'} = $date;
+    		$index++;
+    	}
+    	$responses = array('avg' => $avgResponses, 'responseCount' => $sliderCount);
+    	
+    	return $responses;
+    }
+
     private function getDashboardResponses($dateObj/*$duration, $from_date*/, $user_id)
     {
         if (!$user_id) return null;
@@ -4596,7 +4749,7 @@ where user_id = $user_id
 		}
 		*/
         $avg = $this->mean_score_per_day($dateObj/*$duration, $from_date*/);
-		//MyStuff::Log("DATES 420 PM ");MyStuff::Log($_dates);
+		
         $avgResponses = array();
         $targetArr = $_dates;
         if (count($avg)<count($_dates)) {
@@ -4622,7 +4775,6 @@ where user_id = $user_id
         $index = 0;
 		
         foreach ($targetArr as $date) {
-        	MyStuff::Log("TARGET DATE 419PM ".$date);
             $avgResponses[/*$increments**/
             ($index)] = $avg[$date];
             $avgResponses[/*$increments**/
@@ -4792,6 +4944,43 @@ order by avg_rank desc";
     	}
     }
 
+    private function _mean_score_per_day($days_back=0,$from_date) {
+    	$sql = "select report_date
+					from date_dim
+					where report_date<=date('" . $from_date . "')
+	  				and report_date>=date_sub(date('" . $from_date . "'), interval $days_back day)
+    		  				order by report_date desc";
+    	
+    	foreach (Yii::app()->db->createCommand($sql)->queryAll() as $day) {
+    	
+    	#MyStuff::Log($day);
+    		$return[$day['report_date']] = array(
+    		'top_categories' => array(),
+    		'top_people' => array(),
+    		'top_words' => array(),
+    		);
+    	}
+    	
+    	foreach ($this->mean_categories_per_day($days_back, $from_date) as $data) {
+	    	if ($data['category']) {
+	    		$return[$data['date']]['top_categories'][$data['category']] = $data['value'];
+	    	}
+    	}
+    	
+    	foreach ($this->mean_top_people_per_day($days_back, $from_date) as $data) {
+    		if ($data['person']) {
+    			$return[$data['date']]['top_people'][$data['person']] = $data['person_count'];
+    		}
+    	}
+    	
+    	foreach ($this->mean_top_words_per_day($days_back, $from_date) as $data) {
+    		if ($data['word']) {
+    			$return[$data['date']]['top_words'][$data['word']] = $data['word_count'];
+    		}
+    	}    
+    	return $return;
+    }
+    
     private function mean_score_per_day($dateObj/*$days_back = 0, $from_date*/)
     {
 		$from_date = null;
@@ -4855,8 +5044,7 @@ order by avg_rank desc";
     	$toppeople = $this->mean_top_people_per_day_of_activity($from_date,$minDate);
     	
     	foreach ($categories as $data) {
-    		if ($data['category']) {
-    			//MyStuff::Log("CATEGORY");MyStuff::Log($data['category']);
+    		if ($data['category']) {    			
     			if (!array_key_exists($data['date'],$return) ) {
     				$return[$data['date']] = array(
     						'top_categories' => array(),
