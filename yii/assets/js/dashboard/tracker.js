@@ -118,31 +118,23 @@ var Tracker = {
 			}			
 		},
 		
-		/*
-		 * Chop off the last data point in the plot and add a new one to the beginning
-		 * TODO: NOT IMPLEMENTED FOR CAPPED EVENTS YET
-		 */
-		updateLeft:function(selection,_trackerData,_averages) {
-			if (!selection || !_trackerData||!_averages||!this.trackerPlot||!this.plotData||this.plotData.length<=0) return;
-			
-			if (this.plotData[0].data.length>0) {
-				this.plotData[0].data.pop();
-				this.plotData[0].originalData.pop();
-				//this.plotData[1].data.slice(0,this.plotData.length);
-				//this.plotData[1].originalData.slice(0,this.plotData.length);
-				this.shiftDataLeft(this.plotData[0]);
+		getPlotDataEntry:function(color) {
+			for (var i =0;i<this.plotData.length;i++) {
+				if (this.plotData[i].color == color) return i;
 			}
-				
-			var nPlots = this.getNumberOfPlots(selection),
-				range = this.plotMax/nPlots,
-				index = 0,
-				capped = selection['cappable_events'],
-				uncapped = selection['non_cappable_events'];
-			//console.log("EVENTS ",capped,uncapped);
-			for (var i in capped/*var i = 0;i<capped.length;i++*/) {
+			return -1;
+		},
+		
+		getDataPoint:function(_trackerData,_averages,range,capped,uncapped,shiftDir) {
+			var index = 0,
+				plotIndex = -1;
+			for (var i in capped) {
 				var values = [],
 				data=[],
 				originalValues = [];
+				plotIndex = this.getPlotDataEntry(capped[i]);
+				if (plotIndex <0) continue;
+				
 				for (var j in _averages) {
 					var _date = _averages[j]['date'];
 					values.push(_trackerData['cappable_events'][i][_date]);
@@ -155,20 +147,28 @@ var Tracker = {
 						originalValues.push(values[v]);
 				    } else {
 				    	data.push([v,values[v]+index*range+(range/2),index*range]);
-				    	originalValues.push(values[v]/*+index*range+(range/2)*/);
+				    	originalValues.push(values[v]);
 				    }
 				}
 				/* Add on original data so we can normalize the new value */
-				for (var i = 0;i<this.plotData[0].originalData.length;i++) values.push(this.plotData[0].originalData[i]);
+				for (var i = 0;i<this.plotData[plotIndex].originalData.length;i++) values.push(this.plotData[plotIndex].originalData[i]);
 				values = this.normalizeValues(values, eventUnits||null, index*range,range);
-				values = [values.shift()];				
-				for (var v = 0;v<data.length;v++) this.plotData[0].data.unshift(data[v]);
-				for (var v = 0;v<originalValues.length;v++) this.plotData[0].originalData.unshift(originalValues[v]);
+				values = [values.shift()];			
+				if (shiftDir == 'left') {
+					for (var v = 0;v<data.length;v++) this.plotData[plotIndex].data.unshift(data[v]);
+					for (var v = 0;v<originalValues.length;v++) this.plotData[plotIndex].originalData.unshift(originalValues[v]);
+				} else {
+					for (var v = 0;v<data.length;v++) this.plotData[plotIndex].data.push(data[v]);
+					for (var v = 0;v<originalValues.length;v++) this.plotData[plotIndex].originalData.push(originalValues[v]);
+				}
 				index++;
 			}
 			
-			for (var i in uncapped/*var i = 0;i<uncapped.length;i++*/) {
+			for (var i in uncapped) {
 				var values = [],data=[],originalValues = [];
+				plotIndex = this.getPlotDataEntry(uncapped[i]);
+				
+				if (plotIndex<0) continue;
 				for (var j in _averages) {
 					var _date = _averages[j]['date'];
 					values.push(_trackerData['non_cappable_events'][i][_date]);
@@ -179,91 +179,67 @@ var Tracker = {
 				values = this.normalizeValues(values, eventUnits||null, index*range,range);
 				values = [values.shift()];
 				
-				for (var v = 0;v<values.length;v++) 
-				{
-					data.push([v,values[v]]);
+				if (shiftDir == 'left') {
+					for (var v = 0;v<values.length;v++) 
+					{
+						data.push([v,values[v]]);
+					}
+					for (var v = 0;v<data.length;v++) this.plotData[plotIndex].data.unshift(data[v]);
+					for (var v = 0;v<originalValues.length;v++) this.plotData[plotIndex].originalData.unshift(originalValues[v]);
+				} else {
+					for (var v = 0;v<values.length;v++) 
+					{
+						data.push([this.plotData[plotIndex].data.length,values[v]]);
+					}
+					for (var v = 0;v<data.length;v++) this.plotData[plotIndex].data.push(data[v]);
+					for (var v = 0;v<originalValues.length;v++) this.plotData[plotIndex].originalData.push(originalValues[v]);
 				}
-				//console.log("UPDATE LEFT NEW VALUES? ",data);
-				for (var v = 0;v<data.length;v++) this.plotData[0].data.unshift(data[v]);
-				for (var v = 0;v<originalValues.length;v++) this.plotData[0].originalData.unshift(originalValues[v]);
-				
-				//this.plotData.unshift({data:data,color:uncapped[i],tipLabel:i,originalData:originalValues});
 				index++;
-			}
+			}			
+		},
+		
+		/*
+		 * Chop off the last data point in the plot and add a new one to the beginning
+		 * 
+		 */
+		updateLeft:function(selection,_trackerData,_averages) {
+			if (!selection || !_trackerData||!_averages||!this.trackerPlot||!this.plotData||this.plotData.length<=0) return;
 			
+			for (var i =0;i<this.plotData.length;i++) {
+				this.plotData[i].data.pop();
+				this.plotData[i].originalData.pop();
+				this.shiftDataLeft(this.plotData[i]);
+			}
+				
+			var nPlots = this.getNumberOfPlots(selection),
+				range = this.plotMax/nPlots,
+				index = 0,
+				capped = selection['cappable_events'],
+				uncapped = selection['non_cappable_events'],
+				plotIndex = -1;
+			this.getDataPoint(_trackerData, _averages, range, capped,uncapped,'left');
 			this.trackerPlot.setData(this.plotData);
 			this.trackerPlot.draw();
 		},
 		
 		/*
 		 * Chop off the first data point in the plot and add a new one to the end
-		 * TODO: NOT IMPLEMENTED FOR CAPPED EVENTS YET
+		 * 
 		 */		
 		updateRight:function(selection,_trackerData,_averages) {
 			if (!selection || !_trackerData||!_averages||!this.trackerPlot||!this.plotData||this.plotData.length<=0) return;
-			if (this.plotData.length>0) {
-				this.plotData[0].originalData.shift();
-				this.plotData[0].data.shift();
-				this.shiftDataRight(this.plotData[0]);
-			}	
+			for (var i = 0;i<this.plotData.length;i++) {
+				this.plotData[i].originalData.shift();
+				this.plotData[i].data.shift();
+				this.shiftDataRight(this.plotData[i]);				
+			}
 			var nPlots = this.getNumberOfPlots(selection),
 				range = this.plotMax/nPlots,
 				index = 0,
 				capped = selection['cappable_events'],
-				uncapped = selection['non_cappable_events'];
-			
-			for (var i in capped) {
-				var values = [],
-				data=[],
-				originalValues = [];
-				for (var j in _averages) {
-					var _date = _averages[j]['date'];
-					values.push(_trackerData['cappable_events'][i][_date]);
-				}
-				
-				for (var v = 0;v<values.length;v++) 
-				{
-					if (values[v] == 0) {
-						data.push([v,null]);
-						originalValues.push(values[v]);
-				    } else {
-				    	data.push([v,values[v]+index*range+(range/2),index*range]);
-				    	originalValues.push(values[v]/*+index*range+(range/2)*/);
-				    }
-				}
-				/* Add on original data so we can normalize the new value */
-				for (var i = 0;i<this.plotData[0].originalData.length;i++) values.push(this.plotData[0].originalData[i]);
-				values = this.normalizeValues(values, eventUnits||null, index*range,range);
-				values = [values.shift()];				
-				for (var v = 0;v<data.length;v++) this.plotData[0].data.push(data[v]);
-				for (var v = 0;v<originalValues.length;v++) this.plotData[0].originalData.push(originalValues[v]);
-				index++;
-			}
-			
-			for (var i in uncapped/*var i = 0;i<uncapped.length;i++*/) {
-				var values = [],data=[],originalValues = [];
-				for (var j in _averages) {
-					var _date = _averages[j]['date'];
-					values.push(_trackerData['non_cappable_events'][i][_date]);
-					originalValues.push(_trackerData['non_cappable_events'][i][_date]);
-				}
-				/* Add on original data so we can normalize the new value */
-				for (var i = 0;i<this.plotData[0].originalData.length;i++) values.push(this.plotData[0].originalData[i]);
-				values = this.normalizeValues(values, eventUnits||null, index*range,range);
-				values = [values.shift()];
-				
-				for (var v = 0;v<values.length;v++) 
-				{
-					data.push([this.plotData[0].data.length,values[v]]);
-				}
-				//console.log("UPDATE LEFT NEW VALUES? ",data);
-				for (var v = 0;v<data.length;v++) this.plotData[0].data.push(data[v]);
-				for (var v = 0;v<originalValues.length;v++) this.plotData[0].originalData.push(originalValues[v]);
-				
-				//this.plotData.unshift({data:data,color:uncapped[i],tipLabel:i,originalData:originalValues});
-				index++;
-			}
-			
+				uncapped = selection['non_cappable_events'],
+				plotIndex = -1;
+			this.getDataPoint(_trackerData, _averages, range, capped,uncapped,'right');
 			this.trackerPlot.setData(this.plotData);
 			this.trackerPlot.draw();			
 		},
