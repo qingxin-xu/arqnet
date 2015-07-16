@@ -35,3 +35,11 @@ $(document).ready(function() {
 		},1);
 	}
 });
+
+function arqIsArray(data) {
+	if (data) {
+		if (Object.prototype.toString.call( data ) === '[object Array]' ) return true;
+		else return false;
+	}
+	return false
+}

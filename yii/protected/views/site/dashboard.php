@@ -1,6 +1,9 @@
 <link rel="stylesheet" href="assets/js/jquery-ui/css/vader/jquery-ui.min.css">
+<link rel="stylesheet" href="/assets/css/myJournals.css">
 <script src='/assets/js/dashboard/recentActivities.js'></script>
 <script src='/assets/js/arq/AnswerQuestion.js'></script>
+<script type='text/javascript' src='/assets/js/myJournals/journalMgr.js'></script>
+<script type='text/javascript' src='/assets/js/myJournals/calendarMgr.js'></script>
 <style type='text/css'>
 #slider1 .ui-label {cursor:pointer;}
 </style>
@@ -900,9 +903,67 @@ function updateMsg( description,t ) {
       .text( t );
  }
 
+
 jQuery(document).ready(function($) 
 {
 
+	setTimeout(function() {
+		journalDates = null;
+		
+		if (calendarMgr) {
+			var myDates = calendarMgr.createDatesFromDashboardEvents(__avg,trackerData)
+			calendarMgr.setDates(myDates);
+		}
+		
+ 		$input = $("#mydate");
+ 		$("#mydate").datepicker({
+		});
+
+ 		$input.data('datepicker').hide = function () {};
+ 		$input.data('datepicker').onRender = function(date) {
+	 		if (!date) date = new Date();
+	 		if (calendarMgr) return calendarMgr.isAllowedCalendarDate(date);
+		};
+		/* This forces initial date constraingts */
+		$input.datepicker('setValue',new Date());
+ 		$input.datepicker('show');
+ 		//$('.input-group').hide();
+ 		$('#mydate').hide();
+
+ 		if (calendarMgr) {
+	 		calendarJournals = $.extend({},journalMgr)
+	 		calendarJournals = $.extend(calendarJournals,calendarMgr,{
+				nEntries:0,
+				entries:[],
+				pagingService:'/getMyJournalsByDate'
+			});
+	 		$input.datepicker().on('changeDate',function(e) {
+				//console.log('date change',e.date.getFullYear(),e.date.getMonth()+1,e.date.getDate());
+				var year = e.date.getFullYear(),
+					month = e.date.getMonth()+1,
+					day = e.date.getDate(),
+					lastIndex = 89,
+					dateStr;
+					if (month<10) month='0'+month;
+					if (day<10) day = '0'+day;
+					dateStr = year+'-'+month+'-'+day;
+				
+				for (var i = 0;i<__avg.length;i++) {
+					if (dateStr == __avg[i]['date']) {
+						//Navigate to date
+						if (i+15>lastIndex) {
+						} else {
+						}
+					}
+				}
+			});
+ 		}
+ 		$('div.datepicker.dropdown-menu').prependTo($('.calendar.input-group'));
+ 		$('div.datepicker.dropdown-menu').css('top',0);
+ 		$('div.datepicker.dropdown-menu').css('left',0);
+ 
+	},500);
+	
 	$("[name=trackerSwitchCheckbox]").bootstrapSwitch({
 		onSwitchChange:function(event,state) {
 			if (state) {
@@ -1310,11 +1371,15 @@ function getRandomInt(min, max)
 			</div>
 
 		</div>	
-		<div class="col-sm-3">
-		<div class="boxHeader"><span class="word1">Recent </span><span class="word2">Updates</span></div>
-		<div id='recentActivities' class="panel panel-primary addG-panelhalfheight">
-
+		<div class="rpw col-sm-3">
+			
+		<div class="boxHeader"><span class="word1">Navigate </span><span class="word2">Events</span></div>
+		<div style='height:250px;'>
+		<div class='calendar input-group' style='width:100%;'><input style='width:100%;' type='text' id='mydate' class="form-control datepicker" /></div>
 		</div>
+		<div class="boxHeader"><span class="word1">Recent </span><span class="word2">Updates</span></div>
+		<div id='recentActivities' class="panel panel-primary addG-panelhalfheight"></div>
+		
 	</div>
 	</div>
 

@@ -1,4 +1,3 @@
- <link href="/assets/css/glDatePicker.default.css" rel="stylesheet" type="text/css">
  <link rel="stylesheet" href="/assets/js/jquery-ui/css/vader/jquery-ui.min.css">
  <link rel="stylesheet" href="/assets/css/dashboard.css">
  <link rel="stylesheet" href="/assets/css/jqtree.css">
