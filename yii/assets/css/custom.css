@@ -241,6 +241,10 @@ form input[value=Cancel],button.image_upload,button.next,button.previous,button.
 	height:441px;
 }
 
+.addG-panelRecentActivities {
+	height:220px;
+}
+
 .addG-tileblock, .addG-darkBG {
 	background-color:#262626;
 }
