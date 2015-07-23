@@ -93,7 +93,7 @@ function initializeMainSlider(initVal)
 {	
 	//if (!dateRangeAverages && (!__avg || __avg.length<=0)) return;
 	if (!defaultRange) return;
-	console.log("INIT VALUE",initVal);
+
 	_avg = {};
 	var minValue = 0,
 		increments,
@@ -466,10 +466,20 @@ function createDonutChartData(response)
 	return chartData;
 }
 
+var chartActivity = true;
 function drawDonutChart(chart,response)
 {
-	if (!response) return;
-	var chartData = createDonutChartData(response);
+	var chartData;
+	if (response) {
+		chartData = createDonutChartData(response);
+		chartActivity = true;
+	}  else {
+		chartData = [];
+	}
+	if (chartData.length<=0) {
+		chartData = [{label:"No Activity",value:1.0}];
+		chartActivity = false;
+	}
 	
 	if (!chartData || chartData.length<=0) {
 		$('#topics-tab').addClass('hidden');
@@ -485,7 +495,7 @@ function drawDonutChart(chart,response)
 		topics_donut_chart = Morris.Donut({
 			labelColor:morris_donut_label_color,
 			element: 'topics-tab',
-			formatter:function(y,data) {return morris_formatter(y,data);},
+			formatter:function(y,data) {if (chartActivity) return morris_formatter(y,data);else return '';},
 			data:chartData,
 			colors: morric_topic_colors//['#707f9b', '#455064', '#242d3c','#A2B1CD','#AEB9CD']
 		});
@@ -978,17 +988,9 @@ function onMainSliderChange(ui)
 	var value = Tracker.getSliderValue(ui.value);
 	
 	if (value<0) {
-		var index = $.inArray(ui.value,allSliderValues);
-		if (index == 0) {
-			//console.log("SLIDING LEFT");
-		} else if (index == allSliderValues.length-1) {
-			//console.log("SLIDING RIGHT");
-		}
 		return;
 	}
 	ui = $.extend(ui,{trackerOffset:trackerOffset||0});
-	//if (!responses || !responses[value]) return;
-	//if (!_avg || !_avg[value]) return;
 	var response = _avg[value];//responses[value];
 	currentValue = value;
 	setDateDisplay(response);
@@ -1204,6 +1206,7 @@ jQuery(document).ready(function($)
 			
 		});
 	}
+	/*
 	// Sample Toastr Notification
 	setTimeout(function()
 	{			
@@ -1256,7 +1259,7 @@ jQuery(document).ready(function($)
 		backgroundColor: '#383f47',
 		focusOn: { x: 0.5, y: 0.8, scale: 3 }
 	});		
-
+	*/
 	if (defaultRange>0) 
 	{
 		
@@ -1264,23 +1267,7 @@ jQuery(document).ready(function($)
 		var topics_tab = $("#topics-tab");
 		
 		topics_tab.parent().show();
-		
-		if (_avg && _avg[0]/*responses && responses[0]*/)
-		{
-			var chartData = createDonutChartData(_avg[0]);
-			if (chartData && chartData.length>0) 
-			{
-				topics_donut_chart = Morris.Donut({
-					element: 'topics-tab',
-					labelColor:morris_donut_label_color,
-					formatter:function(y,data) {return morris_formatter(y,data);},
-					data:chartData,
-					colors: morric_topic_colors//['#707f9b', '#455064', '#242d3c','#A2B1CD','#AEB9CD']
-				});
-			} else topics_donut_chart = null;
-		} else topics_donut_chart = null;
-		
-		
+		topics_donut_chart = null;		
 		topics_tab.parent().attr('style', '');
 		
 		
