@@ -89,14 +89,13 @@ function testTracker() {
 /**
  * Set the slider range, values, redraw tabs
  */
-function initializeMainSlider(range)
-{
+function initializeMainSlider(initVal)
+{	
 	//if (!dateRangeAverages && (!__avg || __avg.length<=0)) return;
-	if (!range && !defaultRange) return;
-
+	if (!defaultRange) return;
+	console.log("INIT VALUE",initVal);
 	_avg = {};
 	var minValue = 0,
-		myRange = range?range:defaultRange,
 		increments,
 		sliderValues=[],
 		maxValue,
@@ -180,7 +179,7 @@ function initializeMainSlider(range)
 						if (dateInRange(prevDayStr)) {
 							slidePlot('Left',prevDayStr);
 						} else {
-							extendDateRange(prevDayStr,function() {
+							extendDateRange(prevDayStr,null,function() {
 								slidePlot('Left',prevDayStr);
 								currentStart = 89;
 								currentEnd = currentStart+defaultRange;
@@ -237,7 +236,7 @@ function initializeMainSlider(range)
 	//onMainSliderChange({value:0});
 	
 	setTimeout(function() {
-		if (values.length>1) $('#slider1').slider('values',0,values[values.length-2]);
+		if (values.length>1) $('#slider1').slider('values',0,initVal?values[initVal]:values[values.length-2]);
 	},1);
 }
 
@@ -255,14 +254,15 @@ function getPrevDayStr() {
 	var current_date = slideDate?new Date(slideDate+"T23:59:59"):new Date(_avg[0]['date']+"T23:59:59");
 	var prev_day = new Date();
 	prev_day.setTime(current_date.getTime()-24*3600*1000);
-	var m = prev_day.getMonth()+1;
-	if (m<10) m = '0'+m;
-	var d = prev_day.getDate();
-	if (d<10) d = '0'+d;
-	var prevDayStr = prev_day.getFullYear()+'-'+m+'-'+d;
-	return prevDayStr;
+	return getDateStr(prev_day);
 }
 
+function decrementDayStr(dateStr) {
+	var myD = new Date(dateStr+"T23:59:59");
+	var prev_day = new Date();
+	prev_day.setTime(myD.getTime()-24*3600*1000);
+	return getDateStr(prev_day);
+}
 /*
  * Set this date object's time to midnight
  */
@@ -283,14 +283,25 @@ function getNextDayStr() {
 	setToMidnight(next_day);
 	setToMidnight(today);
 	if (next_day.getTime()>today.getTime()) return null;
-	var m = next_day.getMonth()+1;
-	if (m<10) m = '0'+m;
-	var d = next_day.getDate();
-	if (d<10) d = '0'+d;
-	var nextDayStr = next_day.getFullYear()+'-'+m+'-'+d;
-	return nextDayStr;	
+	return getDateStr(next_day);
 }
 
+function getDateStr(myD) {
+	var m = myD.getMonth()+1;
+	if (m<10) m = '0'+m;
+	var d = myD.getDate();
+	if (d<10) d = '0'+d;
+	return myD.getFullYear()+'-'+m+'-'+d;	
+}
+
+function calculateDayDiff(from_dateStr,to_dateStr) {
+	if (!from_dateStr || !to_dateStr) return 0;
+	var from_date = new Date(from_dateStr+"T23:59:59"),
+		to_date = new Date(to_dateStr+"T23:59:59"),
+		toDays = 1000*60*60*24,
+		diff = (from_date.getTime() - to_date.getTime())/toDays;
+	return parseInt(diff);
+}
 /*
  * Change the range of data represented by the plot after the user has moved the date range forward in time
  */
@@ -338,6 +349,24 @@ function getDataIndex(newDateStr) {
 		}
 	}
 	return index;
+}
+
+function navigateToDate(dateStr) {
+	if (!dateStr) return;
+	var index = getDateIndex(dateStr);
+	
+	//Find index in __avg where this date occurs
+	if (index<0) return;
+	if (index+14 > __avg.length-1) {
+		index = defaultRange - ( (__avg.length-1) - index );
+		currentStart = 60;
+		currentEnd = currentStart+defaultRange;	
+	} else {
+		currentStart = index - 15;
+		currentEnd = currentStart+defaultRange;
+		index = index - currentStart+1;
+	}	
+	initializeMainSlider(index);
 }
 
 function sortTopicValues(response)
@@ -791,7 +820,7 @@ function createTrackerMenuOption(option) {
 					menu.find('input:unchecked').attr('disabled',false);
 				}
 				//Tracker._draw(trackerSelection);
-				initializeMainSlider(currentRangeValue);
+				initializeMainSlider();
 			});
 		}
 	});
@@ -980,10 +1009,10 @@ function updateMsg( description,t ) {
       .text( t );
  }
 
-
 jQuery(document).ready(function($) 
 {
-
+	// Use this so we don't make a call to extendeDateRange more than one
+	var activeDate = null;
 	setTimeout(function() {
 		journalDates = null;
 		
@@ -997,9 +1026,32 @@ jQuery(document).ready(function($)
 		});
 
  		$input.data('datepicker').hide = function () {};
+ 		// Calculate what dates are available
+ 		// We may need a call to extendDateRange if we do not have that info for the specified month being rendered
  		$input.data('datepicker').onRender = function(date) {
 	 		if (!date) date = new Date();
-	 		if (calendarMgr) return calendarMgr.isAllowedCalendarDate(date);
+	 		
+	 		var dateStr = getDateStr(date);
+			if (dateInRange(dateStr)) {
+				activeDate = null;
+				if (calendarMgr) return calendarMgr.isAllowedCalendarDate(date);
+			} else {
+				var earliestDate = decrementDayStr(__avg[0]['date']);
+				var daysBack = calculateDayDiff(earliestDate,dateStr);
+				if (daysBack<=0) return 'disabled';
+				if (!activeDate) {
+					activeDate = earliestDate;
+					extendDateRange(earliestDate,90,function() {
+					if (calendarMgr) {
+						var myDates = calendarMgr.createDatesFromDashboardEvents(__avg,trackerData);
+						calendarMgr.setDates(myDates);
+						$input.datepicker('setValue',new Date(earliestDate+"T23:59:59"));
+						
+					}
+						
+					});
+				}
+			}
 		};
 		/* This forces initial date constraingts */
 		$input.datepicker('setValue',new Date());
@@ -1014,8 +1066,8 @@ jQuery(document).ready(function($)
 				entries:[],
 				pagingService:'/getMyJournalsByDate'
 			});
+
 	 		$input.datepicker().on('changeDate',function(e) {
-				//console.log('date change',e.date.getFullYear(),e.date.getMonth()+1,e.date.getDate());
 				var year = e.date.getFullYear(),
 					month = e.date.getMonth()+1,
 					day = e.date.getDate(),
@@ -1024,21 +1076,27 @@ jQuery(document).ready(function($)
 					if (month<10) month='0'+month;
 					if (day<10) day = '0'+day;
 					dateStr = year+'-'+month+'-'+day;
-				
-				for (var i = 0;i<__avg.length;i++) {
-					if (dateStr == __avg[i]['date']) {
-						//Navigate to date
-						if (i+15>lastIndex) {
-						} else {
-						}
+					
+					if (dateInRange(dateStr)) {
+						navigateToDate(dateStr);
+					} else {
+						var earliestDate = decrementDayStr(__avg[0]['date']);
+						var daysBack = calculateDayDiff(earliestDate,dateStr);
+						extendDateRange(earliestDate,daysBack,function() {
+							navigateToDate(dateStr);
+						});
 					}
-				}
 			});
+
  		}
  		$('div.datepicker.dropdown-menu').prependTo($('.calendar.input-group'));
  		$('div.datepicker.dropdown-menu').css('top',0);
  		$('div.datepicker.dropdown-menu').css('left',0);
- 
+	/*
+		$('.calendar.input-group prev').on('click',function(e) {
+			console.log('prev click',e);
+		});
+		*/
 	},500);
 	
 	$("[name=trackerSwitchCheckbox]").bootstrapSwitch({
@@ -1108,7 +1166,7 @@ jQuery(document).ready(function($)
 		});
 	
 		//Initialize slider
-		setTimeout(function() {initializeMainSlider(defaultRange);},300);
+		setTimeout(function() {initializeMainSlider();},300);
 		
 		//Listen for tab changes and redraw charts that might need to be redrawn/resized
 		$('ul.nav-tabs li a').on('click',function() {
@@ -1451,7 +1509,7 @@ function getRandomInt(min, max)
 		<div class="rpw col-sm-3">
 
 		<div class="boxHeader"><span class="word1">Recent </span><span class="word2">Updates</span></div>
-		<div id='recentActivities' class="panel panel-primary addG-panelhalfheight"></div>
+		<div id='recentActivities' class="panel panel-primary addG-panelRecentActivities"></div>
 			
 		<div class="boxHeader"><span class="word1">Navigate </span><span class="word2">Events</span></div>
 		<div style='height:250px;'>

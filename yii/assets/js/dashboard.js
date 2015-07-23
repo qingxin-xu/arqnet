@@ -18,19 +18,32 @@ function dateInRange(from_date) {
 	}
 	return false;
 }
+
+function getDateIndex(from_date) {
+	if (!from_date) return -1;
+	for (var i = 0;i<__avg.length;i++) {
+		if (__avg[i]['date'] == from_date) return i;
+	}
+	return -1;	
+}
 /**
  * Pull in more data for the tracker/dashboard
  */
-function extendDateRange(from_date,callback) {
+function extendDateRange(from_date,duration,callback) {
+	console.log('extend date range',from_date,duration);
 	if (!from_date) return;
 	if (dateInRange(from_date)) return;
 	$('#myThinker').dialog('open');
+	var requestObj = {
+		from_date:from_date
+	};
+	if (duration) requestObj['duration'] = duration;
 	var service = '/getDashboardData';
 	$.ajax({
 		url:service,
 		type:'GET',
 		dataType:'json',
-		data:{from_date:from_date},
+		data:requestObj,
 	
 		success:function(d) {
 			if (d.success && d.success>0)

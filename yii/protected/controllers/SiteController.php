@@ -422,8 +422,9 @@ class SiteController extends Controller
     	header('Content-type: application/json');
     	$user_id = Yii::app()->user->id;
     	$from_date = Yii::app()->getRequest()->getQuery('from_date');
-    	MyStuff::Log("FROM DATE ".$from_date);
-    	$dashboardData = $this->_getDashboardData(90,$from_date);
+   		$duration = Yii::app()->getRequest()->getQuery('duration');
+   		if (!$duration) $duration = 90;
+    	$dashboardData = $this->_getDashboardData($duration,$from_date);
     	MyStuff::Log("DDData");MyStuff::Log($dashboardData);
     	echo CJSON::encode(array(
     			'success' => 1,
