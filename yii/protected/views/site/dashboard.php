@@ -237,6 +237,7 @@ function initializeMainSlider(initVal)
 	
 	setTimeout(function() {
 		if (values.length>1) $('#slider1').slider('values',0,initVal?values[initVal]:values[values.length-2]);
+		$('#slider1 .ui-slider-handle').focus();
 	},1);
 }
 
@@ -1160,6 +1161,7 @@ jQuery(document).ready(function($)
 				$('.TrackerSwitchLabel').html('View Spider Graph');
 				slideTrackerLeft();
 			}
+			$('#slider1 .ui-slider-handle').focus();
 		});
 		//Listen for slider changes to redraw tabs
 		$('#slider1').on('slidechange',function(event,ui) {
@@ -1199,7 +1201,7 @@ jQuery(document).ready(function($)
 				} else if (el.attr('href').match(/trackers/)) {
 					
 				}
-				
+				$('#slider1 .ui-slider-handle').focus();
 				
 			
 			},100);
