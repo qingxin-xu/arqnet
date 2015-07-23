@@ -69,6 +69,8 @@ var topics_donut_chart,
 	// The slider values, including the
 	allSliderValues = [],
 	slideDate = null,
+	currentStart = 60,//We pull in the last 90 days, and show the last 30 of those on the slider
+	currentEnd = currentStart+defaultRange,
 	//What time it is at the server
 	server_time = new Date(<?php echo "'".date('Y-m-d')." ";; if ($current_time) echo $current_time;else echo date('h:i a'); echo "'";?>);
 
@@ -87,7 +89,7 @@ function testTracker() {
 /**
  * Set the slider range, values, redraw tabs
  */
-function initializeMainSlider(range,dateRangeAverages)
+function initializeMainSlider(range)
 {
 	//if (!dateRangeAverages && (!__avg || __avg.length<=0)) return;
 	if (!range && !defaultRange) return;
@@ -103,19 +105,17 @@ function initializeMainSlider(range,dateRangeAverages)
 		slidingRight = null,
 		slidingLeft = null,
 		startIndex=-999,
+		displayValues,
 		nData = responseCount;//_dates.length;//myResponses.length;
 
 	// This array is a clone of the values fed to the slider
 	// We will use it to navigate the slider programmatically
 	allSliderValues = [];
-	//if (!$.inArray(ranges,myRange)) return;
 	
-	if (dateRangeAverages) __avg = dateRangeAverages;
-
 	//Take last 30 entries - by date - to use for initial slider values
 	_avg = [];
 	var index = 0;
-	for (var i = 60;i<__avg.length;i++) {
+	for (var i = currentStart;i<currentEnd;i++) {
 		_avg[index] = __avg[i];
 		index++;
 	}
@@ -166,7 +166,7 @@ function initializeMainSlider(range,dateRangeAverages)
 					break;
 				}
 			}
-
+			
 			/*
 				The slider timer tells us whether or not we are already animating the changing of the data range
 			*/
@@ -176,9 +176,16 @@ function initializeMainSlider(range,dateRangeAverages)
 					slideTimer = setInterval(function() {
 						slidingLeft = true;
 						var prevDayStr = getPrevDayStr();
-						Tracker.updateLeft(trackerSelection,trackerData,[{date:prevDayStr}]);
-						slideDate = prevDayStr;
-						$('#slider1 .ui-label').html(slideDate);
+						
+						if (dateInRange(prevDayStr)) {
+							slidePlot('Left',prevDayStr);
+						} else {
+							extendDateRange(prevDayStr,function() {
+								slidePlot('Left',prevDayStr);
+								currentStart = 89;
+								currentEnd = currentStart+defaultRange;
+							});
+						}
 						
 					},300);
 				// Slide data to the right - i.e., add dates/data to the right end of the plot
@@ -187,9 +194,7 @@ function initializeMainSlider(range,dateRangeAverages)
 						slidingRight = true;
 						var nextDayStr = getNextDayStr();
 						if (nextDayStr) {
-							Tracker.updateRight(trackerSelection,trackerData,[{date:nextDayStr}]);
-							slideDate = nextDayStr;
-							$('#slider1 .ui-label').html(slideDate);
+							slidePlot('Right',nextDayStr);
 						}
 					},300);
 				}
@@ -212,11 +217,11 @@ function initializeMainSlider(range,dateRangeAverages)
 					else $('#slider1').slider('values',0,allSliderValues[1]);
 				}
 			}
+			currentDate = slideDate;
 			slideTimer = null;
 			slideDate = null;
 			slidingRight = null;
 			slidingLeft = null;
-			var index = $.inArray(ui.value,allSliderValues);
 		}
 	});
 
@@ -236,6 +241,13 @@ function initializeMainSlider(range,dateRangeAverages)
 	},1);
 }
 
+function slidePlot(direction,dateStr) {
+	if (!direction || !Tracker['update'+direction]||!dateStr) return;
+	Tracker['update'+direction](trackerSelection,trackerData,[{date:dateStr}]);
+	slideDate = dateStr;
+	$('#slider1 .ui-label').html(slideDate);
+
+}
 /*
  * Get the day previous to the one specified by the global slideDate - or today if slideDate is null
  */
@@ -707,6 +719,121 @@ function incrementRange()
 	changeDateRange();
 }
 
+function mergeDashboardData(responses) {
+	if (!responses) return;
+	for (var i = responses.length-1;i>=0;i--) {
+		__avg.unshift(responses[i]);
+	}	
+}
+
+function getTrackerOptions(_trackerData) {
+	var options = [];
+	$.each(Object.keys(_trackerData),function(index,value) {
+		for (var i in _trackerData[value]) {options.push(i)}
+	});
+	options.sort(function(a,b) {
+		if (a<b) return -1;
+		else if (a == b) return 0;
+		else return 1;
+	});
+	return options;
+}
+
+function getExistingTrackerOptions() {
+	var options = [];
+	$('.roundedOne input').each(function(index,item) {
+		options.push(item.name);
+	});
+	return options;
+}
+
+function createTrackerMenuOption(option) {
+	if (!option) return;
+	var menu = $('.TrackSubCategories');
+	if (!menu || menu.length<=0) return;
+	menu.append("<div class='roundedOne'><input type='checkbox' name='"+option+"'  /><label>"+option+"</label></div>");
+	menu.find('input').each(function(index,item) {
+		if (item.name == option) {
+			var index = 0;
+			$(this).change(function() {
+				if ($(this)[0].checked) {
+					for (var i in trackerData) {
+						for (var j in trackerData[i]) {
+							if (j == $(this)[0].name) {
+								trackerSelection[i][j] = 1;
+								break;
+							}
+						}
+					}
+				}
+				else {
+					for (var i in trackerData) {
+						for (var j in trackerData[i]) {
+							if (j == $(this)[0].name) {
+								delete trackerSelection[i][j];
+								break;
+							}
+						}
+					}
+				}
+				var nChecked = 0;
+				for (var i in trackerSelection) {
+					for (var j in trackerSelection[i])
+					{
+						trackerSelection[i][j] = Tracker.plotColors[nChecked];
+						nChecked++;
+					}
+				}
+				if (nChecked >=Tracker.maxPlots)
+				{
+					menu.find('input:unchecked').attr('disabled',true);
+				} else {
+					menu.find('input:unchecked').attr('disabled',false);
+				}
+				//Tracker._draw(trackerSelection);
+				initializeMainSlider(currentRangeValue);
+			});
+		}
+	});
+}
+
+function mergeTrackerOptions(newTrackerData) 
+{
+	if (!newTrackerData) return;
+	var menu = $('.TrackSubCategories');
+	if (!menu || menu.length<=0) return;
+	var options = getTrackerOptions(newTrackerData);
+	var existingOptions = getExistingTrackerOptions();
+	if (options.length>0) {
+		var toAdd = true;
+		for (var i = 0;i<options.length;i++) {
+			toAdd = true;
+			for (var j = 0;j<existingOptions.length;j++) {
+				if (options[i] == existingOptions[j]) {
+					toAdd = false;
+					break;
+				}
+			}
+			if (toAdd) {
+				createTrackerMenuOption(options[i]);
+			}
+		}
+	}
+
+	for (var type in newTrackerData) {
+		if (!arqIsArray(newTrackerData[type])) {
+			for (var subtype in newTrackerData[type]) {
+				if (!trackerData[type][subtype]) {
+					trackerData[type][subtype] = {};
+				} 
+				for (var d in newTrackerData[type][subtype]) {
+					trackerData[type][subtype][d] = newTrackerData[type][subtype][d];
+				}
+			}
+		}
+	}
+}
+
 function setTrackerOptions()
 {
 	if (!trackerData) return;
@@ -714,67 +841,17 @@ function setTrackerOptions()
 	menu.html("");
 
 	if (!menu || menu.length<=0) return;
-	
-	var options = [];
-	$.each(Object.keys(trackerData),function(index,value) {
-		for (var i in trackerData[value]) {options.push(i)}
-	});
-	options.sort(function(a,b) {
-		if (a<b) return -1;
-		else if (a == b) return 0;
-		else return 1;
-	});
-	
+	var options = getTrackerOptions(trackerData);
+
 	for (var i = 0;i<options.length;i++)
 	{
-		menu.append("<div class='roundedOne'><input type='checkbox' name='"+options[i]+"'  /><label>"+options[i]+"</label></div>");
+		createTrackerMenuOption(options[i]);
 	}
 
 	for (var i  in trackerData) {
 		trackerSelection[i] = {}
 		//for (var j in trackerData[i]) selection[i].push(j);
 	}
-	menu.find('input').each(function(index,item) {
-		var index = 0;
-		$(this).change(function() {
-			if ($(this)[0].checked) {
-				for (var i in trackerData) {
-					for (var j in trackerData[i]) {
-						if (j == $(this)[0].name) {
-							trackerSelection[i][j] = 1;
-							break;
-						}
-					}
-				}
-			}
-			else {
-				for (var i in trackerData) {
-					for (var j in trackerData[i]) {
-						if (j == $(this)[0].name) {
-							delete trackerSelection[i][j];
-							break;
-						}
-					}
-				}
-			}
-			var nChecked = 0;
-			for (var i in trackerSelection) {
-				for (var j in trackerSelection[i])
-				{
-					trackerSelection[i][j] = Tracker.plotColors[nChecked];
-					nChecked++;
-				}
-			}
-			if (nChecked >=Tracker.maxPlots)
-			{
-				menu.find('input:unchecked').attr('disabled',true);
-			} else {
-				menu.find('input:unchecked').attr('disabled',false);
-			}
-			//Tracker._draw(trackerSelection);
-			initializeMainSlider(currentRangeValue);
-		});
-	});
 }
 
 function slideTrackerRight() {
@@ -1372,14 +1449,14 @@ function getRandomInt(min, max)
 
 		</div>	
 		<div class="rpw col-sm-3">
+
+		<div class="boxHeader"><span class="word1">Recent </span><span class="word2">Updates</span></div>
+		<div id='recentActivities' class="panel panel-primary addG-panelhalfheight"></div>
 			
 		<div class="boxHeader"><span class="word1">Navigate </span><span class="word2">Events</span></div>
 		<div style='height:250px;'>
 		<div class='calendar input-group' style='width:100%;'><input style='width:100%;' type='text' id='mydate' class="form-control datepicker" /></div>
-		</div>
-		<div class="boxHeader"><span class="word1">Recent </span><span class="word2">Updates</span></div>
-		<div id='recentActivities' class="panel panel-primary addG-panelhalfheight"></div>
-		
+		</div>		
 	</div>
 	</div>
 

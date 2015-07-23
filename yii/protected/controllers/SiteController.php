@@ -333,7 +333,7 @@ class SiteController extends Controller
         //$dashboardData = array('eventData'=>array(),'trackerData'=>array());//$this->getDashboardData(array('minDate'=>$this->getEarliestNoteDate())/*30, null, $today*/, $user_id);
         //$dashboardData = $this->getDashboardData(30, null, $today, $user_id);
         // Get all tracker and AE data for the past 90 days
-        $dashboardData = $this->_getDashboardData(90,$user_id);
+        $dashboardData = $this->_getDashboardData(90);
         $event_units = EventUnit::model()->findall();
         $units = array();
         foreach ($event_units as $eu) {
@@ -415,6 +415,25 @@ class SiteController extends Controller
         Yii::app()->end();
     }
 
+    public function actionGetDashboardData() {
+    	if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+    		throw new CHttpException('403', 'Forbidden access.');
+    	}
+    	header('Content-type: application/json');
+    	$user_id = Yii::app()->user->id;
+    	$from_date = Yii::app()->getRequest()->getQuery('from_date');
+    	MyStuff::Log("FROM DATE ".$from_date);
+    	$dashboardData = $this->_getDashboardData(90,$from_date);
+    	MyStuff::Log("DDData");MyStuff::Log($dashboardData);
+    	echo CJSON::encode(array(
+    			'success' => 1,
+    			'responses' => $dashboardData{'eventData'},
+    			'trackerData' => $dashboardData{'trackerData'},
+    	));
+    	Yii::app()->end();
+    }
+    
+    
     public function actionProfile()
     {
         $this->layout = 'arqLayout2';
@@ -4215,12 +4234,14 @@ where user_id = $user_id
         return $formattedDate;
     }
 
-    private function _getDashboardData($duration=90,$user_id) {
-    	if (!$user_id) return array();
-    	$to_date = date('Y-m-d');
+    private function _getDashboardData($duration=90,$to_dateStr='Y-m-d') {
+    	$user_id = Yii::app()->user->id;
+    	//if (!$user_id) return array();
+    	
+    	$to_date = date($to_dateStr);//date($to_dateStr);
         $day = 24 * 3600;
         $from_date = date('Y-m-d', strtotime($to_date) - $duration * $day);
-        $_dates = $this->getLastXDays($duration);
+        $_dates = $this->getLastXDays($duration,"'".$to_date."'");
         
         $responses = $this->_getDashboardResponses($duration, $to_date,$_dates,$user_id);
         
@@ -4407,17 +4428,19 @@ where user_id = $user_id
     /*
      * a la http://stackoverflow.com/questions/2157282/generate-days-from-date-range?answertab=votes#tab-top
      */
-    private function getLastXDays($duration) {
-    	if (!$duration) $duration = 5;
+    private function getLastXDays($duration=5,$atDateStr="curdate()") {
+    	//if (!$duration) $duration = 5;
+    	
     	$myQuery = "select a.Date
-		from (select curdate() - INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY as Date
+		from (select $atDateStr - INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY as Date
     	from (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as a
     	cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as b
     	cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
 		) a
-		where a.Date between date_sub(curdate(),interval :duration day) and date(curdate())
+		where a.Date between date_sub($atDateStr,interval :duration day) and date($atDateStr)
 		order by a.Date ASC";
     	$myDates = Yii::app()->db->createCommand($myQuery)->bindVAlues(array(':duration'=>$duration-1))->queryAll();
+    	
     	return $myDates;
     }
     

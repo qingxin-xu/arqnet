@@ -12,6 +12,45 @@ function getCurrentDate()
 	return now;
 }
 
+function dateInRange(from_date) {
+	for (var i = 0;i<__avg.length;i++) {
+		if (__avg[i]['date'] == from_date) return true;
+	}
+	return false;
+}
+/**
+ * Pull in more data for the tracker/dashboard
+ */
+function extendDateRange(from_date,callback) {
+	if (!from_date) return;
+	if (dateInRange(from_date)) return;
+	$('#myThinker').dialog('open');
+	var service = '/getDashboardData';
+	$.ajax({
+		url:service,
+		type:'GET',
+		dataType:'json',
+		data:{from_date:from_date},
+	
+		success:function(d) {
+			if (d.success && d.success>0)
+			{						
+				$('#myThinker').dialog('close');
+				mergeTrackerOptions(d['trackerData']);
+				mergeDashboardData(d['responses']);
+				if (callback) callback();
+			}
+		},
+		
+		error:function(err)
+		{
+			console.log('error',err);
+			updateMsg($('.validateTips'),'Error changing date range');
+			setTimeout(function() {$('#myThinker').dialog('close');},2000);
+		}
+	});			
+}
+
 function changeDateRange()
 {
 	var service = '/changeDateRange';
