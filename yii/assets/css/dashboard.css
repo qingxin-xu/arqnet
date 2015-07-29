@@ -348,3 +348,35 @@ input[type="checkbox"] {
 .event_odd {
 	background-color:#282828;
 }
+
+#topwords-tab,#toppeople-tab {
+	margin:0 0 0 15px;
+	height: 300px;
+	width:100%;
+}
+.topwords-today-label,.toppeople-today-label,
+.topwords-avg-label,.toppeople-avg-label,
+.no-activity {
+	color:#ffffff;
+	font-size:18px;
+	width:50%;
+	margin:auto;
+}
+
+.no-activity {
+	margin:25px auto 0 auto;
+}
+
+.topwords-today,.toppeople-today,
+.topwords-avg,.toppeople-avg {
+	width:50%;
+	height:100%;
+}
+
+.topwords-today,.toppeople-today {
+	float:left;
+}
+
+.topwords-avg,.toppeople-avg {
+	float:right;
+}

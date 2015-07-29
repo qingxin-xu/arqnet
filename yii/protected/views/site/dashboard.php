@@ -66,6 +66,8 @@ var topics_donut_chart,
 	morris_donut_label_color='#ffffff',
 	moodSpiderGraph=null,
 	trackerSpiderGraph=null,
+	// bar colors for top words and top people tab
+	barColors = ['#2ca8fe','#e55ffc','#fcfcfc','#985ffc','#01d04c'],
 	// The slider values, including the
 	allSliderValues = [],
 	slideDate = null,
@@ -617,9 +619,48 @@ function setMoodDisplay(response)
 	//drawradar(moodValues,$('#tracker-mood-tab'));
 }
 
+function setTopXAvgView(selector,category) {
+	if (!selector || !category || !_avg) return;
+	
+	var bin = {},
+		arrayAvg = [];
+	
+	// Bin results
+	for (var i = 0;i<_avg.length;i++) {
+		var top = _avg[i][category];
+		if (!arqIsArray(top)) {
+			for (var w in top) {
+				if (!bin[w]) {
+					bin[w] = top[w];
+				} else {
+					bin[w] = bin[w]+top[w];
+				}
+			}
+		}
+	}	
+	
+	for (var w in bin) {
+		arrayAvg.push({word:w,count:bin[w]});
+	}
+	
+	//Sort
+	arrayAvg.sort(function(a,b) {
+		if (parseInt(a.count)<parseInt(b.count)) return 1;
+		else if (parseInt(a.count)>parseInt(b.count)) return -1;
+		else return 0;
+	});
+
+	$.each(arrayAvg,function(index,item) {
+		item.word = item.word.replace(/\+/,'');
+		item.barColor = barColors[index%barColors.length];
+	});
+	
+	if (arrayAvg && arrayAvg.length && arrayAvg.length>0) generateTopicBarGraph(arrayAvg,selector,10);
+	else setTopXNoActivity(selector);
+}
+
 function setTopWordsView(response)
 {
-	var barColors = ['#9a61fc','#2ea4fc'];
 	if (!response) return;
 	if ( !('top_words' in response) ) return;
 	response = response['top_words'];
@@ -629,13 +670,6 @@ function setTopWordsView(response)
 	for (var i in response)
 	{
 		topWords.push({count:response[i],word:i});
-		/*
-		if (i.match(/topWordsCnt/))
-		{
-			if (response['topWords'+i.split(/topWordsCnt/)[1]])
-				topWords.push({count:response[i],word:response['topWords'+i.split(/topWordsCnt/)[1]]});
-		}
-		*/
 	}
 	
 	topWords.sort(function(a,b) {
@@ -645,16 +679,15 @@ function setTopWordsView(response)
 	});
 
 	$.each(topWords,function(index,item) {
-		item.barColor = barColors[index%2];
+		item.barColor = barColors[index%barColors.length];
 	});
 	
-	if (topWords && topWords.length && topWords.length>0) generateTopicBarGraph(topWords,'topwords-tab',10);
-	else $('#topwords-tab').empty();
+	if (topWords && topWords.length && topWords.length>0) generateTopicBarGraph(topWords,'topwords-today',10);
+	else setTopXNoActivity('topwords-today')
 }
 
 function setTopPeopleView(response)
 {
-	var barColors = ['#2ca8fe','#e55ffc','#fcfcfc','#985ffc','#01d04c'];
 	if (!response) return;
 	if ( !('top_people' in response) ) return;
 	
@@ -675,11 +708,17 @@ function setTopPeopleView(response)
 	/* Remove prepended '+' */
 	$.each(topPeople,function(index,item) {
 		item.word = item.word.replace(/\+/,'');
-		item.barColor = barColors[index];
+		item.barColor = barColors[index%barColors.length];
 	});
-	if (topPeople && topPeople.length && topPeople.length>0) generateTopicBarGraph(topPeople,'toppeople-tab');
-	else $('#toppeople-tab').empty();
+	if (topPeople && topPeople.length && topPeople.length>0) generateTopicBarGraph(topPeople,'toppeople-today');
+	else setTopXNoActivity('toppeople-today');
 		
+}
+
+function setTopXNoActivity(selector) {
+	if (!selector) return;
+	$('#'+selector).empty();
+	$("<div class='no-activity'>No Activity</div>").appendTo($('#'+selector));
 }
 
 function viewCustomRangeSelect() {
@@ -1000,6 +1039,8 @@ function onMainSliderChange(ui)
 	drawDonutChart(topics_donut_chart,response);
 	setTopWordsView(response);
 	setTopPeopleView(response);
+	setTopXAvgView('topwords-avg','top_words');
+	setTopXAvgView('toppeople-avg','top_people');
 	Tracker.drawOverlayLine(ui);
 	Tracker.showTooltips(ui);
 	if (showTracker) {
@@ -1192,12 +1233,12 @@ jQuery(document).ready(function($)
 					trackerSpiderGraph.drawradar(moodValues/*,$('#tracker-mood-tab')*/);
 				} else if (el.attr('href').match(/topwords/))
 				{
-					//if (responses && responses[value]) setTopWordsView(responses[value]);
 					if (_avg && _avg[value]) setTopWordsView(_avg[value]);
+					setTopXAvgView('topwords-avg','top_words');
 				} else if (el.attr('href').match(/toppeople/))
 				{
-					//if (responses && responses[value]) setTopPeopleView(responses[value]);
 					if (_avg && _avg[value]) setTopPeopleView(_avg[value]);
+					setTopXAvgView('toppeople-avg','top_people');
 				} else if (el.attr('href').match(/trackers/)) {
 					
 				}
@@ -1463,14 +1504,28 @@ function getRandomInt(min, max)
 						</div>
 						
 						<div class="tab-pane " id="topwords">
-							<div id="topwords-tab"  style="margin:0 0 0 15px;height: 300px;width:700px;">
-
+							<div id="topwords-tab"  >
+								<div class="topwords-today">
+									<div class='topwords-today-label'>Today</div>
+									<div id='topwords-today' style="height:100%;width:100%;"></div>
+								</div>
+								<div class="topwords-avg">
+									<div class='topwords-avg-label'>Last 30 days</div>
+									<div id='topwords-avg' style="height:100%;width:100%;"></div>
+								</div>
 							</div>
 						</div>
 						
 						<div class="tab-pane" id="toppeople">
-							<div id="toppeople-tab" class="" style="margin:0 0 0 15px;height: 300px;width:700px;">
-
+							<div id="toppeople-tab" class="" >
+								<div class="toppeople-today">
+									<div class='toppeople-today-label'>Today</div>
+									<div id='toppeople-today' style="height:100%;width:100%;"></div>
+								</div>
+								<div class="toppeople-avg">
+									<div class='toppeople-avg-label'>Last 30 days</div>
+									<div id='toppeople-avg' style="height:100%;width:100%;"></div>
+								</div>
 							</div>
 						</div>
 					</div>
