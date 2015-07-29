@@ -21,7 +21,15 @@ var Tracker = {
 			$("#Tooltip").html("Y = " + y)
 				.css({top: pointOffset.top, left: pointOffset.left+40})
 				.fadeIn(200);
-			},
+		},
+		
+		removeTooltips:function() {
+			if (!this.trackerPlot) return;
+			this.trackerPlot.unhighlight();
+			$.each(this.trackerPlot.getData(),function(index,item) {
+				$("#Tooltip"+index).hide();
+			});
+		},
 		
 		showTooltips:function(ui) {
 			if (!this.trackerPlot) return;
@@ -64,6 +72,11 @@ var Tracker = {
 				.fadeIn(200);
 				self.trackerPlot.highlight(index,sliderValue);
 			});
+		},
+		
+		removeOverlayLine:function() {
+			if (!this.trackerPlot) return;
+			this.trackerPlot.draw();
 		},
 		
 		drawOverlayLine:function(ui)

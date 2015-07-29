@@ -158,6 +158,8 @@ function initializeMainSlider(initVal)
 	
 	$('#slider1').slider({
 		slide: function( event, ui ) {
+			Tracker.removeTooltips();
+			Tracker.removeOverlayLine();
 			$('#slider1 .ui-label').html('');
 			// Get the index of where we are sliding; it will help determine if we need to change the range of data
 			var index = -5;
