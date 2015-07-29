@@ -175,7 +175,7 @@ var Tracker = {
 					originalValues.push(_trackerData['non_cappable_events'][i][_date]);
 				}
 				/* Add on original data so we can normalize the new value */
-				for (var i = 0;i<this.plotData[0].originalData.length;i++) values.push(this.plotData[0].originalData[i]);
+				for (var i = 0;i<this.plotData[plotIndex].originalData.length;i++) values.push(this.plotData[plotIndex].originalData[i]);
 				values = this.normalizeValues(values, eventUnits||null, index*range,range);
 				values = [values.shift()];
 				
