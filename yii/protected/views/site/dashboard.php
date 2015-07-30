@@ -71,6 +71,10 @@ var topics_donut_chart,
 	// The slider values, including the
 	allSliderValues = [],
 	slideDate = null,
+	slideTimer = null,
+	slidingRight = null,
+	slidingLeft = null,
+	startIndex=-999,
 	currentStart = 60,//We pull in the last 90 days, and show the last 30 of those on the slider
 	currentEnd = currentStart+defaultRange,
 	//What time it is at the server
@@ -96,19 +100,6 @@ function initializeMainSlider(initVal)
 	//if (!dateRangeAverages && (!__avg || __avg.length<=0)) return;
 	if (!defaultRange) return;
 
-	_avg = {};
-	var minValue = 0,
-		increments,
-		sliderValues=[],
-		maxValue,
-		maxStep,
-		slideTimer = null,
-		slidingRight = null,
-		slidingLeft = null,
-		startIndex=-999,
-		displayValues,
-		nData = responseCount;//_dates.length;//myResponses.length;
-
 	// This array is a clone of the values fed to the slider
 	// We will use it to navigate the slider programmatically
 	allSliderValues = [];
@@ -124,14 +115,13 @@ function initializeMainSlider(initVal)
 	// Draw plot - if necessary
 	Tracker._draw(trackerSelection);
 	
-	var values = Tracker.generateSliderValues(/*nData>=myRange?myRange:nData*/defaultRange,$('#trackerChart').width());
+	var values = Tracker.generateSliderValues(defaultRange,$('#trackerChart').width());
 
 	/*
 		Set up slider
 		We get the padding first
 		Then we add on a value to the beginning and end to allow the slider to change the date range
 	*/
-	maxStep = increments;
 	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width() - trackerOffset-values[1],
 		paddingMin = trackerOffset+42+Tracker.trackerPlot.getPlotOffset().left-8 - values[1];
 
@@ -145,10 +135,14 @@ function initializeMainSlider(initVal)
 	
 	for (var i = 0;i<values.length;i++) allSliderValues.push(values[i]);
 
+	var rightArrowPosition = $('.sliderContainer').width() - paddingMax - paddingMin;
+	$('.rightArrow').css('left',rightArrowPosition+'px');
+	$('.rightArrow').css('opacity',0.5);
+	console.log('paddingMin and max',paddingMin,paddingMax);	
 	// Set some options for the slider
 	$('#slider1').slider('option',{
 		paddingMin:paddingMin,
-		paddingMax:paddingMax,//$('#trackers-tab').width()-$('#trackerChart').width()+20,
+		paddingMax:paddingMax,
 		step:values.length>1?values[1]-values[0]:0,
 		animate:'fast',
 		min:values.length>1?values[0]:0,
@@ -158,73 +152,13 @@ function initializeMainSlider(initVal)
 	
 	$('#slider1').slider({
 		slide: function( event, ui ) {
-			Tracker.removeTooltips();
-			Tracker.removeOverlayLine();
-			$('#slider1 .ui-label').html('');
-			// Get the index of where we are sliding; it will help determine if we need to change the range of data
-			var index = -5;
-			for (var i = 0;i<allSliderValues.length;i++) {
-				if (Math.abs(ui.value - allSliderValues[i])<=5) {
-					index = i;
-					break;
-				}
-			}
-			
-			/*
-				The slider timer tells us whether or not we are already animating the changing of the data range
-			*/
-			if (!slideTimer) {
-				// Slide data to the left - i.e., add dates/data to the left end of the plot
-				if (startIndex != 0 && index == 0) {
-					slideTimer = setInterval(function() {
-						slidingLeft = true;
-						var prevDayStr = getPrevDayStr();
-						
-						if (dateInRange(prevDayStr)) {
-							slidePlot('Left',prevDayStr);
-						} else {
-							extendDateRange(prevDayStr,null,function() {
-								slidePlot('Left',prevDayStr);
-								currentStart = 89;
-								currentEnd = currentStart+defaultRange;
-							});
-						}
-						
-					},300);
-				// Slide data to the right - i.e., add dates/data to the right end of the plot
-				} else if (startIndex != (defaultRange+1) && index == (defaultRange+1)) {
-					slideTimer = setInterval(function() {
-						slidingRight = true;
-						var nextDayStr = getNextDayStr();
-						if (nextDayStr) {
-							slidePlot('Right',nextDayStr);
-						}
-					},300);
-				}
-			} else {
-
-			}
+			onSliderSliding(event,ui);
 		},
 		start:function(event,ui) {
-			if (slideTimer) clearInterval(slideTimer);
-			startIndex = $.inArray(ui.value,allSliderValues);
+			onSliderStartSliding(event,ui);
 		},
 		stop:function(event,ui) {
-			if (slideTimer) {
-				clearInterval(slideTimer);
-				if (slideDate) {
-					if (slidingLeft) resetSliderValues(slideDate);
-					else resetRightSliderValues(slideDate);
-				} else {
-					if (!slidingLeft) $('#slider1').slider('values',0,allSliderValues[allSliderValues.length-2]);
-					else $('#slider1').slider('values',0,allSliderValues[1]);
-				}
-			}
-			currentDate = slideDate;
-			slideTimer = null;
-			slideDate = null;
-			slidingRight = null;
-			slidingLeft = null;
+			onSliderStopSliding(event,ui);
 		}
 	});
 
@@ -243,6 +177,83 @@ function initializeMainSlider(initVal)
 		if (values.length>1) $('#slider1').slider('values',0,initVal?values[initVal]:values[values.length-2]);
 		$('#slider1 .ui-slider-handle').focus();
 	},1);
+}
+
+function onSliderSliding(event,ui) {
+	Tracker.removeTooltips();
+	Tracker.removeOverlayLine();
+	$('#slider1 .ui-label').html('');
+	// Get the index of where we are sliding; it will help determine if we need to change the range of data
+	var index = -5;
+	for (var i = 0;i<allSliderValues.length;i++) {
+		if (Math.abs(ui.value - allSliderValues[i])<=5) {
+			index = i;
+			break;
+		}
+	}
+	
+	/*
+		The slider timer tells us whether or not we are already animating the changing of the data range
+	*/
+	if (!slideTimer) {
+		// Slide data to the left - i.e., add dates/data to the left end of the plot
+		if (startIndex != 0 && index == 0) {
+			$('.leftArrow').css('opacity',1.0);
+			$('#slider1 .ui-slider-handle').css('opacity',0.5);
+			slideTimer = setInterval(function() {
+				slidingLeft = true;
+				var prevDayStr = getPrevDayStr();
+				
+				if (dateInRange(prevDayStr)) {
+					slidePlot('Left',prevDayStr);
+				} else {
+					extendDateRange(prevDayStr,null,function() {
+						slidePlot('Left',prevDayStr);
+						currentStart = 89;
+						currentEnd = currentStart+defaultRange;
+					});
+				}
+				
+			},300);
+		// Slide data to the right - i.e., add dates/data to the right end of the plot
+		} else if (startIndex != (defaultRange+1) && index == (defaultRange+1)) {
+			$('.rightArrow').css('opacity',1.0);
+			$('#slider1 .ui-slider-handle').css('opacity',0.5);
+			slideTimer = setInterval(function() {
+				slidingRight = true;
+				var nextDayStr = getNextDayStr();
+				if (nextDayStr) {
+					slidePlot('Right',nextDayStr);
+				}
+			},300);
+		}
+	} 	
+}
+
+function onSliderStartSliding(event,ui) {
+	if (slideTimer) clearInterval(slideTimer);
+	startIndex = $.inArray(ui.value,allSliderValues);
+}
+
+function onSliderStopSliding(event,ui) {
+	$('.leftArrow').css('opacity',0.5);
+	$('.rightArrow').css('opacity',0.5);
+	$('#slider1 .ui-slider-handle').css('opacity',1.0);
+	if (slideTimer) {
+		clearInterval(slideTimer);
+		if (slideDate) {
+			if (slidingLeft) resetSliderValues(slideDate);
+			else resetRightSliderValues(slideDate);
+		} else {
+			if (!slidingLeft) $('#slider1').slider('values',0,allSliderValues[allSliderValues.length-2]);
+			else $('#slider1').slider('values',0,allSliderValues[1]);
+		}
+	}
+	currentDate = slideDate;
+	slideTimer = null;
+	slideDate = null;
+	slidingRight = null;
+	slidingLeft = null;	
 }
 
 function slidePlot(direction,dateStr) {
@@ -516,12 +527,7 @@ function setDateDisplay(response)
 	if (!response.date) return;
 	var str = response.date;
 	if (response.time) str = str + ' ' + response.time;
-	/*
-	if ($('.addG-date') && $('.addG-date').length>0) 
-	{
-		$('.addG-date').html(str);
-	}
-	*/
+
 	$('#slider1 .ui-label').html(str);
 	$('#slider1 .ui-slider-handle').attr('href','/calendar');
 	
@@ -585,6 +591,7 @@ function drawCircle() {
 		ctx.stroke();
 	}
 }
+
 function setMoodDisplay(response)
 {
 
@@ -598,27 +605,19 @@ function setMoodDisplay(response)
 		var bar = $('.'+moods[i]+' .progress-bar');
 		moodValue = response[moods[i]]||0;
 		
-		if (bar  /*&& response[moods[i]] != null*/)
+		if (bar )
 		{
 			bar.css('width',moodValue*100+'%');
 			moodValues[moods[i]] = moodValue;
 		}
-		/*
-		bar = $('.'+moods[i]+' .addG-midspan');
-		if (bar )
-		{
-			bar.html(parseFloat(moodValue).toFixed(2));
-			moodValues[moods[i]] = moodValue*10;
-		}
-		*/
+
 		bar = $('.'+moods[i]+' .moodValue');
 		if (bar) {
 			bar.html(parseFloat(moodValue).toFixed(2));
 		}
 	}
 	moodSpiderGraph.drawradar(moodValues);
-	trackerSpiderGraph.drawradar(moodValues/*,$('#tracker-mood-tab')*/);
-	//drawradar(moodValues,$('#tracker-mood-tab'));
+	trackerSpiderGraph.drawradar(moodValues);
 }
 
 function setTopXAvgView(selector,category) {
@@ -727,77 +726,13 @@ function viewCustomRangeSelect() {
 	$('#dateRangePicker')[0].reset();
 	$('.customRange').show();
 }
-function changeRange(v)
-{
-	if (!v) return;
-	if (v != currentRangeValue)
-	{
-		$('.range'+currentRangeValue).removeClass('active');
-		$('.range'+v).addClass('active');
-		currentRangeValue = v;
-		initializeMainSlider(v);
-		$('.customRange').hide();
-		/*
-		var startPicker = $('input[name=start_date]') || [],
-			endPicker = $('input[name=end_date]') || [],
-			form = $('#dateRangePicker') || [];
-		if (form.length>0 && startPicker.length>0 && endPicker.length>0) {
-			var myD = new Date(startPicker.val()),
-				day = 24*60*60*1000;
-				myD.setTime(myD.getTime()-currentRangeValue*day);
-				form[0].reset();
-				startPicker.val(myD.toDateString());
-		}
-		*/
-	}
-	
-}
+
 
 function searchRange()
 {
 	if (!currentRangeValue) return -1;
 	if (!ranges || !ranges.length || ranges.length<=0) return -1;
 	return $.inArray(currentRangeValue,ranges);
-}
-
-function decrementRange()
-{
-	var index = searchRange(),
-		day = 24*60*60*1000,
-		time = ' 00:00:00',
-		newEndDate = new Date(currentEndDate+time),
-		newStartDate = new Date(currentEndDate+time);
-
-	newEndDate.setTime(newEndDate.getTime() - currentRangeValue*day);
-	newStartDate.setTime(newStartDate.getTime() - 2*currentRangeValue*day);
-	$('input[name=start_date]').datepicker('setValue',newStartDate);
-	$('input[name=end_date]').datepicker('setValue',newEndDate);
-	changeDateRange();
-
-}
-
-function incrementRange()
-{
-	var index = searchRange(),
-	day = 24*60*60*1000,
-	time = ' 00:00:00',
-	now = getCurrentDate(),
-	newEndDate = new Date(currentEndDate+time),
-	newStartDate = new Date(currentEndDate+time);
-
-	newEndDate.setTime(newEndDate.getTime() + currentRangeValue*day);
-	newStartDate.setTime(newEndDate.getTime() - currentRangeValue*day);
-	
-	if (newEndDate.getTime() >= now.getTime()) {
-		/*
-		updateMsg($('.validateTips'),'You are at the end of permissible date ranges');
-		$('#myThinker').dialog('open');
-		*/
-		return;
-	}
-	$('input[name=start_date]').datepicker('setValue',newStartDate);
-	$('input[name=end_date]').datepicker('setValue',newEndDate);
-	changeDateRange();
 }
 
 function mergeDashboardData(responses) {
@@ -936,25 +871,25 @@ function setTrackerOptions()
 }
 
 function slideTrackerRight() {
+
 	moodW = 0.33*$('.tab-pane.active').width();
 	var left = -$('#trackerChart').css('left');
-	//$('#trackerChart').css('left',0+'px');
 	
 	$('#trackerChart').animate({left:0});
-	//$('#trackerMoodtabLeft').css('left',0+'px');
+
 	$('#trackerMoodtabLeft').animate({
 		left:0,
 		opacity:1
 	});
-	//$('#trackerCategories').css('left',0+'px');
+	
 	$('#trackerCategories').animate({
 		left:0,
 		opacity:0
 	});
-	//Tracker._draw(trackerSelection);
-	//initializeMainSlider();
+	trackerOffset = moodW - 48.36;
+	initializeMainSlider(currentValue);
+	return;
 	var values = Tracker.generateSliderValues(responseCount>=currentRangeValue?currentRangeValue:responseCount);
-	
 
 	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width() - moodW;
 	//console.log('PADDING MAX',$('#trackers-tab').width(),$('#trackerChart').width(),paddingMax);
@@ -1251,60 +1186,7 @@ jQuery(document).ready(function($)
 			
 		});
 	}
-	/*
-	// Sample Toastr Notification
-	setTimeout(function()
-	{			
-		var opts = {
-			"closeButton": true,
-			"debug": false,
-			"positionClass": "toast-top-right",
-			"toastClass": "black",
-			"onclick": null,
-			"showDuration": "300",
-			"hideDuration": "1000",
-			"timeOut": "5000",
-			"extendedTimeOut": "1000",
-			"showEasing": "swing",
-			"hideEasing": "linear",
-			"showMethod": "fadeIn",
-			"hideMethod": "fadeOut"
-		};
 
-		toastr.success("You have been awarded with 1 year free subscription. Enjoy it!", "Account Subcription Updated", opts);
-	}, 3000);
-	
-	
-	// Sparkline Charts
-	$('.inlinebar').sparkline('html', {type: 'bar', barColor: '#ff6264'} );
-	$('.inlinebar-2').sparkline('html', {type: 'bar', barColor: '#445982'} );
-	$('.inlinebar-3').sparkline('html', {type: 'bar', barColor: '#00b19d'} );
-	$('.bar').sparkline([ [1,4], [2, 3], [3, 2], [4, 1] ], { type: 'bar' });
-	$('.pie').sparkline('html', {type: 'pie',borderWidth: 0, sliceColors: ['#3d4554', '#ee4749','#00b19d']});
-	$('.linechart').sparkline();
-	$('.pageviews').sparkline('html', {type: 'bar', height: '30px', barColor: '#ff6264'} );
-	$('.uniquevisitors').sparkline('html', {type: 'bar', height: '30px', barColor: '#00b19d'} );
-	
-	
-	$(".monthly-sales").sparkline([1,2,3,5,6,7,2,3,3,4,3,5,7,2,4,3,5,4,5,6,3,2], {
-		type: 'bar',
-		barColor: '#485671',
-		height: '80px',
-		barWidth: 10,
-		barSpacing: 2
-	});	
-	
-	
-	// JVector Maps
-	var map = $("#map");
-	
-	map.vectorMap({
-		map: 'europe_merc_en',
-		zoomMin: '3',
-		backgroundColor: '#383f47',
-		focusOn: { x: 0.5, y: 0.8, scale: 3 }
-	});		
-	*/
 	if (defaultRange>0) 
 	{
 		
@@ -1533,21 +1415,10 @@ function getRandomInt(min, max)
 					</div>
 					
 				</div>
-				<div style="margin-top: 27px;">
-<!--
-					<span class="addG-date">N/A</span>
-
-  
-				<div id='slider1' class="slider" data-basic="1" data-min="0" data-max="1000" data-value="0" data-step="100" values="[]" ></div>
--->
-				<div id='slider1' class="slider" ></div>
-					
-
-
-					<!-- <div class="slidewrapper">
-						<div class="slider ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all addG-bottomslider" data-basic="1" data-min="0" data-max="1800" data-value="800" data-step="10" aria-disabled="false" style="width:100%"><a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: 37.77777777777778%;"><span class="ui-label">670</span></a></div>
-					</div>
-				-->
+				<div class="sliderContainer" >
+					<div class='leftArrow'></div>
+					<div id='slider1' class="slider" ></div>
+					<div class='rightArrow'></div>
 				</div>
 			</div>
 
@@ -1564,63 +1435,7 @@ function getRandomInt(min, max)
 	</div>
 	</div>
 
-<div class="row">
-	<div class="col-sm-6">
 
-<form id='dateRangePicker'>
-
-		<div class="form-group">
-						<!-- <label class="col-sm-3 control-label">Date Range Inline</label> -->
-						<!--  
-						<ul class="pagination dashboard">
-							<li ><a href="javascript:decrementRange()"><i class="entypo-left-open-mini"></i></a></li>
-
-							<?php 
-								/*
-								foreach ($date_ranges as $index=>$cr)
-								{
-									echo '<li class="range'.$cr; 
-									if ($default_range==$cr) echo ' active"';
-									else echo '"';
-									echo '</li><a href="javascript:changeRange('.$cr.');">'.$range_labels[$index].'</a></li>'; 
-								}
-								*/
-							?>
-						
-							<li ><a href="javascript:incrementRange()"><i class="entypo-right-open-mini"></i></a></li>
-							<li><a href='javascript:viewCustomRangeSelect()'>Custom</a>
-						</ul>
-						-->
-			<div class='customRange' style='display:none;'>
-			<p>Select a range of up to 3 months</p>
-			<p>Date Start:</p>
-			<div class='input-group' style='width:200px;display:'>
-				<input name='start_date' type="text" class="form-control datepicker" value="<?php if ($default_range) {echo date('m/d/Y', strtotime(date('D, d M Y').' - '.$default_range.'  days')); } else echo date('D, d M Y');?>" >
-				<div class="input-group-addon">
-					<a href="#"><i class="entypo-calendar"></i></a>
-				</div>
-			</div>
-			<p>Date Start:</p>
-			<div class='input-group' style='width:200px;'>
-				<input name='end_date' type="text" class="form-control datepicker" value="<?php echo date('m/d/Y');?>" >
-				
-				<div class="input-group-addon">
-					<a href="#"><i class="entypo-calendar"></i></a>
-				</div>
-			</div>
-
-			<input type='submit' value='Go' />
-			</div>
-						
-					</div>
-</form>
-
-
-	</div>
-	<div class="col-sm-6">
-		<!--<span style="padding-right:20px;">View a Custom Range</span><button type="button" class="btn btn-white" style="margin: 17px 0;">Select a range of dates</button>-->
-	</div>
-</div>
 
 <div class="row">
 	<div class="col-sm-6">
@@ -1661,62 +1476,7 @@ function getRandomInt(min, max)
 		</div>
 
 	</div>
-<!--  
-	<div class="col-sm-6">
-		<div class="tile-block addG-tileblock" id="todo_tasks">
-			
-			<div class="addG-tile-header">
-				<span class="addG-justleft"><a href="my-journals.html">Recent Entries</a></span>
-				<button type="button" class="btn btn-primary" style="float:right;">+ add New</button>
-			</div>
-			
-			<div class="tile-content">
-				<ul class="entries-list">
-					<li>
-						<div class="">
-							<label>Dream Chaser</label>
-						</div>
-					</li>
-					
-					<li>
-						<div class="">
-							<label>Really long text...</label>
-						</div>
-					</li>
-					
-					<li>
-						<div class="">
-							<label>My best Friend</label>
-						</div>
-					</li>
-				</ul>
-				
-			</div>
-			
-		</div>
-	</div>
 
-	<div class="col-sm-6">
-		<div class="tile-block addG-tileblock" id="haveyouever">
-			
-			<div class="addG-tile-header">
-				<span class="addG-justleft"><a href="arq.html">ArQ</a></span>
-				<button type="button" class="btn btn-primary" style="float:right;">Next Question</button>
-
-				
-			</div>
-			
-			<div class="tile-content">
-				<textarea class="addG-textarea" name="haveyou">Have you ever had...?</textarea>
-				<div style="margin-left: 20%;">
-				   <input type="checkbox" name="" value="yup"><span class="addG-cbtext">Yup, sure have</span><input type="checkbox" name="" value="no"><span class="addG-cbtext">Umm, NO</span><input type="checkbox" name="" value="want"> <span class="addG-cbtext">No, but I want to</span>
-				</div>		
-			</div>
-			
-		</div>
-
-	</div>
--->
 </div>
 <!-- Footer -->
 <footer class="main">

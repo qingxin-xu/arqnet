@@ -380,3 +380,33 @@ input[type="checkbox"] {
 .topwords-avg,.toppeople-avg {
 	float:right;
 }
+
+.sliderContainer {
+	
+}
+
+#slider1.slider {
+	margin-bottom:0;
+}
+
+.leftArrow {
+	position:relative;
+	background:transparent url('/assets/images/dashboard/sliderLeftArrow32x25.png') 100% top no-repeat;
+	height:25px;
+	width:32px;
+	top:38px;
+	left:0;
+	z-index:1200;
+	opacity:0.5
+}
+
+.rightArrow {
+	position:relative;
+	background:transparent url('/assets/images/dashboard/sliderRightArrow32x25.png') 100% top no-repeat;
+	height:25px;
+	width:32px;
+	top:0px;
+	left:0;
+	z-index:1300;
+	opacity:0;	
+}
