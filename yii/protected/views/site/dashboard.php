@@ -55,7 +55,10 @@ var topics_donut_chart,
 	eventUnits = <?php echo json_encode($event_units); ?>,
 	//_dates = <?php /*echo json_encode($_dates);*/?>,
 	//trackerDates = <?php /*echo json_encode($trackerDates);*/?>,
+	/* The index of the slider value relative to the 30 days showing */
 	currentValue=0,
+	/* The date the slider is currently pointing to */
+	currentDate = null,
 	trackerOffset = 0,
 	initial_question = <?php echo json_encode($randomQuestion);?>,
 	ansThinkingMsg = 'Answering question'
@@ -408,6 +411,7 @@ function generateTopicBarGraph(sorted_set,placeAt,maxWords) {
 		$('#'+placeAt).empty();
 		return;
 	}
+	console.log(sorted_set,placeAt);
 	if (!maxWords) maxWords = 5;
 	var nWords = sorted_set.length>=maxWords?maxWords:sorted_set.length,
 		year = 2014,
@@ -417,12 +421,13 @@ function generateTopicBarGraph(sorted_set,placeAt,maxWords) {
 			xaxis:{
 				font:{size:16,family:'sans-serif',color:'#FFFFFF'},
 				min:sorted_set[nWords-1].count-1,
-				max:sorted_set[0].count+2,
+				//max:(sorted_set[0].count)*5+2,
                 axisLabel: 'Count',
                 axisLabelUseCanvas: true,
                 axisLabelFontSizePixels: 18,
                 axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
-                axisLabelPadding: 5				
+                axisLabelPadding: 5,
+                autoscaleMargin: 1.00		
 			},
 			yaxis:{
 				font:{size:16,family:'sans-serif',color:'#FFFFFF)'},
@@ -620,15 +625,15 @@ function setMoodDisplay(response)
 	trackerSpiderGraph.drawradar(moodValues);
 }
 
-function setTopXAvgView(selector,category) {
-	if (!selector || !category || !_avg) return;
-	
+function _setTopXAvgView(selector,category) {
 	var bin = {},
-		arrayAvg = [];
+	arrayAvg = [],
+	endIndex = getDateIndex(currentDate)+1,
+	startIndex = endIndex-defaultRange;
 	
 	// Bin results
-	for (var i = 0;i<_avg.length;i++) {
-		var top = _avg[i][category];
+	for (var i = startIndex;i<endIndex;i++) {
+		var top = __avg[i][category];
 		if (!arqIsArray(top)) {
 			for (var w in top) {
 				if (!bin[w]) {
@@ -650,14 +655,38 @@ function setTopXAvgView(selector,category) {
 		else if (parseInt(a.count)>parseInt(b.count)) return -1;
 		else return 0;
 	});
-
+	
 	$.each(arrayAvg,function(index,item) {
 		item.word = item.word.replace(/\+/,'');
 		item.barColor = barColors[index%barColors.length];
 	});
 	
 	if (arrayAvg && arrayAvg.length && arrayAvg.length>0) generateTopicBarGraph(arrayAvg,selector,10);
-	else setTopXNoActivity(selector);
+	else setTopXNoActivity(selector);	
+}
+
+function setTopXAvgView(selector1,category1,selector2,category2) {
+	if (!selector1 || !category1 || !_avg) return;
+	if (!currentDate) currentDate = _avg[currentValue]['date'];
+	var dateIndex = getDateIndex(currentDate);
+	if (dateIndex - defaultRange < 0) {
+		// Pull in more data to stretch back 30 days
+		extendDateRange(decrementDayStr(__avg[0]['date']),defaultRange,function() {
+			if (calendarMgr) {
+				var myDates = calendarMgr.createDatesFromDashboardEvents(__avg,trackerData);
+				calendarMgr.setDates(myDates);
+			}
+			_setTopXAvgView(selector1,category1);
+			if (selector2 && category2) _setTopXAvgView(selector2,category2);
+		});
+	} else {
+		_setTopXAvgView(selector1,category1);
+		if (selector2 && category2) _setTopXAvgView(selector2,category2);
+	}
+}
+
+function setTopXAvgViews() {
+	setTopXAvgView('topwords-avg','top_words','toppeople-avg','top_people');
 }
 
 function setTopWordsView(response)
@@ -684,7 +713,8 @@ function setTopWordsView(response)
 	});
 	
 	if (topWords && topWords.length && topWords.length>0) generateTopicBarGraph(topWords,'topwords-today',10);
-	else setTopXNoActivity('topwords-today')
+	else setTopXNoActivity('topwords-today');
+	$('.topwords-today-label').html(formatTopXDisplayDate());
 }
 
 function setTopPeopleView(response)
@@ -713,9 +743,14 @@ function setTopPeopleView(response)
 	});
 	if (topPeople && topPeople.length && topPeople.length>0) generateTopicBarGraph(topPeople,'toppeople-today');
 	else setTopXNoActivity('toppeople-today');
+	$('.toppeople-today-label').html(formatTopXDisplayDate());
 		
 }
 
+function formatTopXDisplayDate() {
+	var myD = new Date(_avg[currentValue]['date']+"T23:59:59");
+	return myD.toLocaleDateString();
+}
 function setTopXNoActivity(selector) {
 	if (!selector) return;
 	$('#'+selector).empty();
@@ -976,8 +1011,7 @@ function onMainSliderChange(ui)
 	drawDonutChart(topics_donut_chart,response);
 	setTopWordsView(response);
 	setTopPeopleView(response);
-	setTopXAvgView('topwords-avg','top_words');
-	setTopXAvgView('toppeople-avg','top_people');
+	setTopXAvgViews();
 	Tracker.drawOverlayLine(ui);
 	Tracker.showTooltips(ui);
 	if (showTracker) {
@@ -1415,11 +1449,13 @@ function getRandomInt(min, max)
 					</div>
 					
 				</div>
+				
 				<div class="sliderContainer" >
 					<div class='leftArrow'></div>
-					<div id='slider1' class="slider" ></div>
+					<div id='slider1' class="slider"></div>
 					<div class='rightArrow'></div>
 				</div>
+				
 			</div>
 
 		</div>	
