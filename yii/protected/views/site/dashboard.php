@@ -637,9 +637,9 @@ function _setTopXAvgView(selector,category) {
 		if (!arqIsArray(top)) {
 			for (var w in top) {
 				if (!bin[w]) {
-					bin[w] = top[w];
+					bin[w] = parseInt(top[w]);
 				} else {
-					bin[w] = bin[w]+top[w];
+					bin[w] = parseInt(bin[w])+parseInt(top[w]);
 				}
 			}
 		}
