@@ -185,7 +185,10 @@ function initializeMainSlider(initVal)
 function onSliderSliding(event,ui) {
 	Tracker.removeTooltips();
 	Tracker.removeOverlayLine();
-	$('#slider1 .ui-label').html('');
+	var sliderIndex = Tracker.getSliderValue(ui.value);
+	if (sliderIndex>=0 && 'date' in _avg[sliderIndex]) {
+		$('#slider1 .ui-label').html(_avg[sliderIndex]['date']);
+	}
 	// Get the index of where we are sliding; it will help determine if we need to change the range of data
 	var index = -5;
 	for (var i = 0;i<allSliderValues.length;i++) {
