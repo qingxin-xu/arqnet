@@ -54,6 +54,7 @@ var eventRender = {
 	QA_Asked:{},
 	QA_Answered:{},
 	Note:{},
+	FBNote:{},
 	Tracker:{},
 	
 	unRegisterEvents:function() {
@@ -61,14 +62,17 @@ var eventRender = {
 		this['QA_Answered'] = {};
 		this['Note'] = {};
 		this['Tracker'] = {};
+		this['FBNote'] = {};
 	},
 	
 	registerEvent:function(element,event,view) {
+		//console.log('register event ',this,this['render'+event.subcategory]);
 		if (view.name != 'month' || !event.subcategory /*|| !this[event.subcategory]*/) {
 			element.find('.fc-content').addClass('closeView');
 			if (view.name == 'basicDay') element.find('.fc-title').addClass('text_position');
-			if (this['render'+event.subcategory]) this['render'+event.subcategory](element,event,view);
-			else this.renderEvent(element,event,view);
+			if (this['render'+event.subcategory]) {
+				this['render'+event.subcategory](element,event,view);
+			} else this.renderEvent(element,event,view);
 			if (eventHandler && eventHandler.createTooltip) {
 				eventHandler.createTooltip(element,event/*,this[event.subcategory][myD]*/);					
 			}
@@ -78,7 +82,7 @@ var eventRender = {
 		
 		if (!event || !event.subcategory) return ;
 		if (!event.start || !event.start._i) return ;
-		//if (!this[event.subcategory]) return ;
+		
 		var subcategory = this[event.subcategory]?event.subcategory:'Tracker';
 		var myD = event.start._i.split(/\s+/)[0];
 		if (!this[subcategory][myD]) {
@@ -88,14 +92,10 @@ var eventRender = {
 			else this.renderEvent(element,event);
 			this.createCounter(element);
 		} else {
-			this.updateCounter(element, event.subcategory, myD)
+			this.updateCounter(element, subcategory, myD)
 			element.css('display','none');
 		}
-		/*
-		if (eventHandler && eventHandler.createTooltip) {
-			eventHandler.createTooltip(this[event.subcategory][myD].element,event,this[event.subcategory][myD]);
-		}
-		*/
+
 	},
 	
 	/*
@@ -184,7 +184,18 @@ var eventRender = {
 	},
 	
 	renderFBNote:function(element,event) {
-		
+		if (!element || !event) return;
+		var noteStr = "Note: "+event.description[0].value;
+		try {
+			noteStr = $(event.description[0].value).text();
+		} catch(e) {
+			noteStr = "Note "+event.description[0].value;
+			
+		}
+		finally {
+			element.find('.fc-content').addClass('eventIcon facebook_event note');//html('Note: '+event.description[0].value);
+			element.find('.fc-title').html(noteStr);
+		}
 	},
 	
 	preRenderEvent:function(element,event) {
