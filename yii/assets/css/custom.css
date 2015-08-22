@@ -78,6 +78,11 @@ h3 {
 	left:9px;
 	width:0%;
 }
+
+.power-progress-bar {
+	top:9px;
+}
+
 .arqHeader {
 	background-color:#222224;
 	height:60px;

@@ -63,7 +63,7 @@
 				
 			<div class="progress progressPowerBar addG-progress arq-progress">
 				
-				<div class="progress-bar progressBar " role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100";width: 0%">
+				<div class="progress-bar power-progress-bar progressBar " role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100";width: 0%">
 					
 				</div>
 				
