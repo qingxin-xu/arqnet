@@ -31,7 +31,7 @@ h3 {
 }
 
 .arqHeader.col-md-1 {
-	width:12%;
+	width:22%;
 }
 
 .analysisTextWrapper {
@@ -55,7 +55,7 @@ h3 {
 }
 
 .col-sm-3.col-sm-4.clearfix.addG-progresswrap {
-	width:42%;
+	width:52%;
 }
 
 .progressPowerBar {
@@ -74,7 +74,7 @@ h3 {
 .progress-bar {
 	position:relative;
 	height:100%;
-	top:9px;
+	top:0;
 	left:9px;
 	width:0%;
 }
@@ -84,7 +84,7 @@ h3 {
 }
 
 .arqHeader-logout {
-	width:45%;
+	width:25%;
 }
 
 .addG-tresh {
@@ -135,7 +135,7 @@ h3 {
 }
 
 .moodProgress {
-	border-radius:0;
+	border-radius:5px;
 }
 
 .page-container .main-content {

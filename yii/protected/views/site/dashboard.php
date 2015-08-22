@@ -414,7 +414,7 @@ function generateTopicBarGraph(sorted_set,placeAt,maxWords) {
 		$('#'+placeAt).empty();
 		return;
 	}
-	console.log(sorted_set,placeAt);
+	
 	if (!maxWords) maxWords = 5;
 	var nWords = sorted_set.length>=maxWords?maxWords:sorted_set.length,
 		year = 2014,
@@ -612,6 +612,7 @@ function setMoodDisplay(response)
 	{
 		var bar = $('.'+moods[i]+' .progress-bar');
 		moodValue = response[moods[i]]||0;
+		moodValue = parseFloat(moodValue);
 		
 		if (bar )
 		{
@@ -1202,9 +1203,10 @@ jQuery(document).ready(function($)
 						moodValues[moods[i]] = /*responses*/_avg[value]['top_categories'][moods[i]];
 					}
 					
+					setMoodDisplay(_avg[value]);
 					//drawradar(moodValues);
-					moodSpiderGraph.drawradar(moodValues/*,$('#mood-tab')*/);
-					trackerSpiderGraph.drawradar(moodValues/*,$('#tracker-mood-tab')*/);
+					//moodSpiderGraph.drawradar(moodValues/*,$('#mood-tab')*/);
+					//trackerSpiderGraph.drawradar(moodValues/*,$('#tracker-mood-tab')*/);
 				} else if (el.attr('href').match(/topwords/))
 				{
 					if (_avg && _avg[value]) setTopWordsView(_avg[value]);
