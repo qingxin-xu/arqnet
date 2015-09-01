@@ -632,8 +632,16 @@ function setMoodDisplay(response)
 function _setTopXAvgView(selector,category) {
 	var bin = {},
 	arrayAvg = [],
-	endIndex = getDateIndex(currentDate)+1,
-	startIndex = endIndex-defaultRange;
+	endIndex,// = getDateIndex(currentDate)+1,
+	currentIndex = getDateIndex(currentDate),
+	startIndex;// = endIndex-defaultRange;
+
+	if (currentIndex+15 > __avg.length-1) {
+		endIndex = __avg.length-1;
+	} else {
+		endIndex = currentIndex+15;
+	}
+	startIndex = endIndex - defaultRange + 1;
 	
 	// Bin results
 	for (var i = startIndex;i<endIndex;i++) {
