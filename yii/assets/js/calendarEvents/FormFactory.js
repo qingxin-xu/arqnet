@@ -206,9 +206,9 @@ var formFactory = {
 	 */
 	createAndShowForm:function(fields,eventObj)
 	{
+		console.log('fields',fields);
 		var self = this;
 		if (!fields) return null;
-		
 		var form,
 			dialog = this._createDlg(),
 			table = $('.'+this.formClass +' table'),
@@ -289,13 +289,15 @@ var formFactory = {
 	 */
 	createFieldRow:function(field)
 	{
+		console.log('field',field);
 		var row = '<tr height="40">';
 		
 		
 		if (field['type'] && this['create_'+field['type']])
 		{
-			row+='<td>'+this.createLabel(field.label,field.name)+'</td>';
-			row+='<td>'+this['create_'+field['type']](field)+'</td>';
+			//row+='<td>'+this.createLabel(field.label,field.name)+'</td>';
+			//row+='<td>'+this['create_'+field['type']](field)+'</td>';
+			row += this['create_'+field['type']](field);
 		} else if (field['capping_event']) {
 			row+='<td>'+"Which one has ended"+'</td>';
 			
@@ -346,6 +348,12 @@ var formFactory = {
 	{
 		if (!field) return '';
 		var input = '<input name="'+field['name']+'" placeholder="" />';
+		return input;
+	},
+	
+	create_boolean:function(field) {
+		if (!field) return '';
+		var input = '<td style="display:none;"><input name="'+field['name']+'" value="'+"yes"+'" type="hidden" /></td>';
 		return input;
 	},
 	
