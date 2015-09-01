@@ -172,8 +172,15 @@ var recentActivities = {
 		}
 		for (var i =0;i<activity.description.length;i++)
 		{
-			if ($.inArray(activity.description[i].type,this.exclude) >=0) {				
-				description +='<p>'+activity.title+'</p>';
+			/*
+			if (activity.description[i].type == 'boolean') {
+				description='<p>'+activity.description[i].value+'</p>';
+				html = html.replace(/{ACTIVITY}/,description);
+				return html;
+			}
+			*/
+			if ($.inArray(activity.description[i].type,this.exclude) >=0) {		
+				description ='<p>'+activity.title+'</p>';
 				html = html.replace(/{ACTIVITY}/,description);
 				return html;
 			} 
