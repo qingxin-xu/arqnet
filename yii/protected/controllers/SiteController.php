@@ -3061,6 +3061,7 @@ private function getMyJournalsByID($note_id){
     	$start = 0;
     	$ae_data = array();
     	$matches = array();
+    	$parse_start = strtotime(date('y-m-d h:m:s'));
     	foreach (explode("\n", $raw_response) as $line) {
     		$line = trim($line);
     		if ($line == "{") {
@@ -3085,7 +3086,7 @@ private function getMyJournalsByID($note_id){
     			$ae_data[$key] = $value;
     		}
     	}
-    	
+    	$parse_end = strtotime(date('y-m-d h:m:s'));
     	$ae_response = new AeResponse();
     	$ae_response->words = (int)$ae_data['words'];
     	$ae_response->sentences = (int)$ae_data['sentences'];
@@ -3096,46 +3097,57 @@ private function getMyJournalsByID($note_id){
     	$ae_response->source = 'blog';
     	/* The analysis should correspond to the publication date */
     	$ae_response->date_created = date('Y-m-d H:i:s', strtotime($publication_date . ' ' . $publication_time));
+    	$ae_save_start = strtotime(date('y-m-d h:m:s'));
     	$ae_response->save();
-    	
+    	$ae_save_end = strtotime(date('y-m-d h:m:s'));
+    	$category_start = strtotime(date('y-m-d h:m:s'));
     	if ($ae_response) {
     		$ae_categories = Category::model()->findAllByAttributes(array('category_type' => 'mood'));
+    		$valueStr = "";
     		foreach ($ae_categories as $category) {
     			if (isset($ae_data[$category->description])) {
-    				$aec = new AeResponseCategory();
-    				$aec->ae_response_id = $ae_response->ae_response_id;
-    				$aec->category_id = $category->category_id;
-    				$aec->value = (float)$ae_data[$category->description];
-    				$aec->save();
+    				$value = (float)$ae_data[$category->description];
+    				$valueStr = $valueStr."($ae_response->ae_response_id,$category->category_id,$value),";
     			}
+    			
     		}
+    		$valueStr = preg_replace('/,$/', '', $valueStr);
+    		$sql = "insert into ae_response_category(ae_response_id,category_id,value) values $valueStr";//($ae_response->ae_response_id,$category->category_id,$value)";
+    		Yii::app()->db->createCommand($sql)->execute();
+    		
+    		$user_id = Yii::app()->user->Id;
+    		$valueStr = "";
     		for ($i = 1; $i <= 10; $i++) {
     			$get_word = 'topWords' . $i;
     			$get_count = 'topWordsCnt' . $i;
     			if ($ae_data[$get_word] && $ae_data[$get_count]) {
-    				$tw = new TopWords();
-    				$tw->user_id = Yii::app()->user->Id;
-    				$tw->ae_response_id = $ae_response->ae_response_id;
-    				$tw->ae_rank = $i;
-    				$tw->ae_value = $ae_data[$get_word];
-    				$tw->count = intval($ae_data[$get_count]);
-    				$tw->save();
+    				$count = intval($ae_data[$get_count]);
+    				$valueStr = $valueStr."($user_id,$ae_response->ae_response_id,$i,'$ae_data[$get_word]',$count),";
     			}
     		}
-    	
+    		$valueStr = preg_replace('/,$/', '', $valueStr);
+    		$sql = "insert into top_words(user_id,ae_response_id,ae_rank,ae_value,count) values $valueStr";
+    		Yii::app()->db->createCommand($sql)->execute();
+    		$valueStr = "";
     		for ($i = 1; $i <= 10; $i++) {
     			$get_word = 'topPeople' . $i;
     			$get_count = 'topPeopleCnt' . $i;
     			if ($ae_data[$get_word] && $ae_data[$get_count]) {
-    				$tp = new TopPeople();
-    				$tp->user_id = Yii::app()->user->Id;
-    				$tp->ae_response_id = $ae_response->ae_response_id;
-    				$tp->ae_rank = $i;
-    				$tp->ae_value = $ae_data[$get_word];
-    				$tp->count = intval($ae_data[$get_count]);
-    				$tp->save();
+    				$count = intval($ae_data[$get_count]);
+    				$valueStr = $valueStr."($user_id,$ae_response->ae_response_id,$i,'$ae_data[$get_word]',$count),";
     			}
     		}
+    		$valueStr = preg_replace('/,$/', '', $valueStr);
+    		$sql = "insert into top_people(user_id,ae_response_id,ae_rank,ae_value,count) values $valueStr";
+    		Yii::app()->db->createCommand($sql)->execute();
+    		
+    		$category_end = strtotime(date('y-m-d h:m:s'));
+    		$diff = $parse_end - $parse_start;
+    		MyStuff::Log("PARSE ".$parse_end.' '.$parse_start.' '.$diff);
+    		$diff = $ae_save_end - $ae_save_start;
+    		MyStuff::Log("AE SAVE ".$ae_save_end.' '.$ae_save_start.' '.$diff);
+    		$diff = $category_end - $category_start;
+    		MyStuff::Log("CATEGORY SAVE ".$category_end.' '.$category_start.' '.$diff);
     		return $ae_response->ae_response_id;
     	}    	
     }
