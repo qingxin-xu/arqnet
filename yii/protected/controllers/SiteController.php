@@ -1745,61 +1745,7 @@ private function getMyJournalsByID($note_id){
                 ))->findAll();
             }
         } else {
-       /* 	
-            // Create
-	    ///-----test by daniel
-	    //Call the C# interface to deal with the data storage logic for the return json after call the engine.
-	    $stripped_content = strip_tags(Yii::app()->request->getPost('stripped_content', ''));
-	    $get_publish_date = Yii::app()->request->getPost('publish_date', '');
-	    $get_publish_date = date('D, d F Y', strtotime($get_publish_date));
-	    $publish_date = DateTime::createFromFormat('D, d F Y', $get_publish_date);
-	    $publish_date = $publish_date->format('Y-m-d');
-	    $post_data = array(
-	    "title"=>$title,
-	    "note_id"=>0,
-	    "content"=>Yii::app()->request->getPost('post_content', ''),
-	    "publish_date"=>$publish_date,
-	    "publish_time"=>Yii::app()->request->getPost('publish_time', ''),
-	    "status_id"=>Yii::app()->request->getPost('status'),
-	    "visibility_id"=>Yii::app()->request->getPost('visibility'),
-	    "user_id"=>Yii::app()->user->Id,
-	    "date_created"=>date('Y-m-d H:i:s',time()),
-	    "stripped_content"=>$stripped_content,
-	    );
-	    $post_data = json_encode($post_data);
-	    
-	    $url = Yii::app()->params['call_multithreading'];
-	   	    
-	        
-	   	    $ch = curl_init();
-	   	    curl_setopt($ch, CURLOPT_URL, $url);
-		    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	   	    curl_setopt($ch, CURLOPT_POST, 1);
-	   	    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-	   	    $return = curl_exec($ch);
-	   	    curl_close($ch);
-	   	    MyStuff::Log("RETURN? ");MyStuff::Log($return);
-	   	    MyStuff::Log("POST DATA");MyStuff::Log($post_data);
-	   	    MyStuff::Log("url ".$url);
-	   	    */
-	/*
-	$noteImg = "";	     
-	   	   
-	header('Content-type: application/json');
-        echo CJSON::encode(array(
-            'success' => 1,
-            'redirect' => '/recentJournals',
-            'IMAGE' => $noteImg
-        ));
-        Yii::app()->end();exit;
-	//-----test by daniel    
-	   
-	    
-	    */
-	    
-	    
-	    
-	    
+ 
             $note = new Note();
             if (!Yii::app()->user->Id > 0) {
                 header('Content-type: application/json');
@@ -1838,7 +1784,7 @@ private function getMyJournalsByID($note_id){
                 $cal->start_date = $note->date_created;
                 $cal->all_day = 0;
                 $cal->save();
-
+				$calEvent = array('0'=>$cal);
                 /* Event value */
                 $event_value = new EventValue();
                 $event_value->calendar_event_id = $cal->calendar_event_id;
@@ -2081,9 +2027,7 @@ private function getMyJournalsByID($note_id){
 
     }
 
-    private function runAEJournalDaily($get_date = NULL)
-    {
-
+    public function _runAEJournalDaily($get_date = NULL,$publication_date,$publication_time) {
         $user_id = Yii::app()->user->Id;
         $draft_status = NoteStatus::model()->findByAttributes(array('name' => 'Published'));
         if (!$get_date) {
@@ -2092,6 +2036,56 @@ private function getMyJournalsByID($note_id){
             $get_date = substr($get_date, 0, 10);
         }
 
+        $ajd = AeJournalDaily::model()->findByAttributes(array(
+            'user_id' => $user_id,
+            'date_created' => $get_date,
+        ));
+
+        if (!$ajd) {
+            $ajd = new AeJournalDaily();
+            $ajd->user_id = $user_id;
+            $ajd->date_created = $get_date;
+            $ajd->save();
+        };
+        $myPublishDate = date('Y-m-d', strtotime($get_date));
+
+        $sql = "select group_concat(stripped_content, ' ') total_content
+				from note
+				where user_id=$user_id
+				and status_id='$draft_status->status_id'
+					and publish_date is not null
+				  and publish_date>='$myPublishDate'
+				  and publish_date<date_add('$myPublishDate', interval 1 day)
+				  and is_active=1
+				group by user_id";
+        $entries = Yii::app()->db->createCommand($sql)->queryRow();
+
+        if ($entries) {
+            $ae_response_id = SiteController::_createAEResponse($entries['total_content'],$publication_date,$publication_time);
+            $ajd->ae_response_id = $ae_response_id;
+            //todo add by daniel
+            $ajd->is_active = 1;
+            $ajd->save();
+
+        } else {
+            $ajd->delete();
+        }
+    }
+    
+    public function runAEJournalDaily($get_date = NULL)
+    {
+
+        $user_id = Yii::app()->user->Id;
+        //$draft_status = NoteStatus::model()->findByAttributes(array('name' => 'Published'));
+        if (!$get_date) {
+            $get_date = MyStuff::get_sql_date('curdate()');
+        } else {
+            $get_date = substr($get_date, 0, 10);
+        }
+        $publication_date = Yii::app()->request->getPost('publish_date', '');
+        $publication_time = Yii::app()->request->getPost('publish_time', '');
+        $this->_runAEJournalDaily($get_date,$publication_date,$publication_time);
+		/*
         $ajd = AeJournalDaily::model()->findByAttributes(array(
             'user_id' => $user_id,
             'date_created' => $get_date,
@@ -2125,7 +2119,7 @@ private function getMyJournalsByID($note_id){
         } else {
             $ajd->delete();
         }
-
+		*/
     }
 
     public function actionCreateQuestion()
@@ -3056,6 +3050,96 @@ private function getMyJournalsByID($note_id){
         return $dateHash;
     }
 
+    public function _createAEResponse($content='',$publication_date,$publication_time) {
+    	$content = urlencode($content);
+    	$post_data = array('content' => $content);
+    	$_start = strtotime(date('y-m-d h:m:s'));
+    	$raw_response = MyStuff::curl_request(Yii::app()->params['analysis_engine_url'], $post_data);
+    	$_end = strtotime(date('y-m-d h:m:s'));
+    	$_diff = $_start - $_end;
+    	MyStuff::Log("TIME ".$_end.' '.$_start.' '.$_diff);
+    	$start = 0;
+    	$ae_data = array();
+    	$matches = array();
+    	foreach (explode("\n", $raw_response) as $line) {
+    		$line = trim($line);
+    		if ($line == "{") {
+    			$start = 1;
+    			continue;
+    		}
+    		if ($line == "}") {
+    			$start = 0;
+    			break;
+    		}
+    		if ($start) {
+    			$parts = explode(": ", $line);
+    			preg_match('/"(.*)"/', $parts[0], $matches);
+    			$key = $matches[1];
+    			$value = '';
+    			if (preg_match('/"(.*)"/', $parts[1], $matches)) {
+    				$value = $matches[1];
+    			} else {
+    				$value = $parts[1];
+    			}
+    			$value = preg_replace('/,$/', '', $value);
+    			$ae_data[$key] = $value;
+    		}
+    	}
+    	
+    	$ae_response = new AeResponse();
+    	$ae_response->words = (int)$ae_data['words'];
+    	$ae_response->sentences = (int)$ae_data['sentences'];
+    	$ae_response->hits = (int)$ae_data['hits'];
+    	$ae_response->response_ts = $ae_data['timestamp'];
+    	$ae_response->json_response = $raw_response;
+    	$ae_response->user_id = Yii::app()->user->id;
+    	$ae_response->source = 'blog';
+    	/* The analysis should correspond to the publication date */
+    	$ae_response->date_created = date('Y-m-d H:i:s', strtotime($publication_date . ' ' . $publication_time));
+    	$ae_response->save();
+    	
+    	if ($ae_response) {
+    		$ae_categories = Category::model()->findAllByAttributes(array('category_type' => 'mood'));
+    		foreach ($ae_categories as $category) {
+    			if (isset($ae_data[$category->description])) {
+    				$aec = new AeResponseCategory();
+    				$aec->ae_response_id = $ae_response->ae_response_id;
+    				$aec->category_id = $category->category_id;
+    				$aec->value = (float)$ae_data[$category->description];
+    				$aec->save();
+    			}
+    		}
+    		for ($i = 1; $i <= 10; $i++) {
+    			$get_word = 'topWords' . $i;
+    			$get_count = 'topWordsCnt' . $i;
+    			if ($ae_data[$get_word] && $ae_data[$get_count]) {
+    				$tw = new TopWords();
+    				$tw->user_id = Yii::app()->user->Id;
+    				$tw->ae_response_id = $ae_response->ae_response_id;
+    				$tw->ae_rank = $i;
+    				$tw->ae_value = $ae_data[$get_word];
+    				$tw->count = intval($ae_data[$get_count]);
+    				$tw->save();
+    			}
+    		}
+    	
+    		for ($i = 1; $i <= 10; $i++) {
+    			$get_word = 'topPeople' . $i;
+    			$get_count = 'topPeopleCnt' . $i;
+    			if ($ae_data[$get_word] && $ae_data[$get_count]) {
+    				$tp = new TopPeople();
+    				$tp->user_id = Yii::app()->user->Id;
+    				$tp->ae_response_id = $ae_response->ae_response_id;
+    				$tp->ae_rank = $i;
+    				$tp->ae_value = $ae_data[$get_word];
+    				$tp->count = intval($ae_data[$get_count]);
+    				$tp->save();
+    			}
+    		}
+    		return $ae_response->ae_response_id;
+    	}    	
+    }
+    
     private function createAEResponse($content = '')
     {
         if ($content == '') {
@@ -3064,99 +3148,7 @@ private function getMyJournalsByID($note_id){
 
         $publication_date = Yii::app()->request->getPost('publish_date', '');
         $publication_time = Yii::app()->request->getPost('publish_time', '');
-        //$content = preg_replace('/\+/', '%2B', $content); 
-        //$content = str_replace('&',' ',$content);
-        $content = urlencode($content);
-        //$content = $this->encodeAEContent($content);
-        //MyStuff::Log("ENCODED ".$content);
-        $post_data = array('content' => $content);
-        $raw_response = MyStuff::curl_request(Yii::app()->params['analysis_engine_url'], $post_data);
-
-        //if ($aer_test_response!='') {
-        //	$raw_response = $aer_test_response;
-        //}
-        //$raw_response = $this->decodeAEResponse($raw_response);
-
-        $start = 0;
-        $ae_data = array();
-        $matches = array();
-        foreach (explode("\n", $raw_response) as $line) {
-            $line = trim($line);
-            if ($line == "{") {
-                $start = 1;
-                continue;
-            }
-            if ($line == "}") {
-                $start = 0;
-                break;
-            }
-            if ($start) {
-                $parts = explode(": ", $line);
-                preg_match('/"(.*)"/', $parts[0], $matches);
-                $key = $matches[1];
-                $value = '';
-                if (preg_match('/"(.*)"/', $parts[1], $matches)) {
-                    $value = $matches[1];
-                } else {
-                    $value = $parts[1];
-                }
-                $value = preg_replace('/,$/', '', $value);
-                $ae_data[$key] = $value;
-            }
-        }
-
-        $ae_response = new AeResponse();
-        $ae_response->words = (int)$ae_data['words'];
-        $ae_response->sentences = (int)$ae_data['sentences'];
-        $ae_response->hits = (int)$ae_data['hits'];
-        $ae_response->response_ts = $ae_data['timestamp'];
-        $ae_response->json_response = $raw_response;
-        $ae_response->user_id = Yii::app()->user->id;
-        $ae_response->source = 'blog';
-        /* The analysis should correspond to the publication date */
-        $ae_response->date_created = date('Y-m-d H:i:s', strtotime($publication_date . ' ' . $publication_time));
-        $ae_response->save();
-
-        if ($ae_response) {
-            $ae_categories = Category::model()->findAllByAttributes(array('category_type' => 'mood'));
-            foreach ($ae_categories as $category) {
-                if (isset($ae_data[$category->description])) {
-                    $aec = new AeResponseCategory();
-                    $aec->ae_response_id = $ae_response->ae_response_id;
-                    $aec->category_id = $category->category_id;
-                    $aec->value = (float)$ae_data[$category->description];
-                    $aec->save();
-                }
-            }
-            for ($i = 1; $i <= 10; $i++) {
-                $get_word = 'topWords' . $i;
-                $get_count = 'topWordsCnt' . $i;
-                if ($ae_data[$get_word] && $ae_data[$get_count]) {
-                    $tw = new TopWords();
-                    $tw->user_id = Yii::app()->user->Id;
-                    $tw->ae_response_id = $ae_response->ae_response_id;
-                    $tw->ae_rank = $i;
-                    $tw->ae_value = $ae_data[$get_word];
-                    $tw->count = intval($ae_data[$get_count]);
-                    $tw->save();
-                }
-            }
-
-            for ($i = 1; $i <= 10; $i++) {
-                $get_word = 'topPeople' . $i;
-                $get_count = 'topPeopleCnt' . $i;
-                if ($ae_data[$get_word] && $ae_data[$get_count]) {
-                    $tp = new TopPeople();
-                    $tp->user_id = Yii::app()->user->Id;
-                    $tp->ae_response_id = $ae_response->ae_response_id;
-                    $tp->ae_rank = $i;
-                    $tp->ae_value = $ae_data[$get_word];
-                    $tp->count = intval($ae_data[$get_count]);
-                    $tp->save();
-                }
-            }
-            return $ae_response->ae_response_id;
-        }
+        return $this->_createAEResponse($content,$publication_date,$publication_time);
     }
 
     private function getAEResponse($ae_response_id)
