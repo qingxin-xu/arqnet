@@ -2048,7 +2048,7 @@ private function getMyJournalsByID($note_id){
             $ajd->save();
         };
         $myPublishDate = date('Y-m-d', strtotime($get_date));
-
+        /* group_concat will truncate long passages of data
         $sql = "select group_concat(stripped_content, ' ') total_content
 				from note
 				where user_id=$user_id
@@ -2058,10 +2058,21 @@ private function getMyJournalsByID($note_id){
 				  and publish_date<date_add('$myPublishDate', interval 1 day)
 				  and is_active=1
 				group by user_id";
-        $entries = Yii::app()->db->createCommand($sql)->queryRow();
-
+		*/
+        $sql = "select stripped_content as total_content 
+				from note
+				where user_id=$user_id
+				and status_id='$draft_status->status_id'
+					and publish_date is not null
+				  and publish_date>='$myPublishDate'
+				  and publish_date<date_add('$myPublishDate', interval 1 day)
+				  and is_active=1";
+        $entries = Yii::app()->db->createCommand($sql)->queryAll();
+		
+        $totalContent = '';
         if ($entries) {
-            $ae_response_id = SiteController::_createAEResponse($entries['total_content'],$publication_date,$publication_time);
+        	foreach ($entries as $entry ) {$totalContent = $totalContent.' '.$entry['total_content'];}
+            $ae_response_id = SiteController::_createAEResponse($totalContent,$publication_date,$publication_time);
             $ajd->ae_response_id = $ae_response_id;
             //todo add by daniel
             $ajd->is_active = 1;
@@ -3053,15 +3064,16 @@ private function getMyJournalsByID($note_id){
     public function _createAEResponse($content='',$publication_date,$publication_time) {
     	$content = urlencode($content);
     	$post_data = array('content' => $content);
-    	$_start = strtotime(date('y-m-d h:m:s'));
+    	$_start = round(microtime(true) * 1000);
     	$raw_response = MyStuff::curl_request(Yii::app()->params['analysis_engine_url'], $post_data);
-    	$_end = strtotime(date('y-m-d h:m:s'));
-    	$_diff = $_start - $_end;
-    	MyStuff::Log("TIME ".$_end.' '.$_start.' '.$_diff);
+    	$_end = round(microtime(true) * 1000);
+    	$_diff = $_end  - $_start;
+    	MyStuff::Log("ANALYSIS ".$_end.' '.$_start.' '.$_diff);
+    	
     	$start = 0;
     	$ae_data = array();
     	$matches = array();
-    	$parse_start = strtotime(date('y-m-d h:m:s'));
+    	$parse_start = round(microtime(true) * 1000);
     	foreach (explode("\n", $raw_response) as $line) {
     		$line = trim($line);
     		if ($line == "{") {
@@ -3086,7 +3098,7 @@ private function getMyJournalsByID($note_id){
     			$ae_data[$key] = $value;
     		}
     	}
-    	$parse_end = strtotime(date('y-m-d h:m:s'));
+    	$parse_end = round(microtime(true) * 1000);
     	$ae_response = new AeResponse();
     	$ae_response->words = (int)$ae_data['words'];
     	$ae_response->sentences = (int)$ae_data['sentences'];
@@ -3097,10 +3109,10 @@ private function getMyJournalsByID($note_id){
     	$ae_response->source = 'blog';
     	/* The analysis should correspond to the publication date */
     	$ae_response->date_created = date('Y-m-d H:i:s', strtotime($publication_date . ' ' . $publication_time));
-    	$ae_save_start = strtotime(date('y-m-d h:m:s'));
+    	$ae_save_start = round(microtime(true) * 1000);
     	$ae_response->save();
-    	$ae_save_end = strtotime(date('y-m-d h:m:s'));
-    	$category_start = strtotime(date('y-m-d h:m:s'));
+    	$ae_save_end = round(microtime(true) * 1000);
+    	$category_start = round(microtime(true) * 1000);
     	if ($ae_response) {
     		$ae_categories = Category::model()->findAllByAttributes(array('category_type' => 'mood'));
     		$valueStr = "";
@@ -3141,7 +3153,7 @@ private function getMyJournalsByID($note_id){
     		$sql = "insert into top_people(user_id,ae_response_id,ae_rank,ae_value,count) values $valueStr";
     		Yii::app()->db->createCommand($sql)->execute();
     		
-    		$category_end = strtotime(date('y-m-d h:m:s'));
+    		$category_end = round(microtime(true) * 1000);
     		$diff = $parse_end - $parse_start;
     		MyStuff::Log("PARSE ".$parse_end.' '.$parse_start.' '.$diff);
     		$diff = $ae_save_end - $ae_save_start;
