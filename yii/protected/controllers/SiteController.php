@@ -3099,6 +3099,7 @@ private function getMyJournalsByID($note_id){
     		}
     	}
     	$parse_end = round(microtime(true) * 1000);
+    	$ae_write_start = round(microtime(true) * 1000);
     	$ae_response = new AeResponse();
     	$ae_response->words = (int)$ae_data['words'];
     	$ae_response->sentences = (int)$ae_data['sentences'];
@@ -3134,11 +3135,13 @@ private function getMyJournalsByID($note_id){
     			$get_count = 'topWordsCnt' . $i;
     			if ($ae_data[$get_word] && $ae_data[$get_count]) {
     				$count = intval($ae_data[$get_count]);
-    				$valueStr = $valueStr."($user_id,$ae_response->ae_response_id,$i,'$ae_data[$get_word]',$count),";
+    				$insert_value = preg_replace("/'/","''",$ae_data[$get_word]);
+    				$valueStr = $valueStr."($user_id,$ae_response->ae_response_id,$i,'$insert_value',$count),";
     			}
     		}
     		$valueStr = preg_replace('/,$/', '', $valueStr);
     		$sql = "insert into top_words(user_id,ae_response_id,ae_rank,ae_value,count) values $valueStr";
+    		
     		Yii::app()->db->createCommand($sql)->execute();
     		$valueStr = "";
     		for ($i = 1; $i <= 10; $i++) {
@@ -4709,6 +4712,26 @@ where user_id = $user_id
                     );
                     if ($ev->eventNote) {
                         $d['note_id'] = $ev->eventNote->note_id;
+                		$d['fb_image_ids'] = $ev->eventNote->Note->fb_image_ids;
+                		if ($ev->eventNote->Note->fb_image_ids) {
+	                		$imageIDs = explode(',',$ev->eventNote->Note->fb_image_ids);
+	                		if (count($imageIDs)>0) {
+	                			
+	                			$pathArr = array();
+	                			foreach ($imageIDs as $imageID) {
+	                				$image = Image::model()->findByPk($imageID);
+	                				array_push($pathArr,$image->path);
+	                			}
+	                			$d['images'] = $pathArr;
+	                		}
+                		} 
+                		if ($ev->eventNote->Note->fb_video_ids) {
+                			$video = Video::model()->findByPk($ev->eventNote->Note->fb_video_ids);
+                			$d['video'] = $video->path;
+                			$d['video_h'] = $video->height;
+                			$d['video_w'] = $video->width;
+                		}
+                		$d['fb_video_ids'] = $ev->eventNote->Note->fb_video_ids;
                     } else if ($ev->eventQuestion) {
                         $d['question_id'] = $ev->eventQuestion->question_id;
                         $d['question_type'] = $ev->eventQuestion->type;
