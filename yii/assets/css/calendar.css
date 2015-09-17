@@ -288,7 +288,8 @@ hr.ui-widget-header {
 }
 
 .facebook_event {
-	background-image:url('/assets/images/button/fb/fb.png');
+	/*background-image:url('/assets/images/button/fb/fb.PNG');*/
+	background-image:url('/assets/images/button/fb/social-facebook-box-blue-icon.png');
 }
 
 .arq_event {
