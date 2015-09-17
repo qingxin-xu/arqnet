@@ -34,11 +34,9 @@ var formFactory = {
 	 */
 	submit:function(dialog,form,nonFormValues,eventObj,tooltipFields)
 	{
-		//console.log("SUBMIT",dialog,form,eventObj,tooltipFields);
 		if (!eventObj) return;
 		var self = this;
 		if (!dialog) return;
-		//if (!form) return;
 		
 		var formValues = form?form.serializeArray():null;
 		var values = this.createEventValues(formValues,nonFormValues,tooltipFields);
@@ -47,7 +45,6 @@ var formFactory = {
 		dialog.remove();
 		eventObj.description = values;
 		eventObj.capping_event=this.is_capping_event?1:0;
-		//console.log('EVENT OBJ',eventObj);
 		
 		var myData = {
 			capping_event:this.is_capping_event?1:0,
@@ -82,7 +79,7 @@ var formFactory = {
 					} else {
 						$('#calendar').fullCalendar('refetchEvents');
 					}				
-					//$('#calendar').fullCalendar('renderEvent', eventObj, false);
+					
 				} else {
 					var msg = 'Unable to create event';
 					if ('msg' in response) msg = response['msg'];
@@ -178,22 +175,23 @@ var formFactory = {
 		var self = this;
 		this.cappable_event_data = {};
 		if (!fields) return null;
-		
-		if (fields['capping_event']>0) {
+		if (fields['capping_event']>0 ) {
 			for (var i in fields['labels']) {
-				this._getCappableEventData(fields, $.extend(fields['labels'][i],{capping_event:1,start:eventObj.start||null}),function() {
-					for (var i in self.cappable_event_data) 
-					{
-						if (self.cappable_event_data[i].length<=0)
+				if (fields['labels'][i]['type'] == 'boolean') {
+					this._getCappableEventData(fields, $.extend(fields['labels'][i],{capping_event:1,start:eventObj.start||null}),function() {
+						for (var i in self.cappable_event_data) 
 						{
-							$('.myErrorMsg_msg').text("There are no events of this type to end");
-							$('#myErrorMsg').dialog('open');
-							return;
+							if (self.cappable_event_data[i].length<=0)
+							{
+								$('.myErrorMsg_msg').text("There are no events of this type to end");
+								$('#myErrorMsg').dialog('open');
+								return;
+							}
 						}
-					}
-					self.is_capping_event=true;
-					self.createAndShowForm(fields, eventObj);
-				});
+						self.is_capping_event=true;
+						self.createAndShowForm(fields, eventObj);
+					});
+				}
 			}
 		}	else {
 			this.createAndShowForm(fields,eventObj);
@@ -206,7 +204,6 @@ var formFactory = {
 	 */
 	createAndShowForm:function(fields,eventObj)
 	{
-		console.log('fields',fields);
 		var self = this;
 		if (!fields) return null;
 		var form,
@@ -218,7 +215,6 @@ var formFactory = {
 			nonFormValues = [],
 			formStr = '';
 		
-		//for (var i = 0;i<fields.length;i++)
 		for (var i in fields['labels'])
 		{
 			if (fields['labels'][i].type == '_no_input_') {
@@ -226,7 +222,7 @@ var formFactory = {
 				continue;
 			};
 			var myField = Fields.createField(fields['labels'][i]);
-			if (fields['capping_event']>0) {
+			if (fields['labels'][i]['capping_event']>0) {
 				myField = $.extend(myField,{capping_event:1,start:eventObj.start||null});
 			}
 			tooltipFields.push($.extend({},myField));
@@ -289,21 +285,17 @@ var formFactory = {
 	 */
 	createFieldRow:function(field)
 	{
-		console.log('field',field);
 		var row = '<tr height="40">';
 		
-		
-		if (field['type'] && this['create_'+field['type']])
-		{
-			//row+='<td>'+this.createLabel(field.label,field.name)+'</td>';
-			//row+='<td>'+this['create_'+field['type']](field)+'</td>';
-			row += this['create_'+field['type']](field);
-		} else if (field['capping_event']) {
+		if (field['capping_event']) {
 			row+='<td>'+"Which one has ended"+'</td>';
 			
 			row+='<td>'+"<select name='cappable_events_"+field.name+"' required=true>"+this.createCappingEventDropDown(field)+"</select>"+'</td>';
 			row+=this.createHidden(field);
-		} else
+		} else if (field['type'] && this['create_'+field['type']])
+		{
+			row += this['create_'+field['type']](field);
+		}  else
 		{
 			row+='<td>'+this.createLabel(field.label,field.name)+'</td>';
 			row+='<td>'+this.createInput(field)+'</td>';
@@ -323,7 +315,6 @@ var formFactory = {
 	{
 		var str = '<tr height="40"><td>'+'<input type="submit" value="Submit" /></td>'+
 		'<td><input type="button" value="Cancel" /></tr>';
-		//str+='<td><input type="button" value="Cancel" class="cancelDnD" /></td></tr>';
 		return str;
 	},
 	
@@ -417,15 +408,6 @@ var formFactory = {
 						self.cappable_event_data[field.label] = [];
 					}
 				} else  self.cappable_event_data[field.label] = [];
-				
-				for (var i = 0;i<keys.length;i++)
-				{
-					if (!self.cappable_event_data[keys[i]])
-					{
-						self._getCappableEventData(fields, field, keys[i], callback);
-						return;
-					}
-				}
 				callback();
 				
 			},

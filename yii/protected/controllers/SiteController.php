@@ -876,10 +876,17 @@ class SiteController extends Controller
 
         $options = array();
         foreach ($event_values as $ev) {
-            array_push($options, array(
-                'event_value_id' => $ev->event_value_id,
-                'event_date' => $ev->calendarEvent->start_date
-            ));
+        	/*
+				There's always a Note definition for every event
+				But we really only want to identify the value
+				corresponding to the boolean (yes/no) definition
+			*/
+        	if (strcmp('boolean',$ev->eventDefinition->parameter)==0) {
+	            array_push($options, array(
+	                'event_value_id' => $ev->event_value_id,
+	                'event_date' => $ev->calendarEvent->start_date
+	            ));
+        	}
         }
         echo CJSON::encode(array(
             'success' => 1,
@@ -3149,7 +3156,8 @@ private function getMyJournalsByID($note_id){
     			$get_count = 'topPeopleCnt' . $i;
     			if ($ae_data[$get_word] && $ae_data[$get_count]) {
     				$count = intval($ae_data[$get_count]);
-    				$valueStr = $valueStr."($user_id,$ae_response->ae_response_id,$i,'$ae_data[$get_word]',$count),";
+    				$insert_value = preg_replace("/'/","''",$ae_data[$get_word]);
+    				$valueStr = $valueStr."($user_id,$ae_response->ae_response_id,$i,'$insert_value',$count),";
     			}
     		}
     		$valueStr = preg_replace('/,$/', '', $valueStr);
