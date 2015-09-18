@@ -16,6 +16,23 @@ h3 {
 	font-family: arial;
 	/*font-weight:bold;*/
 }
+
+.powerbar_info {
+	float:left;
+	background-image:url('/assets/images/header/infoIcon.png');
+	background-color:transparent;
+	background-size:25px 25px;
+	background-position:bottom center;
+	background-repeat:no-repeat;
+	height:30px;
+	width:30px;
+	cursor:pointer;
+}
+
+.powerbar_info:hover {
+	opacity:0.75;
+}
+
 .addG-progress.arq-progress {
 	border:none;
 	height:40px;

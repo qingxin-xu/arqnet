@@ -1,5 +1,9 @@
 <script type='text/javascript'>
 	var powerbar = <?php if ($powerbar) echo $powerbar.';'; else echo '0;';?>
+	var infoTipContent = "For optimal analysis accuracy, keep this bar green with daily activity including journal entries, social media imports, tracking daily habits and asking or answering questions.";
+	$(document).ready(function() {
+		arqUtils.createTooltip($('.powerbar_info'),infoTipContent,'bottomRight');
+	});
 </script>
 <div class="arqHeader row">
 	
@@ -60,7 +64,7 @@
 			<div class="addG-tresh"></div>
 			<div class='allcaps analysisTextWrapper'>
 				<span class='arqText1'>Analysis </span><span class='arqText2'>Power Bar</span></div>
-				
+				<div class='powerbar_info' ></div>
 			<div class="progress progressPowerBar addG-progress arq-progress">
 				
 				<div class="progress-bar power-progress-bar progressBar " role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100";width: 0%">

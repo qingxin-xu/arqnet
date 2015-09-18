@@ -2,13 +2,15 @@
 <link href="assets/js/magicsuggest/magicsuggest-min.css" rel="stylesheet">
 <link rel='stylesheet' href='/assets/js/fullcalendar-2.2.5/fullcalendar.css' />
 <link rel="stylesheet" href="assets/css/calendar.css">
+<link rel='stylesheet' href='assets/js/colorbox/colorbox.css' />
+<script src='assets/js/colorbox/jquery.colorbox-min.js'></script>
 <script src="/assets/js/jquery.validate.min.js"></script>
 <script src='http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js'></script>
 <script type='text/javascript' src='assets/js/calendarEvents/Events.js'></script>
 <script type='text/javascript' src='assets/js/calendarEvents/Fields.js'></script>
 <script type='text/javascript' src='assets/js/calendarEvents/FormFactory.js'></script>
 <script type='text/javascript' src='assets/js/magicsuggest/magicsuggest.js'></script>
-<script type='text/javascript' src='assets/js/qtip/jquery.qtip-1.0.min.js'></script>
+
 <script type='text/javascript' src='assets/js/calendarEvents/eventHandler.js'></script>
 <script type="text/javascript">
 
@@ -347,12 +349,13 @@ jQuery(document).ready(function($){
 		processBar(0);
 	}
 
-	function processBar(key) {
+	function processBar(query) {
 		$.ajax({
 			url: '/FBLogin/ProgressBar',
 			data: {
 //				since: $('#selectDate').val(),
-				key: key
+				query:query||''
+				
 			},
 			method: 'POST',
 			dataType: 'json',
@@ -362,6 +365,7 @@ jQuery(document).ready(function($){
 //				$('#myErrorMsg').dialog('open');
 			},
 			success: function (response) {
+				console.log(response);
 				if (response.success == 0) {
 					alert(response.msg);
 					window.location.href ="/calendar";
@@ -380,14 +384,14 @@ jQuery(document).ready(function($){
 					window.location.href ="/calendar";
 					return;
 				}
-				processBar(response.nextKey);
+				if (response.next && response.next.query) processBar(response.next.query);
 			}
 
 		});
 	}
 	$("#submitImport").click(function () {
 //		$('#submitImport').attr('disabled', "true");
-		processBar(0);
+		processBar();
 
 	});
 
@@ -411,19 +415,6 @@ jQuery(document).ready(function($){
 
 
 <div class="calendar-env">
-	<?php 
-	/*
-	$myD = date_create();
-	$month = $myD->format('m')+1;
-	$newDate = date('Y-m-d',strtotime( $myD->setDate($myD->format('Y'),$month,1)->format('Y-m-d') ));
-	echo $newDate;
-	
-  $myd = "2014-08-06T05:00:00.000Z";//'Fri Aug 01 2014 07:00:00 GMT-0500 (CDT)';
-  //$_myd = DateTime::createFromFormat('D M d Y H:i:s T',$myd);//->format('Y-m-d');
-  $myd = DateTime::createFromFormat('Y-m-d\TH:i:s.uZ',$myd);
-  echo 'DATE '.$myd->format('Y-m-d H:i:s');
-*/
-?>
 	<!-- Calendar Body -->
 	<div class="calendar-body">
 		
@@ -441,95 +432,16 @@ jQuery(document).ready(function($){
 			</div>
 		</div>
 		
-		<!-- custom task form 
-		<div class="calendar-sidebar-row">
-				
-			<form role="form" id="add_event_form">
-			
-				<div class="input-group minimal">
-					<input type="text" class="form-control" placeholder="Add event..." name="calendar"/>
-					
-					<div class="input-group-addon">
-						<i class="entypo-pencil"></i>
-					</div>
-				</div>
-				
-			</form>
-			
-		</div>
-		-->
-	
 		<!-- Events List -->
 		<ul class="events-list" id="draggable_events">
 			<li>
 				<p>Drag Events to Calendar Dates</p>
 			</li>
-			<!--  
-			<li>
-				<a href="#" class="color-primary" data-event-class="color-primary">Meeting</a>
-			</li>
-			<li>
-				<a href="#" class="color-primary" data-event-class="color-primary">Relax</a>
-			</li>
-			<li>
-				<a href="#" class="color-primary" data-event-class="color-primary">Study</a>
-			</li>
-			<li>
-				<a href="#" class="color-primary" data-event-class="color-primary">Family Time</a>
-			</li>
-			-->
-			<?php 
-				/*
-				foreach ($data['events'] as $d)
-				{
-					if (is_null($d['event_date']))
-					{
-						echo '<li>';
-						echo '<a id="'.$d['calendar_event_id'].'" href="#" class="color-primary" data-event-class="color-primary">'.$d['event_name'].'</a>';
-						echo '</liv>';
-					}
-				}
-				*/
-			?>
 		</ul>
-<!--  
-		<div class="calendar-sidebar-row">
-			Milestones
-			<div class='template_milestones'>
-			</div>
--->
-			<!--  
-			<form role="form" id="add_task_form">
-			
-				<div class="input-group minimal">
-					<input type="text" class="form-control" placeholder="Tracker" name="tracker"/>
-					
-					<div class="input-group-addon">
-						<i class="entypo-pencil"></i>
-					</div>
-				</div>
-				
-			</form>
-			-->
 		</div>
-	
-	
 		<!-- Events List -->
 		<ul class="events-list" id="milestone_events">
-			<?php 
-			/*
-				foreach ($data['tracker'] as $d)
-				{
-					if (is_null($d['event_date']))
-					{
-							
-						echo '<li>';
-						echo '<a href="#" class="color-green" data-event-class="color-green">'.$d['event_name'].'</a>';
-						echo '</liv>';
-					}
-				}
-				*/
-			?>		
+
 		</ul>
 	</div>
 	
@@ -858,10 +770,21 @@ jQuery(document).ready(function($){
 													
 			 									},			 									
 			 									*/
-			 									/*,
+			 									
 			 									eventAfterRender:function(event,element,view) {
-			 										element.tooltip({content:'this is a test',disabled:false});
-			 									}*/
+			 										//element.tooltip({content:'this is a test',disabled:false});
+			 										if (view.name == 'basicDay' || view.name=='basicWeek') {
+				 										if (event.description && event.description.length>0) {
+				 											var eventClass = 'gallery_'+event.description[0].id;
+															if (event.hasImages ) {
+																$('a.'+eventClass).colorbox({rel:eventClass});
+															} else if (event.hasVideo) {
+																$('a.'+eventClass).colorbox({rel:eventClass,iframe:true,width:event.description[0].video_w||300,height:event.description[0].video_h||300});
+															}
+															
+				 										}
+				 									}
+			 									}
 			 							});
 			
 			

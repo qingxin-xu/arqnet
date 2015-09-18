@@ -9,6 +9,40 @@ var arqUtils = {
 	   var tmp = document.createElement("DIV");
 	   tmp.innerHTML = html;
 	   return tmp.textContent || tmp.innerText || "";
+	},
+
+	createTooltip:function(element,content,target) {
+		if (!element) return;
+		if (!element.qtip) return;
+		var myTip = element.qtip({
+			   content:{text:content},
+			   hide:{
+				   fixed:true,
+				   delay:100
+			   },
+			   style: { 
+			      //width: 200,			
+			      padding: 5,
+			      background: '#181818',
+			      color: '#FFFFFF',
+			      textAlign: 'center',
+			      border: {
+			         width: 17,
+			         radius: 5,
+				 
+			         color: '#181818'
+			      },
+			      tip: 'topLeft',
+			      //name: 'dark' // Inherit the rest of the attributes from the preset dark style
+			   },
+			   show:'mouseover',
+			   position:{
+			   	target:element,
+			   	corner: {
+			   		target: target||'topCenter'
+			   	}
+			}
+		});		
 	}
 }
 
