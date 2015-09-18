@@ -138,10 +138,12 @@ function initializeMainSlider(initVal)
 	
 	for (var i = 0;i<values.length;i++) allSliderValues.push(values[i]);
 
-	var rightArrowPosition = $('.sliderContainer').width() - paddingMax - paddingMin;
+	var rightArrowPosition = $('.sliderContainer').width() - paddingMax - paddingMin+trackerOffset;
 	$('.rightArrow').css('left',rightArrowPosition+'px');
 	$('.rightArrow').css('opacity',0.5);
-	console.log('paddingMin and max',paddingMin,paddingMax);	
+	$('.leftArrow').css('left',trackerOffset+'px');
+	$('.leftArrow').css('opacity',0.5);
+	
 	// Set some options for the slider
 	$('#slider1').slider('option',{
 		paddingMin:paddingMin,
@@ -165,7 +167,7 @@ function initializeMainSlider(initVal)
 		}
 	});
 
-	/*$('#slider1 .ui-slider-handle')*/$('#slider1 .ui-label').click(function() {
+	$('#slider1 .ui-label').click(function() {
 		if (currentValue == null) return;
 		if (!(currentValue in _avg) ) {return;}
 		var str = _avg[currentValue]['date'].replace(/-/g,'_');
@@ -174,10 +176,9 @@ function initializeMainSlider(initVal)
 		tmp[1] = tmp[1];
 		window.open('/calendar?atDate='+tmp[0]+'_'+tmp[1]+'_'+tmp[2],'_blank');
 	});
-	//onMainSliderChange({value:0});
 	
 	setTimeout(function() {
-		if (values.length>1) $('#slider1').slider('values',0,initVal?values[initVal]:values[values.length-2]);
+		if (values.length>1) $('#slider1').slider('values',0,initVal?values[initVal+1]:values[values.length-2]);
 		$('#slider1 .ui-slider-handle').focus();
 	},1);
 }
@@ -917,15 +918,19 @@ function setTrackerOptions()
 	}
 }
 
+/*
+ * Show the mood graph on the tracker tab
+ */
 function slideTrackerRight() {
 
-	moodW = 0.33*$('.tab-pane.active').width();
+	//moodW = 0.33*$('.tab-pane.active').width();
+	moodW = $('#trackerMoodtabLeft').width();
 	var left = -$('#trackerChart').css('left');
 	
-	$('#trackerChart').animate({left:0});
+	$('#trackerChart').animate({left:-80});
 
 	$('#trackerMoodtabLeft').animate({
-		left:0,
+		left:-80,
 		opacity:1
 	});
 	
@@ -933,75 +938,32 @@ function slideTrackerRight() {
 		left:0,
 		opacity:0
 	});
-	trackerOffset = moodW - 48.36;
+	trackerOffset = moodW - 80;//48.36;
 	initializeMainSlider(currentValue);
-	return;
-	var values = Tracker.generateSliderValues(responseCount>=currentRangeValue?currentRangeValue:responseCount);
-
-	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width() - moodW;
-	//console.log('PADDING MAX',$('#trackers-tab').width(),$('#trackerChart').width(),paddingMax);
-	//$('#slider1').slider('option',{paddingMin:50,paddingMax:100,step:increments,min:minValue,max:maxValue,values:sliderValues});
-	$('#slider1').slider('option',{
-		paddingMin:moodW+42 + Tracker.trackerPlot.getPlotOffset().left-8,
-		paddingMax:paddingMax,//$('#trackers-tab').width()-$('#trackerChart').width()+20,
-		step:values.length>1?values[1]-values[0]:null,
-		min:values[0],
-		max:values[values.length-1],
-		values:values/*,
-		hooks: {drawOverlay: [Tracker.drawOverlayLine]}*/
-	});
-	$('#slider1').slider({
-		slide: function( event, ui ) {
-			$('#slider1 .ui-label').html('');
-		}
-	});
-	trackerOffset = moodW;
-	onMainSliderChange({value:currentValue||0});
 }
 
+/* 
+ * Hide the mood graph on the tracker tab
+ */
 function slideTrackerLeft() {
 	//Tracker tab set up
 	var left = 0.66*$('.tab-pane.active').width(),
 		offset = 5,
-		moodW = 0.33*$('.tab-pane.active').width();
-	$('#trackerChart').css('width',left+'px');
-	//$('#trackerChart').css('left',-moodW+'px');
+		moodW = 0.33*$('.tab-pane.active').width();	
 	$('#trackerChart').animate({left:-moodW+'px'});
-	$('#trackerMoodtabLeft').css('width',moodW+'px');
+
 	$('#trackerMoodtabLeft').animate({
-		left:0 - 5 - moodW+'px',
+		left:-moodW+'px',
 		opacity:0
 	});
 	
-	//$('#trackerMoodtabLeft').css('left',0 - 5 - moodW+'px');
-	
-	//$('#trackerCategories').css('left',-moodW+'px');
 	$('#trackerCategories').animate({
 		left:-moodW+'px',
 		opacity:1
 	});
-	var paddingMax = $('.tab-pane.active').width()-$('#trackerChart').width();
+	trackerOffset = 0
+	initializeMainSlider(currentValue);
 
-	var values = Tracker.generateSliderValues(responseCount>=currentRangeValue?currentRangeValue:responseCount);
-	
-	//console.log('PADDING MAX',$('#trackers-tab').width(),$('#trackerChart').width(),paddingMax);
-	//$('#slider1').slider('option',{paddingMin:50,paddingMax:100,step:increments,min:minValue,max:maxValue,values:sliderValues});
-	$('#slider1').slider('option',{
-		paddingMin:42+Tracker.trackerPlot.getPlotOffset().left-8,
-		paddingMax:paddingMax,//$('#trackers-tab').width()-$('#trackerChart').width()+20,
-		step:values.length>1?values[1]-values[0]:null,
-		min:values[0],
-		max:values[values.length-1],
-		values:values/*,
-		hooks: {drawOverlay: [Tracker.drawOverlayLine]}*/
-	});
-	$('#slider1').slider({
-		slide: function( event, ui ) {
-			$('#slider1 .ui-label').html('');
-		}
-	});
-	trackerOffset = 0;
-	onMainSliderChange({value:currentValue||0});
 }
 
 function onMainSliderChange(ui)
@@ -1119,25 +1081,18 @@ jQuery(document).ready(function($)
  		$('div.datepicker.dropdown-menu').prependTo($('.calendar.input-group'));
  		$('div.datepicker.dropdown-menu').css('top',0);
  		$('div.datepicker.dropdown-menu').css('left',0);
-	/*
-		$('.calendar.input-group prev').on('click',function(e) {
-			console.log('prev click',e);
-		});
-		*/
 	},500);
 	
 	$("[name=trackerSwitchCheckbox]").bootstrapSwitch({
 		onSwitchChange:function(event,state) {
 			if (state) {
-				//$('.TrackerSwitchLabel').html('View Chart Options');
 				slideTrackerRight();
 			} else {
-				//$('.TrackerSwitchLabel').html('View Spider Graph');
 				slideTrackerLeft();
 			}
 		},
 		onText:'On',
-		offText:'Off',//'View Spider Graph',
+		offText:'Off',
 		size:'small'
 	});
 	$('#myThinker').dialog({
@@ -1421,8 +1376,8 @@ function getRandomInt(min, max)
 								<div id='Tooltip3' class='plotTooltip'></div>
 								<div id='Tooltip4' class='plotTooltip'></div>
 
-								<div id="trackerMoodtabLeft" style='width:8%;position:relative;left:-8%;float:left;opacity:0;'>
-									<canvas id="tracker-mood-tab" style='height:300px;width:100%;'   height='300'></canvas>
+								<div id="trackerMoodtabLeft" style='width:25%;position:relative;left:-8%;float:left;opacity:0;'>
+									<canvas id="tracker-mood-tab" style='height:300px;width:371px;'   width='371' height='300'></canvas>
 								</div>
 								<div id="trackerChart" class="addG-fleft" style="float:left;height: 300px;width:75%;position:relative;left:0;"></div>
 								<div id='trackerCategories' class="addG-fleft chartLegend" style='display:inline-block;height:300px;width:7%;position:relative;left:0;'>
