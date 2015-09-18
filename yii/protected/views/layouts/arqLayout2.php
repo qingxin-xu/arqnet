@@ -29,6 +29,17 @@
 		.addG-panelhalfheight {height:398px;}
 	</style>
 	<script src="/assets/js/jquery-1.11.0.min.js"></script>
+	<script type='text/javascript'>
+		jQuery.browser = {};
+		(function () {
+		    jQuery.browser.msie = false;
+		    jQuery.browser.version = 0;
+		    if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+		        jQuery.browser.msie = true;
+		        jQuery.browser.version = RegExp.$1;
+		    }
+		})();
+	</script>
 	<!-- the mousewheel plugin - optional to provide mousewheel support -->
 	<script type="text/javascript" src="/assets/js/jscrollpane/jquery.mousewheel.js"></script>
 	
