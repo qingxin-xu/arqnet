@@ -930,12 +930,12 @@ class SiteController extends Controller
         $randomQuestions = array();
 
         foreach ($categories as $c => $category) {
-            $randomQuestions{$category{'name'}} = $this->getRandomQuestionByCategory($category);
+            $randomQuestions{$category{'name'}} = $this->getRandomQuestionByCategory($categories,$category);
         }
         $randomQuestion = null;
         while (!$randomQuestion) {
             $randInt = rand(0, count($categories) - 1);
-            $randomQuestion = $this->getRandomQuestionByCategory($categories{$randInt});
+            $randomQuestion = $this->getRandomQuestionByCategory($categories,$categories{$randInt});
         }
         $goto = null;
         if (isset($_GET['goto'])) {
@@ -985,7 +985,7 @@ class SiteController extends Controller
         while ($different < 0) {
             $categories = $this->getQuestionCategories();
             $randInt = rand(0, count($categories) - 1);
-            $question = $this->getRandomQuestionByCategory($categories{$randInt});
+            $question = $this->getRandomQuestionByCategory($categories,$categories{$randInt});
             if ($question && $question{'question_id'} != $question_id) $different = 1;
         }
 
@@ -1070,7 +1070,7 @@ class SiteController extends Controller
                 while ($different < 0) {
                     $categories = $this->getQuestionCategories();
                     $randInt = rand(0, count($categories) - 1);
-                    $myQuestion = $this->getRandomQuestionByCategory($categories{$randInt});
+                    $myQuestion = $this->getRandomQuestionByCategory($categories,$categories{$randInt});
                     if ($myQuestion && $myQuestion{'question_id'} != $question_id) $different = 1;
                 }
             }
@@ -1125,8 +1125,9 @@ class SiteController extends Controller
 
         $different = -1;
         $category = array('question_category_id' => $questionCategory->question_category_id, 'name' => $questionCategory->name);
+        $categories = $this->getQuestionCategories();
         while ($different < 0) {
-            $question = $this->getRandomQuestionByCategory($category);
+            $question = $this->getRandomQuestionByCategory($categories,$category);
             if ($question && $question{'question_id'} != $question_id) $different = 1;
         }
 
