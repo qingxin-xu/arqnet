@@ -348,7 +348,7 @@ class SiteController extends Controller
         $randomQuestion = null;
         while (!$randomQuestion) {
             $randInt = rand(0, count($categories) - 1);
-            $randomQuestion = $this->getRandomQuestionByCategory($categories{$randInt});
+            $randomQuestion = $this->getRandomQuestionByCategory($categories,$categories{$randInt});
         }
 
         $this->render('dashboard',
@@ -4214,17 +4214,22 @@ where user_id = $user_id
     /*
 	 * Random question from a category AND not answered by this user
 	 */
-    private function getRandomQuestionByCategory($category)
+    private function getRandomQuestionByCategory($categories,$category)
     {
-        if (!$category) return null;
-        $user_id = Yii::app()->user->id;
-        $_questions = Question::model()->with(array(
-            'questionStatus' => array('condition' => "name='Approved'")
-        ))->findAll('t.question_category_id=:_id', array(':_id' => $category{'question_category_id'}));
+        if (!$category) return 1;
+        $found = 0;
+        while($found == 0) {
+	        $user_id = Yii::app()->user->id;
+	        $_questions = Question::model()->with(array(
+	            'questionStatus' => array('condition' => "name='Approved'")
+	        ))->findAll('t.question_category_id=:_id', array(':_id' => $category{'question_category_id'}));
 
-        if (count($_questions) <= 0) {
-            return 1;
+	        if (count($_questions) <= 0) {
+	            $randInt = rand(0, count($categories) - 1);
+	            $category = $categories{$randInt};
+	        } else {$found = 1;}
         }
+        
         $questions = array();
         foreach ($_questions as $question) {
             if ($question->answers) {
