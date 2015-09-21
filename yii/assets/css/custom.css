@@ -21,11 +21,11 @@ h3 {
 	float:left;
 	background-image:url('/assets/images/header/infoIcon.png');
 	background-color:transparent;
-	background-size:25px 25px;
-	background-position:bottom center;
+	background-size:35px 35px;
+	background-position:center;
 	background-repeat:no-repeat;
-	height:30px;
-	width:30px;
+	height:40px;
+	width:40px;
 	cursor:pointer;
 }
 
@@ -113,7 +113,7 @@ h3 {
 	
 	top:3%;
 	z-index:1001;
-	left:386px;
+	left:262px;
 }
 
 .moodLabel {
