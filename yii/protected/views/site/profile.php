@@ -6,41 +6,6 @@
 <script type='text/javascript' src='/assets/js/profile/profile.js'></script>
 <script type='text/javascript'>
 	var myProfile = <?php echo json_encode($profile);?>;
-
-	$(document).ready(function() {
-		if (!myProfile) return;
-
-		for (var i in myProfile) {
-			var field = $('[name='+i+']');
-			if (field && field.length>0) {
-				if (myProfile[i] != null) {
-					field.val(myProfile[i]);
-				}
-			}
-		}
-
-		if (myProfile['orientation_id']) {
-			field = $('[name=orientation][value='+myProfile['orientation_id']+']');
-			if (field && field.length>0) {
-				field.attr('checked',true);
-			}
-		}
-
-		if (myProfile['relationship_status_id']) {
-			field = $('[name=relationship_status][value='+myProfile['relationship_status_id']+']');
-			if (field && field.length>0) {
-				field.attr('checked',true);
-			}
-		}
-
-		if (myProfile['gender']) {
-			field = $('[name=gender][value='+myProfile['gender']+']');
-			if (field && field.length>0) {
-				field.attr('checked',true);
-			}
-		}
-		
-	});
 </script>
 	<div class='row'>
 					<?php 
@@ -156,7 +121,47 @@
 							</form>
 						</div>
 						<div class="tab-pane" id='aboutMe'>
-							<form id='aboutMeForm' method='post'>
+							<div id='aboutMeReadOnly'>
+							<div class='col-sm-4'>
+								<div class="profile_info">Interests:</div>
+								<div class='tile-block addG-tileblock'>
+									<div class="tile-content interests"></div>
+								</div>
+								<div class="profile_info">Favorite Books:</div>
+								<div class='tile-block addG-tileblock'>
+									
+									<div class='tile-content favorite_books'></div>
+								</div>
+								<div class="profile_info">Website/Blog:</div>
+								<div class='tile-block addG-tileblock'>
+									<div class='tile-content website'></div>
+								</div>		
+								<div class='form-group'>
+										<input type='button' id='editAboutMe' value='edit' />
+								</div>					
+							</div>
+							<div class='col-sm-4'>
+								<div class="profile_info">Favorite Music:</div>
+								<div class='tile-block addG-tileblock'>
+									<div class='tile-content favorite_music'></div>
+								</div>
+								<div class="profile_info">Favorite TV:</div>
+								<div class='tile-block addG-tileblock'>
+									<div class='tile-content favorite_tv_shows'></div>
+								</div>			
+							</div>
+							<div class='col-sm-4'>
+								<div class="profile_info">Favorite Movies:</div>
+								<div class='tile-block addG-tileblock'>
+									<div class='tile-content favorite_movies'></div>
+								</div>
+								<div class="profile_info">Favorite Quotes:</div>
+								<div class='tile-block addG-tileblock'>
+									<div class='tile-content favorite_quotes'></div>
+								</div>										
+							</div>
+							</div>
+							<form id='aboutMeForm' method='post' style='display:none;'>
 								<div class='col-sm-4'>
 									<div class='form-group'>
 										<h4>Interests:</h4>
@@ -197,15 +202,10 @@
 
 
 <!-- Footer -->
-<footer class="main">
-	
-		
-	&copy; 2014 <strong>ArQnet</strong> Prototype <a>V 1.0</a>
-	
-</footer>
-	</div>
-	
-
+	<footer class="main">
+		&copy; 2014 <strong>ArQnet</strong> Prototype <a>V 1.0</a>
+	</footer>
+</div>
 <div id="myThinker" title="...">
   <p class="validateTips">Submitting Journal Entry</p> 
 </div>

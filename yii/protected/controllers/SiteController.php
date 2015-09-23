@@ -1514,10 +1514,12 @@ private function getMyJournalsByID($note_id){
             Yii::app()->end();
         }
 
+        $updatedProfile = array();
         foreach ($user as $key => $value) {
             $fieldValue = Yii::app()->request->getPost($key, '');
             if ($fieldValue && $value != $fieldValue) {
                 $user->$key = $fieldValue;
+                $updatedProfile[$key] = $fieldValue;
             }
         }
 
@@ -1532,6 +1534,7 @@ private function getMyJournalsByID($note_id){
             echo CJSON::encode(array(
                 'success' => 1,
                 'redirect' => '/dashboard',
+            	'profile' => $updatedProfile
             ));
             Yii::app()->end();
         } else {

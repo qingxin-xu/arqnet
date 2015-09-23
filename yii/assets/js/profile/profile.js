@@ -9,6 +9,53 @@ function clearPasswords()
 	$('input[type=password]').val('');
 }
 
+function updateAboutMeForm(profile) {
+	if (!profile) return;
+	for (var i in profile) {
+		var field = $('[name='+i+']');
+		if (field && field.length>0) {
+			if (profile[i] != null) {
+				field.val(profile[i]);
+			}
+		}
+		field = $('.'+i);
+		if (field && field.length>0) {
+			field.html(profile[i]);
+		}
+	}
+}
+
+$(document).ready(function() {
+	updateAboutMeForm(myProfile);
+	if (myProfile['orientation_id']) {
+		field = $('[name=orientation][value='+myProfile['orientation_id']+']');
+		if (field && field.length>0) {
+			field.attr('checked',true);
+		}
+	}
+
+	if (myProfile['relationship_status_id']) {
+		field = $('[name=relationship_status][value='+myProfile['relationship_status_id']+']');
+		if (field && field.length>0) {
+			field.attr('checked',true);
+		}
+	}
+
+	if (myProfile['gender']) {
+		field = $('[name=gender][value='+myProfile['gender']+']');
+		if (field && field.length>0) {
+			field.attr('checked',true);
+		}
+	}
+	
+	$('#editAboutMe').on('click',function() {
+		$('#aboutMeReadOnly').fadeOut('slow',function() {
+			$('#aboutMeForm').fadeIn('slow');
+		});
+	});
+	
+});
+
 $(document).ready(function() {
 	
 	var myProfileForm = '#myProfileForm',
@@ -150,7 +197,13 @@ $(document).ready(function() {
 					if (d.success && d.success>0)
 					{	
 						updateMsg($('.validateTips'),'Profile Updated');
-						setTimeout(function() {$('#myThinker').dialog('close');},2000);
+						setTimeout(function() {
+							$('#myThinker').dialog('close');
+							$('#aboutMeForm').fadeOut('slow',function() {
+								updateAboutMeForm(d['profile']||null);
+								$('#aboutMeReadOnly').fadeIn('slow');
+							});
+						},2000);
 					} else
 					{
 						console.log("ERRROR",d);
