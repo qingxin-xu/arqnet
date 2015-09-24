@@ -60,11 +60,11 @@
 	</div>
 		<div class="col-sm-3 col-sm-4 clearfix addG-progresswrap">
 			<div class="addG-tresh"></div>
-				<div class='powerbar_info' ></div>
 			<div class="progress progressPowerBar addG-progress arq-progress">
 				<div class="progress-bar power-progress-bar progressBar " role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100";width: 0%">
 				</div>
 			</div>
+			<div class='powerbar_info' ></div>
 		</div>
 	
 	<!-- Raw Links -->
