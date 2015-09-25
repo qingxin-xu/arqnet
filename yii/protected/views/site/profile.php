@@ -56,7 +56,102 @@
 					<div class='panel-body'>
 					<div class="tab-content">
 						<div class="tab-pane active" id='myProfile'>
-							<form id='myProfileForm' method='post'>
+							<div id='myProfileReadOnly'>
+								<div class='col-sm-4'>
+									
+									<div class="profile_info">First Name</div>
+									<div class=' tile-block addG-tileblock'>
+										<div class="myProfile tile-content first_name"></div>
+									</div>	
+									<div class="profile_info">Gender</div>
+										<input disabled type='radio' name='gender' value='F' /><label class='_radio' for='gender'>Female</label>
+										<input disabled type='radio' name='gender' value='M' /><label class='_radio' for='gender'  >Male</label>
+									
+									<div class="profile_info">Birthdate</div>
+									<div class='tile-block addG-tileblock'>
+										<div class="myProfile tile-content birthday"></div>
+									</div>
+									
+									<div class="profile_info">Facebook URL</div>
+									<div class='tile-block addG-tileblock'>
+										<div class="myProfile tile-content facebook_url"></div>
+									</div>
+									
+									<div class="profile_info">Ethnicity</div>
+									<div class='tile-block addG-tileblock'>
+										<div class="myProfile tile-content ethnicity"></div>
+									</div>
+									
+									<div class="profile_info">Email</div>
+									<div class='tile-block addG-tileblock'>
+										<div class="myProfile tile-content email"></div>
+									</div>
+									
+									<div class='form-group'>
+										<input id='editMyProfile' type='button' value='edit' />
+									</div>
+								</div>
+
+								<div class='col-sm-4'>
+									<div class="profile_info">Last Name</div>
+										<div class='tile-block addG-tileblock'>
+											<div class="myProfile tile-content last_name"></div>
+										</div>
+										<div class="profile_info">Relationship</div>
+											<?php 
+												$index = 0;
+												if ($relationships) {
+													foreach ($relationships as $o) {
+														if ($index%3==0) {echo "<div style='margin:10px;'>";}
+															echo "<input disabled type='radio' name='relationship_status' value='".$o{'id'}."' /><label class='_radio'>".$o{'description'}."</label>";
+														$index++;
+														if ($index%3 == 0) {echo "</div>";}
+													}
+													if ($index%3 != 0) {echo "</div>";}
+												}
+											?>
+											
+										<div class="profile_info">Location</div>
+										<div class='tile-block addG-tileblock'>
+											<div class="myProfile tile-content location"></div>
+										</div>
+										
+										<div class="profile_info">Twitter URL</div>
+										<div class='tile-block addG-tileblock'>
+											<div class="myProfile tile-content twitter_url"></div>	
+										</div>												
+					
+								</div>
+								<div class='col-sm-4'>
+										<div class="profile_info">Username</div>
+										<div class='tile-block addG-tileblock'>
+											<div class="myProfile tile-content username"></div>
+										</div>
+										<div class="profile_info">Orientation</div>
+											<?php 
+												$index = 0;
+												if ($orientations) {
+													foreach ($orientations as $o) {
+														if ($index%3==0) {echo "<div style='margin:10px;'>";}
+														echo "<input type='radio' name='orientation' value='".$o{'id'}."' /><label class='_radio'>".$o{'description'}."</label>";
+														$index++;
+														if ($index%3 == 0) {echo "</div>";}
+													}
+												}
+												if ($index%3 != 0) {echo "</div>";}
+											?>
+										<div class="profile_info">Occupation</div>
+										<div class='tile-block addG-tileblock'>
+											<div class="myProfile tile-content  occupation"></div>
+										</div>
+										<div class="profile_info">Google+ URL</div>
+										<div class='tile-block addG-tileblock'>
+											<div class="myProfile tile-content gplus_url"></div>	
+										</div>							
+								</div>								
+							</div>
+							
+							<form id='myProfileForm' method='post' style='display:none;'>
 								<div class='col-sm-4'>
 									<div class='form-group'>
 										<h3>First Name</h3>
@@ -195,12 +290,8 @@
 							</form>
 						</div>
 					</div>
-					</div>
+				</div>
 			</div>
-		<!--  </div>-->
-
-
-
 <!-- Footer -->
 	<footer class="main">
 		&copy; 2014 <strong>ArQnet</strong> Prototype <a>V 1.0</a>

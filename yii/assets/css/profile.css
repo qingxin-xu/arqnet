@@ -104,3 +104,8 @@ color:#FFFFFF;
 .addG-tileblock {
 	background-color:#181818;
 }
+
+.tile-block .myProfile.tile-content {
+	padding:5px;
+	min-height:25px;
+}

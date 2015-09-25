@@ -25,32 +25,42 @@ function updateAboutMeForm(profile) {
 	}
 }
 
+function updateMyProfileForm(profile) {
+	if (profile['orientation_id']) {
+		field = $('[name=orientation][value='+profile['orientation_id']+']');
+		if (field && field.length>0) {
+			field.attr('checked',true);
+		}
+	}
+
+	if (profile['relationship_status_id']) {
+		field = $('[name=relationship_status][value='+profile['relationship_status_id']+']');
+		if (field && field.length>0) {
+			field.attr('checked',true);
+		}
+	}
+
+	if (profile['gender']) {
+		field = $('[name=gender][value='+profile['gender']+']');
+		if (field && field.length>0) {
+			field.attr('checked',true);
+		}
+	}	
+}
+
 $(document).ready(function() {
 	updateAboutMeForm(myProfile);
-	if (myProfile['orientation_id']) {
-		field = $('[name=orientation][value='+myProfile['orientation_id']+']');
-		if (field && field.length>0) {
-			field.attr('checked',true);
-		}
-	}
-
-	if (myProfile['relationship_status_id']) {
-		field = $('[name=relationship_status][value='+myProfile['relationship_status_id']+']');
-		if (field && field.length>0) {
-			field.attr('checked',true);
-		}
-	}
-
-	if (myProfile['gender']) {
-		field = $('[name=gender][value='+myProfile['gender']+']');
-		if (field && field.length>0) {
-			field.attr('checked',true);
-		}
-	}
+	updateMyProfileForm(myProfile);
 	
 	$('#editAboutMe').on('click',function() {
 		$('#aboutMeReadOnly').fadeOut('slow',function() {
 			$('#aboutMeForm').fadeIn('slow');
+		});
+	});
+	
+	$('#editMyProfile').on('click',function() {
+		$('#myProfileReadOnly').fadeOut('slow',function() {
+			$('#myProfileForm').fadeIn('slow');
 		});
 	});
 	
@@ -123,16 +133,16 @@ $(document).ready(function() {
 	$(myProfileForm).validate({
 		
 		rules:{
-			first_name:{required:true},
-			birthday:{required:true,dateFormat:true},
+			//first_name:{required:true},
+			//birthday:{required:true,dateFormat:true},
 			facebook_url:{url:true},
-			ethnicity:{required:true},
-			last_name:{required:true},
-			relationship_status:{required:true},
-			location:{required:true},
+			//ethnicity:{required:true},
+			//last_name:{required:true},
+			//relationship_status:{required:true},
+			//location:{required:true},
 			twitter_url:{url:true},
 			username:{required:true},
-			orientation:{required:true},
+			//orientation:{required:true},
 			gplus_url:{url:true},
 			email:{required:true,email:true},
 			password2: {
@@ -154,7 +164,14 @@ $(document).ready(function() {
 					if (d.success && d.success>0)
 					{	
 						updateMsg($('.validateTips'),'Profile Updated');
-						setTimeout(function() {$('#myThinker').dialog('close');},2000);
+						setTimeout(function() {
+							$('#myThinker').dialog('close');
+							$('#myProfileForm').fadeOut('slow',function() {
+								updateAboutMeForm(d['profile']||null);
+								updateMyProfileForm(d['profile']||null);
+								$('#myProfileReadOnly').fadeIn('slow');
+							});
+						},2000);
 					} else
 					{
 						console.log("ERRROR",d);
