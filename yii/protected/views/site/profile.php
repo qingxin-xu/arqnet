@@ -174,6 +174,7 @@
 									</div>
 									<div class='form-group'>
 										<input type='submit' value='submit' />
+										<input id='myProfileCancelBtn' type='button' value='cancel' />
 									</div>
 								</div>
 								<div class='col-sm-4'>
@@ -268,6 +269,7 @@
 									</div>
 									<div class='form-group'>
 										<input type='submit' value='submit' />
+										<input id='aboutMeCancelBtn' type='button' value='cancel' />
 									</div>
 								</div>
 								<div class='col-sm-4'>

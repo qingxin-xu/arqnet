@@ -64,6 +64,23 @@ $(document).ready(function() {
 		});
 	});
 	
+	$('#aboutMeCancelBtn').on('click',function() {
+		updateAboutMeForm(myProfile);
+		$('#aboutMeForm').fadeOut('slow',function() {
+			
+			$('#aboutMeReadOnly').fadeIn('slow');
+		});		
+	});
+	
+	$('#myProfileCancelBtn').on('click',function() {
+		updateAboutMeForm(myProfile);
+		updateMyProfileForm(myProfile);
+		$('#myProfileForm').fadeOut('slow',function() {
+			
+			$('#myProfileReadOnly').fadeIn('slow');
+		});		
+	});
+	
 });
 
 $(document).ready(function() {
