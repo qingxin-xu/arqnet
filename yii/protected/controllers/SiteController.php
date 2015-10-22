@@ -520,6 +520,14 @@ class SiteController extends Controller
         $user = User::model()->findByAttributes(
             array('user_id' => Yii::app()->user->id)
         );
+        $me = array();
+        if ($user) {
+        	foreach ($user as $key => $value) {
+        		if (strcmp('password', $key) != 0 && strcmp('user_id', $key) != 0)
+        			$me{$key} = $value;
+        	}
+        	$image = Image::model()->findByAttributes(array('image_id' => $user->image_id));
+        }
         $cat = EventCategory::model()->with('eventSubcategories')->findAll('t.name=:_name', array(':_name' => 'Milestones'));
         $milestones = EventCategory::_getCategories($cat);
         $is_bound = BindingAccount::model()->findAllByAttributes(array('arq_id' => Yii::app()->user->id));
@@ -558,7 +566,7 @@ class SiteController extends Controller
         $this->layout = 'arqLayout2';
         $this->setPageTitle('Settings');
         $this->render('settings', array(
-            'user' => $user,
+            'user' => $me,
             'milestones' => $milestones,
             'is_bound' => $is_bound,
             'third_part_account' => $third_part_account,
@@ -2525,11 +2533,12 @@ private function getMyJournalsByID($note_id){
                 Yii::app()->end();
             }
         }
-
+		/*
         $facebook_url = Yii::app()->request->getPost('facebook_url', '');
         if ($facebook_url != $user->facebook_url) {
             $user->facebook_url = $facebook_url;
         }
+        */
         $twitter_url = Yii::app()->request->getPost('twitter_url', '');
         if ($twitter_url != $user->twitter_url) {
             $user->twitter_url = $twitter_url;

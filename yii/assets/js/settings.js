@@ -14,15 +14,18 @@ function getUrlParam(name)
  	alert("Your facebook account has been bound before, please switch your facebook account.");
  	window.location.href="/settings"; 
  }
+ 
  if(getUrlParam("error") == 1) {
      alert("Your current facebook login account is not the bind account you left in arq, please re_log your facebook with correct account");
      window.open("http://www.facebook.com");
  }
+ 
 var myArq = myArq || {},
 	successMsg = 'Settings have been updated',
 	errorMsg = 'Unable to update your settings at this time',
 	thinkingMsg = 'Updating settings',
 	formID = '#userSettings';
+
 function auto_update(third) {
 	$.ajax({
 		url: '/AutoUpdate',
@@ -46,8 +49,14 @@ function auto_update(third) {
 
 function resetPasswordFields()
 {
-	$('input[name=password')[0].reset();
-	$('input[name=password2')[0].reset();
+	$('input[name=password2').val("");
+	$('input[name=password').val("");
+}
+
+function resetSettingsForm() {
+	resetPasswordFields();
+	updateMyProfileForm(myProfile);
+	updateAboutMeForm(myProfile);	
 }
 
 ;(function($, window, undefined)
@@ -56,6 +65,9 @@ function resetPasswordFields()
 	
 	$(document).ready(function()
 	{
+		
+		updateMyProfileForm(myProfile);
+		updateAboutMeForm(myProfile);
 		// Form Validation & Submit
 		$(formID).validate({
 			rules: {
@@ -131,7 +143,13 @@ function resetPasswordFields()
 			}
 		});
 		
-
+		$('#resetPrevious').on('click',function(evt) {
+			evt.stopPropagation();
+			resetSettingsForm();
+		});
+		$('#resetPrevious').click();
 	});
+	
+	
 	
 })(jQuery, window);

@@ -4,6 +4,7 @@
 <script src='http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js'></script>
 <script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
 <script type='text/javascript' src='/assets/js/profile/profile.js'></script>
+<script type='text/javascript' src='/assets/js/profile/profileUtils.js'></script>
 <script type='text/javascript'>
 	var myProfile = <?php echo json_encode($profile);?>;
 </script>

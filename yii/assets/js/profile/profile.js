@@ -9,44 +9,6 @@ function clearPasswords()
 	$('input[type=password]').val('');
 }
 
-function updateAboutMeForm(profile) {
-	if (!profile) return;
-	for (var i in profile) {
-		var field = $('[name='+i+']');
-		if (field && field.length>0) {
-			if (profile[i] != null) {
-				field.val(profile[i]);
-			}
-		}
-		field = $('.'+i);
-		if (field && field.length>0) {
-			field.html(profile[i]);
-		}
-	}
-}
-
-function updateMyProfileForm(profile) {
-	if (profile['orientation_id']) {
-		field = $('[name=orientation][value='+profile['orientation_id']+']');
-		if (field && field.length>0) {
-			field.attr('checked',true);
-		}
-	}
-
-	if (profile['relationship_status_id']) {
-		field = $('[name=relationship_status][value='+profile['relationship_status_id']+']');
-		if (field && field.length>0) {
-			field.attr('checked',true);
-		}
-	}
-
-	if (profile['gender']) {
-		field = $('[name=gender][value='+profile['gender']+']');
-		if (field && field.length>0) {
-			field.attr('checked',true);
-		}
-	}	
-}
 
 $(document).ready(function() {
 	updateAboutMeForm(myProfile);
