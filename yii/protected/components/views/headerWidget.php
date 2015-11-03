@@ -14,9 +14,9 @@
 		<ul class="user-info pull-left pull-none-xsm" >
 		
 						<!-- Profile Info -->
-			<li class="profile-info dropdown"><!-- add class "pull-right" if you want to place this from right -->
+			<li class="profile-info dropdown">
 				
-				<a href="#" class="dropdown-toggle " data-toggle="dropdown">
+				<a href="/profile" class="dropdown-toggle " >
 					<?php
 						$img = "default_user.jpg";
 						if (!is_null($image))
@@ -35,25 +35,7 @@
 							
 						}
 					?>
-					
-					<!--  SuperNova 68-->
-					
 				</a>
-				
-				<ul class="dropdown-menu">
-					
-					<!-- Reverse Caret -->
-					<li class="caret"></li>
-					
-					<!-- Profile sub-links -->
-					<li>
-						<a href="profile">
-							<i class="entypo-user"></i>
-							Edit Profile
-						</a>
-					</li>
-					
-				</ul>
 			</li>
 		
 		</ul>
