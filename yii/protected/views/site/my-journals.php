@@ -157,12 +157,9 @@
 	<div class='row col-sm-9'>
 		<div style='height:52px;width:90%;'>
 			<div style='float:left;' class="boxHeader">
-				<!--
-				<span class="word1">Recent </span>
-				-->  
 				<span class="word2">Journal</span>
 			</div>
-			<div style='float:right;margin:26px 0 0 0;'><button  onclick='window.location.href="/journal"' type='button'>Create New Entry</button></div>
+			<div class="create_entry_wrapper"><button  onclick='window.location.href="/journal"' type='button'>Create New Entry</button></div>
 		</div>
 		<div class='myJournalsContainer'  id='myJournals'>You have no journal entries</div>
 		<div class='myJournalsPager'>

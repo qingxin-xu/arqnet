@@ -160,11 +160,13 @@ var journalMgr = {
 	
 	template:[
 	          "<div class='journalEntryWrapper'>",
-	          	"<h1 class='journalEntryTitle'>{TITLE}</h1>",
-	          	"<div class='journalEntryDateTimeWrapper'>",
-	          		"<span class='journalEntryDate'>{DATE}</span>",
-	          		"<span class='journalEntryTime'>{TIME}</span>",
-	          	"</div>",
+	          	"<div class='journalHeaderWrapper'>",
+		          	"<h1 class='journalEntryTitle'>{TITLE}</h1>",
+		          	"<div class='journalEntryDateTimeWrapper'>",
+		          		"<span class='journalEntryDate'>{DATE}</span>",
+		          		"<span class='journalEntryTime'>{TIME}</span>",
+		          	"</div>",
+		        "</div>",
 	          	"<div class='journalEntryContent'>{CONTENT}</div>",
 	          	"<div class='journalEntryButtons'>",
 	          		"<button id='Journal_{JOURNAL_ID}' class='edit' type='button'>Edit</button>",
