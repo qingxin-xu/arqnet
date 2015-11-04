@@ -36,7 +36,7 @@ jQuery(document).ready(function($){
 	tinymce.init({
 	    selector: "textarea[name=post_content]",
 	    content_css:'assets/css/custom.css',
-	    plugins:['jbimages','paste'],
+	    plugins:['jbimages','paste','link'],
 	    menubar: "edit insert view format table tools",
 	    relative_urls:false,
 	    paste_as_text:true
