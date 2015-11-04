@@ -470,3 +470,8 @@ a.logout {
 .breadcrumb > li + li:before {
 	content:none;
 }
+
+.mce-label {
+	text-shadow:none;
+	color:#fff;
+}
