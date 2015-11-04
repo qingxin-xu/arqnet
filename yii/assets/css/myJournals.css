@@ -21,6 +21,9 @@
 	margin:15px 0;
 }
 
+.journalEntryWrapper img {
+	max-width:50%;
+}
 .journalHeaderWrapper {
 	width:100%;
 	height:45px;
