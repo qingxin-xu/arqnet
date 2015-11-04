@@ -623,7 +623,7 @@ function setMoodDisplay(response)
 
 		bar = $('.'+moods[i]+' .moodValue');
 		if (bar) {
-			bar.html(parseFloat(moodValue).toFixed(2));
+			bar.html((parseFloat(moodValue)*100).toFixed(0)+'%');
 		}
 	}
 	moodSpiderGraph.drawradar(moodValues);
