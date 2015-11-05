@@ -415,6 +415,62 @@ class SiteController extends Controller
         Yii::app()->end();
     }
 
+    /**
+     * Service to look up cities based on input text
+     * @throws CHttpException
+     */
+    public function actionCityLookup() {
+    	if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+    		throw new CHttpException('403', 'Forbidden access.');
+    	}
+    	header('Content-type: application/json');
+    	$term = addcslashes(Yii::app()->getRequest()->getQuery('term'),'%_');
+    	$q = new CDbCriteria( array(
+    			'condition' => "city LIKE :match",         // no quotes around :match
+    			'params'    => array(':match' => "%$term%"),  // Aha! Wildcards go here
+    			'distinct'  => true
+    	) );
+    	$locations = Locations::model()->findAll($q);
+    	$hash = array();
+    	$results = array();
+    	foreach ($locations as $loc) {
+    		if (!array_key_exists($loc->city_state,$hash)) {
+    			array_push($results,array('label'=>$loc->city_state,'value'=>$loc->city));
+    			$hash[$loc->city_state] = 1;
+    		}
+    	}
+    	echo CJSON::encode($results);
+    	Yii::app()->end();
+    }
+    
+    /**
+     * Service to look up ethnicities based on input text
+     * @throws CHttpException
+     */
+    public function actionEthnicityLookup() {
+    	if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+    		throw new CHttpException('403', 'Forbidden access.');
+    	}
+    	header('Content-type: application/json');
+    	$term = addcslashes(Yii::app()->getRequest()->getQuery('term'),'%_');
+    	$q = new CDbCriteria( array(
+    			'condition' => "description LIKE :match",         // no quotes around :match
+    			'params'    => array(':match' => "%$term%"),  // Aha! Wildcards go here
+    			'distinct'  => true
+    	) );
+    	$locations = Ethnicity::model()->findAll($q);
+    	$hash = array();
+    	$results = array();
+    	foreach ($locations as $loc) {
+    		if (!array_key_exists($loc->description,$hash)) {
+    			array_push($results,array('label'=>$loc->description,'value'=>$loc->description));
+    			$hash[$loc->description] = 1;
+    		}
+    	}
+    	echo CJSON::encode($results);
+    	Yii::app()->end();    	
+    } 
+    
     public function actionGetDashboardData() {
     	if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
     		throw new CHttpException('403', 'Forbidden access.');
@@ -425,7 +481,7 @@ class SiteController extends Controller
    		$duration = Yii::app()->getRequest()->getQuery('duration');
    		if (!$duration) $duration = 90;
     	$dashboardData = $this->_getDashboardData($duration,$from_date);
-    	MyStuff::Log("DDData");MyStuff::Log($dashboardData);
+    	
     	echo CJSON::encode(array(
     			'success' => 1,
     			'responses' => $dashboardData{'eventData'},
