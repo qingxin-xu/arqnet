@@ -221,6 +221,43 @@ $(document).ready(function() {
 		}
 		
 	});
+	/*
+	 * 	Auto complete for location
+	 */
+    $( "[name=location]" ).autocomplete({
+        source: function( request, response ) {
+          $.ajax({
+            url: "/cityLookup",
+            dataType: "json",
+            data: {
+              term: request.term
+            },
+            success: function( data ) {
+              response( data );
+            }
+          });
+        },
+        minLength: 3
+    });
+    
+    /*
+     * 	Auto complete for ethnicity
+     */
+    $( "[name=ethnicity]" ).autocomplete({
+        source: function( request, response ) {
+          $.ajax({
+            url: "/ethnicitysLookup",
+            dataType: "json",
+            data: {
+              term: request.term
+            },
+            success: function( data ) {
+              response( data );
+            }
+          });
+        },
+        minLength: 3
+    });
 });
 
 $(function () {
