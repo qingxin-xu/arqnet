@@ -246,7 +246,7 @@ $(document).ready(function() {
     $( "[name=ethnicity]" ).autocomplete({
         source: function( request, response ) {
           $.ajax({
-            url: "/ethnicitysLookup",
+            url: "/ethnicityLookup",
             dataType: "json",
             data: {
               term: request.term
