@@ -30,7 +30,7 @@ var urlExpStr = '(http|ftp|https)://[\\w-]+(\\.[\\w-]+)+([\\w-.,@?^=%&:/~+#-]*[\
 	urlexp = new RegExp(urlExpStr,'g'),
 	hyperlinkUrlExpStr = 'href\\s*=\\s*(\\&\\#39\\;)*(\\&quot\\;)*(\\\')*(\\")*'+urlExpStr,
 	hyperlinkExp = new RegExp(hyperlinkUrlExpStr,'g'),
-	taggedUrlExpStr = '(&gt;|>)\\s*'+urlExpStr+'\\s*(&lt;|<)',
+	taggedUrlExpStr = /*'(<\\s*a|&lt;\\s*a).**/'(&gt;|>)\\s*'+urlExpStr+'\\s*(&lt;|<)',
 	taggedUrlExp = new RegExp(taggedUrlExpStr,'g');
 	
 var urlexp = new RegExp( '(http|ftp|https)://[\\w-]+(\\.[\\w-]+)+([\\w-.,@?^=%&:/~+#-]*[\\w@?^=%&;/~+#-])?','g' );
@@ -39,28 +39,41 @@ var urlexp = new RegExp( '(http|ftp|https)://[\\w-]+(\\.[\\w-]+)+([\\w-.,@?^=%&:
  */
 
 function processLinks(content) {
-	//All hyperlinked URLs
-	var myHyperlinkURLs = content.match(hyperlinkExp)||[],
-		myHyperlinkHash = {};
+	// Create DOM for content - helpful if content was pasted from somewhere else
+	$('.holdingArea').html(content);
 
-	myHyperlinkURLs = myHyperlinkURLs.concat(content.match(taggedUrlExp)||[]);
-	
-	//Encode hyperlinked URLs
-	for (var i = 0;i<myHyperlinkURLs.length;i++) {
-		var myCode = "ArQNeT"+i;
-		myHyperlinkHash[myCode] = myHyperlinkURLs[i];
-		content = content.replace(myHyperlinkURLs[i],myCode);
+	//Mask anchor nodes so they are not processed again
+	var myHyperlinkHash = {},
+		index = 1;
+	$('.holdingArea a').each(function(i,item) {
+		var myCode = 'ArQNet'+index++;
+		myHyperlinkHash[myCode] = {
+			href:$(this).attr('href'),
+			innerHTML:$(this).html()
+		}
+		$(this).attr('href','HREF'+myCode);
+		$(this).html('HTML'+myCode);
+	});
+
+	//Convert URLs to anchors
+	var newContent = _processLinks($('.holdingArea').html());
+
+	//Unmask masked hyperlink content
+	for (var i in myHyperlinkHash) {
+		newContent = newContent.replace('HREF'+i,myHyperlinkHash[i]['href']);
+		newContent = newContent.replace('HTML'+i,myHyperlinkHash[i]['innerHTML']);
 	}
-	
+	$('.holdingArea').html("");
+	return newContent;
+}
+
+function _processLinks(content) {
 	//URLs not hyperlinked yet
-	var myLinksArr = content.match(urlexp)||[];
+	var myLinksArr = content.match(urlexp)||[]
 	for (var i = 0;i<myLinksArr.length;i++) {
 		content = content.replace(myLinksArr[i],"<a href='"+myLinksArr[i]+"' target=_blank>"+myLinksArr[i]+"</a>");
 	}
-	//Decode URLs that have already been hyperlinked
-	for (var i in myHyperlinkHash) {
-		content = content.replace(i,myHyperlinkHash[i]);
-	}
+
 	return content;
 }
 function updateMsg( description,t ) {
@@ -76,8 +89,12 @@ jQuery(document).ready(function($){
 	    menubar: "edit insert view format table tools",
 	    relative_urls:false,
 	    paste_as_text:true,
+
 	    paste_preprocess: function(plugin, args) {
-	        args.content=processLinks(args.content);
+	        var myContent = args.content;
+	        myContent = myContent.replace(/&lt;/g,'<');
+	        myContent = myContent.replace(/&gt;/g,'>');
+	        args.content = processLinks(myContent);
 	    }
 	 });
 	$('input[name=publish_time]').timepicker();
@@ -332,7 +349,7 @@ jQuery(document).ready(function($){
 	</div>
 	
 </form>
-
+<div class='holdingArea hidden'></div>
 <!-- Footer -->
 <footer class="main">
 	
