@@ -381,13 +381,13 @@ function navigateToDate(dateStr) {
 	//Find index in __avg where this date occurs
 	if (index<0) return;
 	if (index+14 > __avg.length-1) {
-		index = defaultRange - ( (__avg.length-1) - index );
+		index = defaultRange - ( (__avg.length-1) - index ) - 1;
 		currentStart = 60;
 		currentEnd = currentStart+defaultRange;	
 	} else {
 		currentStart = index - 15;
 		currentEnd = currentStart+defaultRange;
-		index = index - currentStart+1;
+		index = index - currentStart;
 	}	
 	initializeMainSlider(index);
 }
@@ -1065,7 +1065,7 @@ jQuery(document).ready(function($)
 					if (month<10) month='0'+month;
 					if (day<10) day = '0'+day;
 					dateStr = year+'-'+month+'-'+day;
-					
+
 					if (dateInRange(dateStr)) {
 						navigateToDate(dateStr);
 					} else {
