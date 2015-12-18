@@ -26,7 +26,43 @@ label[for='visibility'] {
 </style>
 <script type="text/javascript" src="assets/js/tinymce/js/tinymce/tinymce.min.js"></script>
 <script type="text/javascript">
+var urlExpStr = '(http|ftp|https)://[\\w-]+(\\.[\\w-]+)+([\\w-.,@?^=%&:/~+#-]*[\\w@?^=%&;/~+#-])?',
+	urlexp = new RegExp(urlExpStr,'g'),
+	hyperlinkUrlExpStr = 'href\\s*=\\s*(\\&\\#39\\;)*(\\&quot\\;)*(\\\')*(\\")*'+urlExpStr,
+	hyperlinkExp = new RegExp(hyperlinkUrlExpStr,'g'),
+	taggedUrlExpStr = '(&gt;|>)\\s*'+urlExpStr+'\\s*(&lt;|<)',
+	taggedUrlExp = new RegExp(taggedUrlExpStr,'g');
+	
+var urlexp = new RegExp( '(http|ftp|https)://[\\w-]+(\\.[\\w-]+)+([\\w-.,@?^=%&:/~+#-]*[\\w@?^=%&;/~+#-])?','g' );
+/*
+ * /(([a-z]+:\/\/)?(([a-z0-9\-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-\.~]+)*(\/([a-z0-9_\-\.]*)(\?[a-z0-9+_\-\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi
+ */
 
+function processLinks(content) {
+	//All hyperlinked URLs
+	var myHyperlinkURLs = content.match(hyperlinkExp)||[],
+		myHyperlinkHash = {};
+
+	myHyperlinkURLs = myHyperlinkURLs.concat(content.match(taggedUrlExp)||[]);
+	
+	//Encode hyperlinked URLs
+	for (var i = 0;i<myHyperlinkURLs.length;i++) {
+		var myCode = "ArQNeT"+i;
+		myHyperlinkHash[myCode] = myHyperlinkURLs[i];
+		content = content.replace(myHyperlinkURLs[i],myCode);
+	}
+	
+	//URLs not hyperlinked yet
+	var myLinksArr = content.match(urlexp)||[];
+	for (var i = 0;i<myLinksArr.length;i++) {
+		content = content.replace(myLinksArr[i],"<a href='"+myLinksArr[i]+"' target=_blank>"+myLinksArr[i]+"</a>");
+	}
+	//Decode URLs that have already been hyperlinked
+	for (var i in myHyperlinkHash) {
+		content = content.replace(i,myHyperlinkHash[i]);
+	}
+	return content;
+}
 function updateMsg( description,t ) {
 	description
       .text( t );
@@ -39,7 +75,10 @@ jQuery(document).ready(function($){
 	    plugins:['jbimages','paste','link'],
 	    menubar: "edit insert view format table tools",
 	    relative_urls:false,
-	    paste_as_text:true
+	    paste_as_text:true,
+	    paste_preprocess: function(plugin, args) {
+	        args.content=processLinks(args.content);
+	    }
 	 });
 	$('input[name=publish_time]').timepicker();
 	$('#myThinker').dialog({

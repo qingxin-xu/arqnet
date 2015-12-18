@@ -12,7 +12,6 @@ var myJournal = myJournal || {};
 		$('input[name=publish_date]').datepicker({});
 		myJournal.$container = $("#journalForm");
 		
-		// Login Form & Validation
 		myJournal.$container.validate({
 			rules: {
 				post_title: {
@@ -43,9 +42,9 @@ var myJournal = myJournal || {};
 			
 			submitHandler:function(ev)
 			{		
-				//$('textarea[name=stripped_content]').html($('textarea[name=post_content]').val().replace(/\<br\>/g,' '));
+				var content = processLinks(tinyMCE.activeEditor.getContent());
 				$('textarea[name=stripped_content]').html(tinyMCE.activeEditor.getContent({format:'text'}));
-				$('textarea[name=post_content]').html(tinyMCE.activeEditor.getContent());
+				$('textarea[name=post_content]').html(content);
 				var service = '/createOrUpdateJournal';
 				updateMsg($('.validateTips'),'Creating Journal Entry');
 				$('#myThinker').dialog('open');
