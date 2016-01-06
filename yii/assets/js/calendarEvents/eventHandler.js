@@ -18,6 +18,7 @@ var eventHandler = {
 		this.dispatch('/myJournals',event);
 	},
 
+	FBNote:function(event) {},
 	QA_Asked:function(event) {
 		if (!event) return;
 		var onDate = this.getEventDate(event);
@@ -137,6 +138,9 @@ var eventHandler = {
 	createTooltip:function(element,event,registeredEvent) {		
 			if (!element) return;	
 			if (!element.qtip) return;	
+			if (event.description && event.description.length>0) {
+				if (event.description[0].images || event.description[0].video) return;
+			}
 			var view = $('#calendar').fullCalendar( 'getView' );
 			if(view.name == "month") return;
 			if(event.subcategory == "typeInEvents") {

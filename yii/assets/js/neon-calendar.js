@@ -66,7 +66,6 @@ var eventRender = {
 	},
 	
 	registerEvent:function(element,event,view) {
-		//console.log('register event ',this,this['render'+event.subcategory]);
 		if (view.name != 'month' || !event.subcategory /*|| !this[event.subcategory]*/) {
 			element.find('.fc-content').addClass('closeView');
 			if (view.name == 'basicDay') element.find('.fc-title').addClass('text_position');
@@ -185,17 +184,35 @@ var eventRender = {
 	
 	renderFBNote:function(element,event) {
 		if (!element || !event) return;
-		var noteStr = "Note: "+event.description[0].value;
-		try {
-			noteStr = $(event.description[0].value).text();
-		} catch(e) {
-			noteStr = "Note "+event.description[0].value;
+		
+		var noteStr,
+			eventClass,
+			description;
+		
+		if (event.description && event.description.length>0) {
+			console.log(event.description[0].note_id);
+			eventClass ='gallery_'+event.description[0].id;
+			description = event.description[0].value?event.description[0].value:"";
 			
+			if (event.description[0].images) {
+				var images = event.description[0].images;
+				description += "  Click To View Images";
+				noteStr = "<a href='"+images[0]+"' class='"+eventClass+"'>"+description+"</a>";
+				for (var i = 1;i<images.length;i++) {
+					noteStr += "<p style='display:none;'><a href='"+images[i]+"' target='_blank' class='"+eventClass+"'></a></p>"; 
+				}
+				event.hasImages=true;
+			} else if (event.description[0].video) {
+				description += "  Click To View Video";
+				noteStr = "<a href='"+event.description[0].video+"' class='"+eventClass+"'>"+description+"</a>";
+				event.hasVideo = true;
+			} else noteStr = event.description[0].value;
+			
+		} else {
+			noteStr = 'Note ';
 		}
-		finally {
-			element.find('.fc-content').addClass('eventIcon facebook_event note');//html('Note: '+event.description[0].value);
-			element.find('.fc-title').html(noteStr);
-		}
+		element.find('.fc-content').addClass('eventIcon facebook_event note');//html('Note: '+event.description[0].value);
+		element.find('.fc-title').html(noteStr);
 	},
 	
 	preRenderEvent:function(element,event) {

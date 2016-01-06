@@ -5,6 +5,7 @@ require_once Yii::app()->basePath . '\controllers\SiteController.php';
 */
 Yii::import('application.Vendor.*');
 require_once('fb_v321/facebook.php');
+Yii::import('application.controllers.SiteController');
 
 class FBLoginController extends Controller
 {
@@ -17,12 +18,21 @@ class FBLoginController extends Controller
 		'oauth ' => true,
 	);
 	*/
+	/* arqnet
 	public $config = array(
 			'appId' => '1593970450870932',
 			'secret' => '27d7c56415b50d1b07230fedacd1a5a9',
 			'cookie' => true,
 			'oauth ' => true,
 	);	
+	*/
+	/* local */
+	public $config = array(
+			'appId' => '1625355101065800',
+			'secret' => 'a93408d548afc749d21d39f8355d7261',
+			'cookie' => true,
+			'oauth ' => true,
+	);
 	public function actionIndex()
 	{
 //		$this->layout = 'arqLayout1';
@@ -71,8 +81,15 @@ class FBLoginController extends Controller
 		if ($user_id) {
 			try {
 				$me = $facebook->api('/me');
-                                MyStuff::Log("FB ME ");MyStuff::Log($me);
-                                MyStuff::Log("BINDING ".$binding);
+				$since = strtotime(date('Y-m-d')) - 30*24*3600;
+				/*
+                MyStuff::Log("FB ME ");MyStuff::Log($me);
+               	MyStuff::Log("SINCE= ".date('Y-m-d',1364849754).' '.$since);
+                MyStuff::Log("BINDING ".$binding);
+                MyStuff::Log("POSTS? ".$me['id']);
+              	MyStuff::Log($facebook->api('/'.$me['id'].'/posts?since='.$since));
+                MyStuff::Log("AFTER POSts");
+                */
 				//如果单纯绑定，则只需要判断是否已绑定，与登录注册无关
 				if ($binding == 1 && $me) {
 
@@ -270,21 +287,6 @@ class FBLoginController extends Controller
 
 					//do login action
 				} else if ($username_exists) {
-//					if ($bingding == 1) {
-//						Yii::app()->session['binding_status'] = 0;
-//						//获取当前登录的账户id
-//						$banding_account = new BindingAccount();
-//						$banding_account->arq_id = Yii::app()->user->Id;
-//						//获取fb返回的账户名称 并取得该账户的id
-//						$banding_account->fb_id = $username_exists['user_id'];
-//
-//						//写入绑定关系表
-//						$banding_account->save(false, $banding_account);
-//						Yii::app()->session['fb_user_id'] = $username_exists['user_id'];
-//						//绑定成功后，弹出导入blog选项
-//						$this->redirect("/brandhorse/yii/index.php/calendar/index?progress=1");
-//						exit;
-//					}
 
 					$auth = new LoginForm();
 					$pwd = $this->encrypt($username_exists['encrypt_pwd'], 'D', 'danielcome');
@@ -315,14 +317,15 @@ class FBLoginController extends Controller
 						//更新登录时间
 						$currentLoginDate = new CDbExpression('NOW()');
 						User::model()->updateByPk(Yii::app()->user->id, array('login_date' => $currentLoginDate));
-
+						$diff = $nowStamp - $lastLoginStamp;
+						MyStuff::Log("LASt lOGIN STUFF ".$nowStamp.' '.$lastLoginStamp.' '.$diff);
 						//超过一个月没有登录 弹出导入选择框
 						if (empty($lastLoginStamp) || ($nowStamp - $lastLoginStamp) >= 2592000) {
 							$this->redirect("/calendar?progress=1");
 						}
 
-						$timePeriod = strtotime("-1 month");
-						$this->getUserMessage($timePeriod);
+						//$timePeriod = strtotime("-1 month");
+						//$this->getUserMessage($timePeriod);
 						$this->redirect("/calendar");
 						exit;
 					} else {
@@ -546,35 +549,213 @@ class FBLoginController extends Controller
 	return join("",$match[0]);
 	}
 	
+	private function addLink($post,$note) {
+		if (isset($post['link'])) {
+			$link = $this->addContentLink($post['link']);
+			$note->content = $note->content.'<br>'.$link;
+		}		
+	}
+	
+	private function getImages($facebook,$note,$post_id) {
+		$post = $facebook->api('/'.$post_id.'/attachments');
+		$image_ids = array();
+		if (isset($post['data'])) {
+			if (isset($post['data'][0])) {
+				if (isset($post['data'][0]['subattachments'])) {
+					$arr = $post['data'][0]['subattachments']['data'];
+					foreach ($arr as $image) {
+						$image_id = $this->addImage($image['media']['image']);
+						array_push($image_ids,$image_id);
+					}
+				} else {
+					$image_id = $this->addImage($post['data'][0]['media']['image']);
+					array_push($image_ids,$image_id);
+				}
+			}
+		}
+		return $image_ids;
+	}
+	
+	private function getVideo($facebook,$note,$post) {
+		$video = new Video();
+		$video->path = $post['source'];
+		$video_post = $facebook->api('/'.$post['id'].'/attachments');
+		MyStuff::Log("POST");MyStuff::Log($video_post);
+		if (isset($video_post['data'])) {
+			if (isset($video_post['data'][0])) {
+				if (isset($video_post['data'][0]['media']) && isset($video_post['data'][0]['media']['image'])) {
+					$video_data = $video_post['data'][0]['media']['image'];
+					//MyStuff::Log("VIDEO DATA ");MyStuff::Log($video_data);
+					$video->width = $video_data['width'];
+					$video->height = $video_data['height'];
+				}
+			}
+		}
+		MyStuff::Log("VIDEO");MyStuff::Log($video);
+		$video->save();
+		$note->fb_video_ids = $video->video_id;	
+	}
+	
+	private function addImage($image) {
+		if (isset($image['src'])) {
+			$img = new Image();
+			$img->path = $image['src'];
+			$img->save();
+			return $img->image_id;
+		}
+	}
+	
+	private function processFacebookEntry($facebook,$post,$note) {
+		
+		if ($post['type'] == 'video') {
+			// Get video image
+			if (isset($post['source'])) {
+				$this->getVideo($facebook,$note,$post);
+			}
+			// Add link to content
+			$this->addLink($post,$note);
+		} else if ($post['type'] == 'photo') {
+			// Loop through attachments and get images
+			if ( isset($post['id']) ) {
+				$image_ids = $this->getImages($facebook,$note,$post['id']);
+				$note->fb_image_ids = implode(",",$image_ids);
+			}
+		} else if ($post['type'] == 'link') {
+			//Add link to content
+			$this->addLink($post,$note);
+		} 
+		
+	}
 	
 	public function  actionProgressBar()
 	{
 		if (Yii::app()->request->isAjaxRequest) { 
-//			$since = Yii::app()->request->getPost('since', '');
-//			$since = strtotime($since);
-//			if ($since) {
-//				$timePeriod = $since;
-//			} else {
-//				$timePeriod = null;
-//			}
-//			$timePeriod = null;
-//			if ($since > strtotime(date("Y-m-d"))) {
-//				echo CJSON::encode(array(
-//					'success' => 0,
-//					'msg' => "please select the correct date",
-//				));
-//				exit;
-//			}
-//
-//			$facebook = new Facebook($this->config);
-//					$fql = "SELECT post_id,message,updated_time,attachment FROM stream WHERE source_id = me() AND is_hidden = 0
-//								ORDER BY created_time
-//								DESC LIMIT 1000000";
-//					$param = array('method' => 'fql.query',
-//							'query' => $fql
-//					);
-//					$statuse = $facebook->api($param);
+			$ae_hash = array();
+			$note_status = NoteStatus::model()->findByAttributes(array('name' => 'Published'));
+			$note_visibility = NoteVisibility::model()->findByAttributes(array('name' => 'Public'));
+			/* Calendar event */
+			$event_definition = EventDefinition::model()->findByAttributes(array(
+					'parameter' => 'FB Note:'
+			));
+			$facebook = new Facebook($this->config);
+			$user_id = $facebook->getUser();
+			if (!$user_id) {
+				echo CJSON::encode(array(
+						'success' => 0,
+						'msg' => "User cannot be verified",
+				));
+				exit;				
+			}
+			$since = strtotime(date('Y-m-d')) - 30*24*3600;//May use to test larger facebook accounts
+			$me = $facebook->api('/me');
+			$query = Yii::app()->request->getPost('query','');
+			$queryStr = '/posts';
+			if ($query) {
+				$queryStr =$queryStr.'?'.$query;
+			}
 			
+			$posts = $facebook->api('/'.$me['id'].$queryStr);//?since='.$since);
+			
+			if (empty($posts) ) {
+				echo CJSON::encode(array(
+						'success' => 0,
+						'msg' => "You have not posts to import",
+				));
+				exit;				
+			}
+			
+			$data = $posts['data'];
+			foreach ($data as $datum) {
+				if (isset($datum['created_time'])) {
+					$fb_message_id = explode("_", $datum['id'])[1];
+					$is_inserted = Note::model()->findByAttributes(array(
+							'fb_message_id' => $fb_message_id,
+							'user_id' => Yii::app()->user->Id
+					));
+					if ($is_inserted) {
+						
+					} else {
+						if (!$is_inserted) {
+							
+							$note = new Note();
+							$note->user_id = Yii::app()->user->Id;
+							$created_date = date('Y-m-d', strtotime($datum['created_time']));
+							$facebookNote = "";
+							if (isset($datum['message'])) 
+							{
+								$facebookNote = $datum['message'];
+								if (!isset($ae_hash[$created_date])) {
+									$ae_hash[$created_date] =array('date'=>$created_date,'time'=>date('h:m:s',strtotime($datum['created_time'])));
+								}
+							}
+							$note->title = substr($facebookNote, 0, 20);
+							$note->content = $this->addcontentlink($facebookNote);
+							$note->stripped_content = $facebookNote;
+							
+							$note->date_created = date('Y-m-d H:i:s', strtotime($datum['created_time']));
+							$note->date_modified = date('Y-m-d H:i:s', strtotime($datum['updated_time']));
+							$note->fb_message_id = $fb_message_id;
+							$note->publish_date = date("y-m-d",strtotime($datum['created_time']));
+							$note->status_id = $note_status->status_id;
+							$note->is_active = 1;
+							$note->visibility_id = $note_visibility->visibility_id;
+							$this->processFacebookEntry($facebook,$datum,$note);
+							
+							$note->save();
+							//Bin the dates of content so we know which days to run the analyzer on
+							$note->refresh();
+							$cal = new CalendarEvent();
+							$cal->user_id = Yii::app()->user->Id;
+							$cal->start_date = $note->date_created;
+							$cal->all_day = 0;
+							$cal->save();
+							
+							/* Event value */
+							
+							$event_value = new EventValue();
+							$event_value->calendar_event_id = $cal->calendar_event_id;
+							$event_value->value = substr($facebookNote, 0, 15) . '...';
+							$event_value->event_definition_id = $event_definition->event_definition_id;
+							$event_value->save();
+								
+							$event_note = new EventNote();
+							$event_note->note_id = $note->note_id;
+							$event_note->event_value_id = $event_value->event_value_id;
+							$event_note->save();
+							
+						} //Insertion check
+						
+					}
+				}
+			}
+			foreach ($ae_hash as $myDate) {
+				MyStuff::Log($myDate['date'].' '.$myDate['time']);
+				SiteController::_runAEJournalDaily($myDate['date'],$myDate['date'],$myDate['time']);
+			}
+			MyStuff::Log("END AN QUERY ".$query);
+			header('Content-type: application/json');
+
+			if (isset($posts['paging']) && isset($posts['paging']['next'])) {
+				echo CJSON::encode(array(
+						'success' => 1,
+						'nextKey' => 1,
+						'start' => 5,
+						'finish' => false,
+						'next'=>parse_url($posts['paging']['next'])
+				));				
+			} else {
+				echo CJSON::encode(array(
+						'success' => 1,
+						'nextKey' => 1,
+						'start' => 100,
+						'finish' => true
+				));		
+			}
+		
+
+		Yii::app()->end();
+		exit;
+						
 			$statuse = Yii::app()->session['your_statuse'];
 			
 			if (empty($statuse)) {
