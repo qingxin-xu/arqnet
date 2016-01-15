@@ -2475,15 +2475,15 @@ private function getMyJournalsByID($note_id){
             $newQuestion = null;
             $category_count = Yii::app()->request->getPost('category_count', 0);
             if ($category_count < 2) {
-                $newQuestion = $this->getRandomQuestionByCategory(array('question_category_id' => $question->question_category_id));
+                $newQuestion = $this->getRandomQuestionByCategory(array('question_category_id' => $question->question_category_id),array('question_category_id' => $question->question_category_id));
             } else {
                 $categories = $this->getQuestionCategories();
                 while (!$newQuestion) {
                     $randInt = rand(0, count($categories) - 1);
-                    $newQuestion = $this->getRandomQuestionByCategory($categories{$randInt});
+                    $newQuestion = $this->getRandomQuestionByCategory($categories,$categories{$randInt});
                 }
             }
-
+			
             $answers = array();
             $myAnswer = null;
 
@@ -4287,7 +4287,7 @@ where user_id = $user_id
 	 */
     private function getRandomQuestionByCategory($categories,$category)
     {
-        if (!$category) return 1;
+        if (!$category) $category = 1;
         $found = 0;
         while($found == 0) {
 	        $user_id = Yii::app()->user->id;
@@ -4322,9 +4322,11 @@ where user_id = $user_id
         if ($questionCount > 0) {
             $randomInt = rand(0, count($questions) - 1);
             $question = $questions{$randomInt};
-            $myQuestion = Question::unroll($question);
-            return $myQuestion;
-        } else return null;
+        } else {
+        	$question = $questions{0};
+        }
+        $myQuestion = Question::unroll($question);
+        return $myQuestion;
     }
 
 
