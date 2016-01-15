@@ -1,4 +1,13 @@
-	
+<link rel="stylesheet" href="assets/js/jquery-ui/css/vader/jquery-ui.min.css">
+<script src='assets/js/utils.js'></script>
+<script type='text/javascript'>
+	var powerbar = -1;
+	$(document).ready(function() {
+		arqUtils.setAutocomplete('[name=location]',"/cityLookup");
+		arqUtils.setAutocomplete("[name=ethnicity]","/ethnicityLookup");
+	});
+</script>
+<script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>	
 	<div class="login-header login-caret">
 		
 		<div class="login-content">
@@ -265,6 +274,7 @@
 									<i class="entypo-user"></i>
 								</div>
 								<select style="background-color: #0A0A0A;" class="form-control" name="ethnicity" id="ethnicity">
+									<option value="" disabled selected>Type or select</option>
 									<?php foreach ($ethnicity as $val) {
 										echo '<option value=' . $val['ethnicity_id'] . '>' . $val['description'] . '</option>';
 									}
@@ -348,4 +358,4 @@
 		</div>
 		
 	</div>
-<script src="/assets/js/auto-complete/jquery.autocomplete.js"></script>
+<!--  <script src="/assets/js/auto-complete/jquery.autocomplete.js"></script> -->

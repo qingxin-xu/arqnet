@@ -221,43 +221,8 @@ $(document).ready(function() {
 		}
 		
 	});
-	/*
-	 * 	Auto complete for location
-	 */
-    $( "[name=location]" ).autocomplete({
-        source: function( request, response ) {
-          $.ajax({
-            url: "/cityLookup",
-            dataType: "json",
-            data: {
-              term: request.term
-            },
-            success: function( data ) {
-              response( data );
-            }
-          });
-        },
-        minLength: 3
-    });
-    
-    /*
-     * 	Auto complete for ethnicity
-     */
-    $( "[name=ethnicity]" ).autocomplete({
-        source: function( request, response ) {
-          $.ajax({
-            url: "/ethnicityLookup",
-            dataType: "json",
-            data: {
-              term: request.term
-            },
-            success: function( data ) {
-              response( data );
-            }
-          });
-        },
-        minLength: 3
-    });
+	arqUtils.setAutocomplete('[name=location]',"/cityLookup");
+	arqUtils.setAutocomplete("[name=ethnicity]","/ethnicityLookup");
 });
 
 $(function () {

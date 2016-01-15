@@ -43,6 +43,25 @@ var arqUtils = {
 			   	}
 			}
 		});		
+	},
+	
+	setAutocomplete:function(selector,service) {
+		if (!selector || !service) return;
+	    $( selector ).autocomplete({
+	        source: function( request, response ) {
+	          $.ajax({
+	            url:service,
+	            dataType: "json",
+	            data: {
+	              term: request.term
+	            },
+	            success: function( data ) {
+	              response( data );
+	            }
+	          });
+	        },
+	        minLength: 3
+	    });
 	}
 }
 

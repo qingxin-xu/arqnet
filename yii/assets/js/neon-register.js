@@ -53,16 +53,43 @@ var neonRegister = neonRegister || {};
 		neonRegister.$steps_list = neonRegister.$steps.find(".step");
 		neonRegister.step = 'step-1'; // current step
 		
-		$("#location").autocomplete(
-		            "/SearchLocal",
-		            {
-		                width: 200,
-		                matchContains: false,
-		                selectFirst: true,
-		                scroll:true,
-		                extraParams: {name:function(){return $("#location").val();},action:"getAjaxInfo"}
-		            }
-		);
+		/*
+		 * 	Auto complete for location
+		 */
+		
+	    $( "#location" ).autocomplete({
+	        source: function( request, response ) {
+	          $.ajax({
+	            url: "/cityLookup",
+	            dataType: "json",
+	            data: {
+	              term: request.term
+	            },
+	            success: function( data ) {
+	              response( data );
+	            }
+	          });
+	        },
+	        minLength: 3
+	    });
+	    /*
+	     * 	Auto complete for ethnicity
+	     */
+	    $( "[name=ethnicity]" ).autocomplete({
+	        source: function( request, response ) {
+	          $.ajax({
+	            url: "/ethnicityLookup",
+	            dataType: "json",
+	            data: {
+	              term: request.term
+	            },
+	            success: function( data ) {
+	              response( data );
+	            }
+	          });
+	        },
+	        minLength: 3
+	    });
 		neonRegister.$container.validate({
 			rules: {
 				fname: {
