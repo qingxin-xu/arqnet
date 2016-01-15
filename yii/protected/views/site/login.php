@@ -69,7 +69,7 @@
 				</div> -->
 				
 				<div class="form-group">
-					<a href="FBLogin/connect/">
+					<a href="connect/">
 						<button type="button" class="btn btn-default btn-lg btn-block btn-icon icon-left facebook-button">
 							Login with Facebook
 							<i class="entypo-facebook"></i>
