@@ -18,28 +18,29 @@ class FBLoginController extends Controller
 		'oauth ' => true,
 	);
 	*/
-	/* arqnet
+	/* arqnet */
 	public $config = array(
 			'appId' => '1593970450870932',
 			'secret' => '27d7c56415b50d1b07230fedacd1a5a9',
 			'cookie' => true,
 			'oauth ' => true,
 	);	
-	*/
-	/* local */
+	
+	/* local 
 	public $config = array(
 			'appId' => '1625355101065800',
 			'secret' => 'a93408d548afc749d21d39f8355d7261',
 			'cookie' => true,
 			'oauth ' => true,
 	);
+	*/
 	public function actionIndex()
 	{
 //		$this->layout = 'arqLayout1';
 		$this->render('index');
 
 	}
-
+	public function actionTest() {MyStuff::Log('test');}
 	/**
 	 * //绑定账户 标签
 	 */
@@ -69,6 +70,7 @@ class FBLoginController extends Controller
 	 * */
 	public function actionConnect()
 	{
+		MyStuff::Log("ACTION CONNECT");
 		$binding = Yii::app()->session['binding_status'];
 		if (@$_GET['error_reason']) {
 			die("<script type='text/javascript'>top.location.href = 'http://www.facebook.com';</script>");
@@ -667,7 +669,8 @@ class FBLoginController extends Controller
 			$data = $posts['data'];
 			foreach ($data as $datum) {
 				if (isset($datum['created_time'])) {
-					$fb_message_id = explode("_", $datum['id'])[1];
+					$fb_message_ids = explode("_", $datum['id']);
+					$fb_message_id = $fb_message_ids[1];
 					$is_inserted = Note::model()->findByAttributes(array(
 							'fb_message_id' => $fb_message_id,
 							'user_id' => Yii::app()->user->Id
