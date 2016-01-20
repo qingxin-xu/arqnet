@@ -353,7 +353,7 @@ var AnswerQuestion = {
 			'{CUSTOM_FORM_ELEMENTS}',
 			'<div class="form-group tile-content">',
 				//'<label for="field-ta" class="col-sm-3 control-label">Written Answer</label>',
-				'<textarea class="form-control autogrow" id="field-ta" name="user_answer" >{USER_ANSWER}</textarea>',
+				'<textarea rows="5" class="form-control autogrow" id="field-ta" name="user_answer" >{USER_ANSWER}</textarea>',
 			'</div>',
 			'<button type="submit" >',
 				'Submit Answer',

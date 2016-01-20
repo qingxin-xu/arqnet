@@ -1210,6 +1210,14 @@ jQuery(document).ready(function($)
 		//$('.TrackSubCategories').find('input');
 	}
 
+	var quickJournalBoxH = $('#quickJournalBox').height(),
+		quickQuestionBoxH = $('#quickQuestionBox').height(),
+		diff = Math.abs(quickJournalBoxH - quickQuestionBoxH)-2;
+	if (quickJournalBoxH > quickQuestionBoxH) {
+		$('#quickQuestionBox form').css('paddingBottom',diff+'px');
+	} else if (quickQuestionBoxH > quickJournalBoxH) {
+		$('#quickJournalBox form').css('paddingBottom',diff+'px');
+	}
 });
 
 function getRandomInt(min, max) 
@@ -1442,7 +1450,7 @@ function getRandomInt(min, max)
 
 
 <div class="row">
-	<div class="col-sm-6">
+	<div class="col-sm-6" id='quickJournalBox'>
 		<div class="boxHeader"><span class="word1">Quick </span><span class="word2">Journal</span></div>
 		<div class="tile-block addG-tileblock" id="todo_tasks">
 			
@@ -1472,7 +1480,7 @@ function getRandomInt(min, max)
 		</div>
 	</div>
 
-	<div class="col-sm-6">
+	<div class="col-sm-6" id='quickQuestionBox'>
 		<div class="boxHeader"><span class="word1">Quick </span><span class="word2">Question</span></div>
 		<div class="tile-block addG-tileblock" id="haveyouever">	
 			<div class='FormPlaceHolder displayed' ></div>		
