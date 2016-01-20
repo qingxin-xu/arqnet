@@ -142,6 +142,11 @@ function quickEntry()
 				updateMsg($('.validateTips'),'Journal Entry Created');
 				$('#quickEntry')[0].reset();
 				setTimeout(function() {$('#myThinker').dialog('close');},2000);
+				if ('dashboardData' in d) {
+					var entry = d['dashboardData']['eventData'][0];
+					__avg[__avg.length-1] = entry;
+					initializeMainSlider(currentValue?currentValue:null);
+				}
 			} else
 			{
 				var msg = "Error creating entry - please try again";

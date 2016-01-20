@@ -2094,11 +2094,13 @@ private function getMyJournalsByID($note_id){
                 }
             }
         }
+        $returnEventData = Yii::app()->request->getPost('returnEventData', '-1');
         header('Content-type: application/json');
         echo CJSON::encode(array(
             'success' => 1,
             'redirect' => '/recentJournals',
-            'IMAGE' => $noteImg
+            'IMAGE' => $noteImg,
+        	'dashboardData'=>$returnEventData>0?$this->_getDashboardData(1):''
         ));
         Yii::app()->end();
 

@@ -1461,7 +1461,7 @@ function getRandomInt(min, max)
 			
 			<div class="tile-content">
 				<form id='quickEntry' enctype="multipart/form-data">
-				
+				<input type='hidden' name='returnEventData' value='1' />
 				<input type='hidden' name='journal_id' value='-1' />
 				<textarea style='display:none;' type='hidden' name='stripped_content'></textarea>
 				<textarea name='post_content' class="form-control wysihtml5" rows="5" data-stylesheet-url="assets/css/wysihtml5-color.css" placeholder="Enter your quick journal entry here"></textarea>
