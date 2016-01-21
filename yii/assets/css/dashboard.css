@@ -15,7 +15,7 @@
 	z-index:1100;
 }
 
-#quickEntry textarea,#quickQuestion textarea {
+#quickJournalBox textarea,#quickQuestionBox textarea {
 	resize:none;
 }
 .randomQuestion {
