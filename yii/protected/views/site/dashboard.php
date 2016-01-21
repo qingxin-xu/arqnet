@@ -85,6 +85,7 @@ var topics_donut_chart,
 
 	var morris_formatter = function(y,data) {
 		var value = parseFloat(parseFloat(y).toFixed(2))*100;
+		value = Math.round(value);
 		return value+'%';
 	};
 
@@ -485,6 +486,7 @@ function createDonutChartData(response)
 	{
 		if (sorted_topics[i].value>0)
 		{
+			
 			chartData.push(sorted_topics[i]);
 		}
 	}
