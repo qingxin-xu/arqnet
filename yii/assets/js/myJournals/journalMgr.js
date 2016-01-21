@@ -9,9 +9,7 @@ var journalMgr = {
 	
 	display:function(entries,placeholder) {
 		if (!entries) return;
-		console.log('display',entries);
 		if (!entries.data || !entries.data.length || entries.data.length<=0) return;
-		console.log('here',this.placeholder);
 		if (!this.placeholder && !placeholder) return;
 		if (placeholder) this.placeholder = placeholder;
 		
@@ -20,6 +18,7 @@ var journalMgr = {
 		for (var i = 0;i<data.length;i++) {
 			var html = this.template;
 			html = this.displayDate(html,data[i]);
+			if (data[i].id) html = html.replace(/{ID}/,data[i].id);
 			if (data[i].title) html = html.replace(/{TITLE}/,data[i].title);
 			else html = html.replace(/{TITLE}/,'');
 			if (data[i].content) html = html.replace(/{CONTENT}/,data[i].content);
@@ -40,6 +39,23 @@ var journalMgr = {
 				}
 			}
 		});
+		for (var i = 0;i<data.length;i++) {
+			if ($('#entry_'+data[i].id+' img') && $('#entry_'+data[i].id+' img').length>0) {
+				this.createColorBox('entry_'+data[i].id);
+			}
+		}
+	},
+	
+	createColorBox:function(id) {
+		if (!id) return;
+		//var html = "<div style='height:100%;cursor:pointer;width:100%;'>";
+		$('#'+id+' img').each(function(i,item) {
+			$(this).wrap("<a class='gallery_"+id+"' href='"+$(this).attr('src')+"'></a>");
+			//html += "<a href='"+item.src+"' class='gallery_"+id+"'></a>";
+		});
+		//html += "</div>";
+		//$('#'+id).append(html);
+		$('a.gallery_'+id).colorbox();
 	},
 	
 	displayDate:function(html,datum) {
@@ -159,7 +175,7 @@ var journalMgr = {
 	},
 	
 	template:[
-	          "<div class='journalEntryWrapper'>",
+	          "<div class='journalEntryWrapper' id='entry_{ID}'>",
 	          	"<div class='journalHeaderWrapper'>",
 		          	"<h1 class='journalEntryTitle'>{TITLE}</h1>",
 		          	"<div class='journalEntryDateTimeWrapper'>",

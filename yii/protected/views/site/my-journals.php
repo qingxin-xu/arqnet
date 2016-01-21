@@ -11,6 +11,8 @@
 <script type='text/javascript' src='/assets/js/myJournals/calendarMgr.js'></script>
 <script type='text/javascript' src='/assets/js/myJournals/archiveMgr.js'></script>
 <script type='text/javascript' src='/assets/js/myJournals/tagMgr.js'></script>
+<link rel='stylesheet' href='assets/js/colorbox/colorbox.css' />
+<script src='assets/js/colorbox/jquery.colorbox-min.js'></script>
 <script type='text/javascript'>
 	var activities = null<?php //echo(json_encode($activities));?>,
 		journalDates = <?php echo json_encode($journalDates);?>,
