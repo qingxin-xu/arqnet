@@ -1,0 +1,160 @@
+21 Do you think it\'s your parent\'s job to put you through college?
+24 Were you raised by parental figures who weren\'t your biological parents?
+29 Do you think it\’s okay for your parents to talk to you about sex?
+39 What\'s more important to you, friends or family?
+43  Do you think it\'s important to earn your in laws approval?
+53  If you are a part of a stepfamily, what\'s it like?
+54  If you are adopted, how does it feel knowing you\'re adopted?
+57  Is there something about your siblings that you\'re specifically jealous of?
+83  How do you know if you\'re ready for marriage? 
+84  How do you know if you\'re ready to have children?
+86  What is the worst experience you\'ve ever had at home?
+95  Do you feel that you\'re gay?
+97  Is there a secret you\'re keeping from your family that you\'re afraid to tell them?
+102 What are ways you try to earn your family\'s respect?
+105 What are things about your family that you\'re thankful for?
+106 What are things about your childhood that you\'re thankful for?
+120 What\'s the right age to move out of your parents\' home?
+136  Do you think it\'s important to eat breakfast?
+173  Tequila love or hate?
+175  Are there any foods that you wouldn\'t eat as a child that you eat now?
+195  What do you think of people who say they\'re not into food?
+197  Name your top 5 favorite restaurants and what\'s good to order there.
+210  Is there a food that you\'ve had a bad experience with and will never eat again?
+221  What would you consider is American cuisine?
+224  What kind of foods do you like to eat when you\'re stressed?
+234  Which do you prefer: rice, pasta, bread or potatoes?
+239  What are your tips for people who don\'t know how to cook to get started?
+241  What\'s your favorite spicy dish?
+264  What is the most unhealthy thing you\'ve eaten today?
+267  What\'s the best restaurant you\'ve ever been to and why did you like it?
+268  What\'s the absolute best way to prepare steak?
+269  What\'s the absolute best way to prepare fish?
+270  What\'s the absolute best way to prepare chicken?
+271  What\'s the tastiest way to prepare vegetables that even someone who hates veggies will eat it?
+272  What\'s the absolute best way to prepare seafood?
+277  What is the best food truck you\'ve ever tried?
+278  How much does a restaurant\'s health rating affect whether you eat there?
+281  What\'s the best way to treat a burn in the kitchen?
+286  How many seconds can food be on the floor before you won\'t eat it?
+287  How many days can you leave takeout in the fridge before it\'s not okay to eat?
+290  How much was the most expensive meal you\'ve ever had?
+370  What\'s your best tip for people who are having a hard time committing to a fitness routine?
+371  What are some good workout options if you can\'t afford a personal trainer?
+386  What is the best way to work out if I don\'t have a gym membership?
+408  What\'s the heaviest weight you\'ve ever been? (lbs)
+409  What\'s the lowest you\'ve ever weighed? (lbs)
+411  What\'s the longest distance you\'ve ever run? (miles)
+412  What\'s the longest distance you\'ve ever biked? (miles)
+413  What\'s the longest distance you\'ve ever swam?
+421  What\'s the longest distance (in miles) you\'ve ever run?
+422  What\'s the longest distance (in miles) you\'ve ever biked?
+430  When you travel, which is more important: luxury or culture?
+458  What was the most unique vacation you\'ve ever been on?
+460  What is the nicest hotel you\'ve ever stayed at?
+476  What is the most spiritual experience you\'ve had while traveling?
+477  What is the scariest experience you\'ve ever had traveling alone?
+478  What is the most memorable experience you\'ve ever had traveling alone?
+487  What vacation destinations would you recommend if you\'re single?
+488  What vacation destinations are good places to party if you\'re single?
+500  What is the most beautiful place you\'ve ever visited?
+506  What\'s your go to spot for a weekend getaway?
+513  What\'s the best age to start taking a baby on a plane?
+528  If you saw your best friend\'s partner kissing someone else, would you tell them?
+552  Do you believe we\'ll discover extraterrestrial life in our lifetime? 
+570  If you were at a restaurant and you didn\'t like your order, would you ask for your money back?
+581  Like in \'Eternal Sunshine of the Spotless Mind,\' is there a relationship that you would want to erase?
+607  What\'s the best way to cheer up someone who is down?
+631  How many dates does it take before you know it\'s just not going to work with someone?
+717  What does \'family\' mean to you?
+718  What does \'integrity\' mean to you?
+719  What does \'honor\' mean to you?
+720  What does \'cowardice\' mean to you?
+732  How do you deal with it when you\'re feeling jealous?
+750  What can you do today that you couldn\'t do a year ago?
+751  What will you be able to do a year from now that you can\'t or aren\'t doing today?
+757  What do you think people\'s first impression of you are?
+758  What do you have that you can\'t live without?
+773  What\'s stopping you from having the life that you want?
+779  What were your new year\'s resolutions?
+794  Do you find that you are dating the same \'type\' over and over again?
+799  Who should do the asking out guys or girls?
+802  Do you believe that if a relationship isn\'t work out, divorce is an option?
+818  Is someone\'s past important to a relationship?
+828  How important is it that you get along with your partner\'s parents?
+834  What\'s more important: physical attraction or mental compatibility?
+841  Is it possible to change your partner\'s bad habits?
+843  Have you ever dated someone you weren\'t initially attracted to but then became attracted to?
+852  What\'s more important: financial security or love?
+858  What\'s better: being friends with someone first then developing feelings, or dating?
+860  What are 3 of your partner\'s best traits?
+861  What are 3 of your partner\'s worst traits?
+876  When you\'ve gotten in a fight, how do you usually resolve it?
+877  What are things you wish your partner would do that they currently don\'t do?
+881  Describe the best date you\'ve ever been on and why.
+885  What topics do you avoid talking about because you\'re afraid of your partner\'s reaction?
+887  When you\'ve gotten in a fight, how do you usually resolve it?
+888  What are things you wish your partner would do that they currently don\'t do?
+892  Describe the best date you\'ve ever been on and why.
+896  Describe someone you\'ve met who fits your idea of a perfect mate.
+913  What\'s the best way to bring up wanting to try something kinky with your partner?
+917  What\'s the best piece of advice you\'ve ever gotten about relationships?
+924  What is your \'go to\' first date?
+926  What is the best way to show you\'re interested in someone?
+927  What is the best way to let someone who is interested know you aren\'t interested?
+940  What is the biggest secret you have kept from someone you\'re in a relationship with?
+953  What is the most outrageous thing you\'ve ever experienced on a date?
+967  What do you think about \'saving it for marriage\'?
+979  What are lies you can\'t forgive in a relationship?
+992  What are the most common things you\'ve argued about in relationships (past and present)?
+994  Could you be with someone who didn\'t share your interests?
+1000  If you are interested in someone who doesn\'t know, what would it take for you to tell them?
+1004  How have your parents\' marriage affected your view on relationships and marriage?
+1010  Do you think you\'re ready for a serious relationship? Why or why not?
+1028  If your partner went out with for a boys\'s night out/girls\' night out, and you saw a video of the entire evening, do you think there would be something on it that would make you mad?
+1036  Is sex better when you\'re with someone you\'ve been with for a while?
+1044  When you\'re sleeping with someone new, is it hard for you to cum?
+1048  Do you prefer sex when you\'re drunk or high?
+1056  Do you prefer your partner shaved, trimmed or natural \'down there?\' 
+1097  What is the kinkiest thing you\'ve ever done?
+1101  What is the most adventurous place you\'ve had sex?
+1103  Have you ever had a sexual encounter that you can\'t tell anyone about?
+1107  Describe a sexual fantasy you have that you haven\'t told your partner about.
+1108  Describe a fantasy you\'ve had about a teacher or superior.
+1114  What\'s the most embarrassing time you got caught masturbating?
+1115  What is your favorite fantasy when you\'re masturbating?
+1122  Do you ever have thoughts other than your partner when you\'re having sex?
+1124  How do you handle it if you\'re with someone and can\'t get an erection?
+1125  How do you handle it if you\'re having sex and you lose your erection?
+1126  How do you feel when the guy you\'re with can\'t get hard?
+1127  How do you feel when the guy you\'re with loses his erection in the middle of sex?
+1128  How do you handle it if a guy you\'re with can\'t get an erection?
+1135  What is the worst one night stand you\'ve ever had?
+1136  What is the best one night stand you\'ve ever had?
+1143  Why don\'t men cum sometimes when having sex?
+1144  What is the most taboo thing you\'ve ever done in bed?
+1147  What is something that you\'ve wanted to do in bed that made a partner uncomfortable?
+1157  What thoughts turn you on when you\'re having sex?
+1163  What\'s the biggest age difference between you and someone you\'ve slept with?
+1164  What\'s the youngest a person should be to have sex?
+1165  What\'s the most number of times you\'ve had sex in a day?
+1168  What\'s the most number of sex partners you\'ve had in a day?
+1169  What\'s the most number of sex partners you\'ve had in a week?
+1170  What\'s the most number of sex partners you\'ve had in a year?
+1171  What\'s the most number of sex partners you\'ve had at the same time?
+1173  What\'s the most number of times you\'ve cum in a single session?
+1174  What\'s the most number of times you\'ve masturbated in a single day?
+1175  How old was the youngest person you\'ve had sex with?
+1176  How old was the oldest person you\'ve had sex with?
+1190  Do you think it\'s a problem for couples in a relationship to work at the same office together?
+1197  Would you take a job that paid you more but was something you didn\'t want to do as a profession?
+1202  Would it be hard to work with someone you\'re in a relationship with?
+1204  If you noticed an extra direct deposit from your company that shouldn\'t be there, would you bring it up?
+1209  Does a company\'s cultural diversity (or lack of) affect your decision to take a job?
+1217  Do you think you\'re getting paid more than you really should be?
+1222  How important to you is a company\'s name when looking for a job?
+1243  What can\'t you stand about your boss?
+1255  How would you deal with a situation in which you couldn\'t meet a deadline at work?
+1269  Have you ever been \'caught\' having sex at work?
+1278  If you don\'t like your job, why would you stay?
+1280  Does what you studied in college correspond to your what you\'re doing now?
