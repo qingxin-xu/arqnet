@@ -147,9 +147,10 @@ class Question extends CActiveRecord
 		$category = $model->questionCategory;
 		$myChoices = array();
 		foreach($choices as $choice) {
+			MyStuff::Log("CONTENT ".addslashes($choice->content));
 			array_push($myChoices,array(
 				'question_choice_id'=>$choice->question_choice_id,
-				'content'=>$choice->content,
+				'content'=>utf8_decode($choice->content),
 				'choice_order'=>$choice->choice_order,
 				'is_active'=>$choice->is_active
 			));
