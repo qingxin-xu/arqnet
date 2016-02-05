@@ -2072,7 +2072,7 @@ address {
   line-height: 1.42857143;
 }
 table {
-  max-width: 100%;
+  width:100%;
   background-color: transparent;
 }
 th {
