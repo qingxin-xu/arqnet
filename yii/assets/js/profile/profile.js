@@ -11,6 +11,10 @@ function clearPasswords()
 
 
 $(document).ready(function() {
+	$('[name=birthday]').datepicker({
+		format:arqUtils['ArqDateFormats']['js'],
+		changeYear:true
+	});
 	updateAboutMeForm(myProfile);
 	updateMyProfileForm(myProfile);
 	

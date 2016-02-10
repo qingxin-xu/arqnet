@@ -52,44 +52,12 @@ var neonRegister = neonRegister || {};
 		neonRegister.$steps = neonRegister.$container.find(".form-steps");
 		neonRegister.$steps_list = neonRegister.$steps.find(".step");
 		neonRegister.step = 'step-1'; // current step
+		$('[name=birthdate]').datepicker({
+			format:arqUtils['ArqDateFormats']['js'],
+			changeYear:true
+		});
+		$('[name=birthdate]').datepicker('update','1/1/1990');
 		
-		/*
-		 * 	Auto complete for location
-		 */
-		
-	    $( "#location" ).autocomplete({
-	        source: function( request, response ) {
-	          $.ajax({
-	            url: "/cityLookup",
-	            dataType: "json",
-	            data: {
-	              term: request.term
-	            },
-	            success: function( data ) {
-	              response( data );
-	            }
-	          });
-	        },
-	        minLength: 3
-	    });
-	    /*
-	     * 	Auto complete for ethnicity
-	     */
-	    $( "[name=ethnicity]" ).autocomplete({
-	        source: function( request, response ) {
-	          $.ajax({
-	            url: "/ethnicityLookup",
-	            dataType: "json",
-	            data: {
-	              term: request.term
-	            },
-	            success: function( data ) {
-	              response( data );
-	            }
-	          });
-	        },
-	        minLength: 3
-	    });
 		neonRegister.$container.validate({
 			rules: {
 				fname: {

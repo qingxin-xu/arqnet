@@ -1,3 +1,7 @@
+.form-control,form input[type=text],form input[type=password],form textarea {
+	width:55%;
+	padding:6px 12px;
+}
 .profile_header {
 	height:250px;
 	position:relative;

@@ -505,6 +505,9 @@ class SiteController extends Controller
             foreach ($user as $key => $value) {
                 if (strcmp('password', $key) != 0 && strcmp('user_id', $key) != 0)
                     $me{$key} = $value;
+                if (strcmp('birthday',$key) == 0) {
+                	$me{$key} = date('m/d/Y',strtotime($value));
+                }
             }
             $image = Image::model()->findByAttributes(array('image_id' => $user->image_id));
         }
@@ -1639,6 +1642,9 @@ private function getMyJournalsByID($note_id){
         foreach ($user as $key => $value) {
             $fieldValue = Yii::app()->request->getPost($key, '');
             if ($fieldValue && $key != 'password' && $value != $fieldValue) {
+            	if (strcmp('birthday',$key)==0) {
+            		$fieldValue = date('m/d/Y', strtotime($fieldValue));
+            	}
             	$updatedProfile[$key] = $fieldValue;
                 $user->$key = $fieldValue;
             }

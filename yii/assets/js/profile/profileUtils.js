@@ -1,3 +1,4 @@
+
 function updateAboutMeForm(profile) {
 	if (!profile) return;
 	for (var i in profile) {
@@ -15,6 +16,12 @@ function updateAboutMeForm(profile) {
 }
 
 function updateMyProfileForm(profile) {
+	console.log("MY PROFILE ",profile);
+	
+	if (profile['birthday']) {
+		$('[name=birthday]').datepicker('update',new Date(profile['birthday']));
+	}
+	
 	if (profile['is_active']) {
 		field = $('[name=is_active][value='+profile['is_active']+']');
 		if (field && field.length>0) {

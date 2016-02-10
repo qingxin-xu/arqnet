@@ -156,7 +156,7 @@
 								<div class='col-sm-4'>
 									<div class='form-group'>
 										<h3>First Name</h3>
-										<input placeHolder='First name' name='first_name'></input>
+										<input type='text' placeHolder='First name' name='first_name'></input>
 										<h3>Password</h3>
 										<input type='password' placeHolder='Enter a new password' name='password' id='password'></input>
 										<h3>Confirm Password</h3>
@@ -165,13 +165,14 @@
 										<input type='radio' name='gender' value='F' /><label class='_radio' for='gender'>Female</label>
 										<input type='radio' name='gender' value='M' /><label class='_radio' for='gender'  >Male</label>
 										<h3>Birthdate</h3>
-										<input placeHolder='Birthday' name='birthday'></input>
+										<input type='text' placeHolder='Birthday' name='birthday' class="form-control datepicker" value=""></input>
+										<!--  <input  name='birthday'></input>-->
 										<h3>Facebook URL</h3>
-										<input placeHolder='URL' name='facebook_url'></input>
+										<input type='text' placeHolder='URL' name='facebook_url'></input>
 										<h3>Ethnicity</h3>
-										<input placeHolder='Ethnicity' name='ethnicity'></input>
+										<input type='text' placeHolder='Ethnicity' name='ethnicity'></input>
 										<h3>Email</h3>
-										<input placeHolder='Email' name='email'></input>
+										<input type='text' placeHolder='Email' name='email'></input>
 									</div>
 									<div class='form-group'>
 										<input type='submit' value='submit' />
@@ -181,7 +182,7 @@
 								<div class='col-sm-4'>
 									<div class='form-group'>
 										<h3>Last Name</h3>
-										<input placeHolder='Last name' name='last_name'></input>
+										<input type='text' placeHolder='Last name' name='last_name'></input>
 										<h3>Relationship</h3>
 											<?php 
 												if ($relationships) {
@@ -191,16 +192,16 @@
 												}
 											?>
 										<h3>Location</h3>
-										<input placeHolder='Location' name='location'></input>
+										<input type='text' placeHolder='Location' name='location'></input>
 										<h3>Twitter URL</h3>
-										<input placeHolder='URL' name='twitter_url'></input>
+										<input type='text' placeHolder='URL' name='twitter_url'></input>
 									</div>			
 								</div>
 								<div class='col-sm-4'>
 								
 									<div class='form-group'>
 										<h3>Username</h3>
-										<input placeHolder='Username' name='username'></input>
+										<input type='text' placeHolder='Username' name='username'></input>
 										<h3>Orientation</h3>
 											<?php 
 												if ($orientations) {
@@ -210,9 +211,9 @@
 												}
 											?>
 										<h3>Occupation</h3>
-										<input placeHolder='Occupation' name='occupation'></input>
+										<input type='text' placeHolder='Occupation' name='occupation'></input>
 										<h3>Google+ URL</h3>
-										<input placeHolder='URL' name='gplus_url'></input>
+										<input type='text' placeHolder='URL' name='gplus_url'></input>
 									</div>										
 								</div>
 							</form>
