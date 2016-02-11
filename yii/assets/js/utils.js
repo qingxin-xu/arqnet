@@ -1,5 +1,11 @@
 var arqUtils = {
-	
+	/**
+	 * Date formats for birthday drop downs
+	 */
+	ArqDateFormats:{
+		js:'mm/dd/yyyy',
+		php:'m/d/Y'
+	},
 	/**
 	 * Remove HTML tags and return just the text
 	 * Thanks to: http://stackoverflow.com/questions/822452/strip-html-from-text-javascript
