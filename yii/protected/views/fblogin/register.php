@@ -194,9 +194,9 @@
 			<div class="input-group-addon">
 				<i class="entypo-user"></i>
 			</div>
-
+			
 			<input type="text" class="form-control" class="ui-autocomplete-input" name="location" id="location"
-			       placeholder="Location" autocomplete="off"/>
+			       placeholder="Location" autocomplete="off" value='<?php echo $userRegisterArray['location'];?>' />
 		</div>
 
 	</div>

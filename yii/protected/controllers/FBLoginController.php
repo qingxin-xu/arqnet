@@ -240,13 +240,18 @@ class FBLoginController extends Controller
 				));
 				//do register action
 				if ($me && !$username_exists) {
-
+					
 					$userRegisterArray = array();
 					$userRegisterArray['first_name'] = isset($me['first_name']) ? $me['first_name'] : null;
 
 					$userRegisterArray['last_name'] = isset($me['last_name']) ? $me['last_name'] : null;
 					$userRegisterArray['gender'] = isset($me['gender']) ? $me['gender'] : null;
 
+					if (isset($me['location']) && isset($me['location']['name']) ) {
+						$userRegisterArray['location'] = $me['location']['name'];
+					} else {
+						$userRegisterArray['location'] = "";
+					}
 					if (isset($me['birthday'])) {
 						$get_dob = explode('/', $me['birthday']);
 						$userRegisterArray['year'] = $get_dob[2];
