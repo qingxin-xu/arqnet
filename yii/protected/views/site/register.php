@@ -97,7 +97,7 @@
 								<div class="input-group-addon">
 									<i class="entypo-calendar"></i>
 								</div>
-								<input type='text' name='birthdate' class="form-control datepicker" value="<?php echo date('m/d/Y',strtotime("1990-01-01"));?>"
+								<input type='text' name='birthdate' class="form-control datepicker" value="<?php echo date('m/d/Y',strtotime("1990-01-01"));?>"/>
 
 							</div>
 						</div>
