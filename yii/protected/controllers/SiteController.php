@@ -189,7 +189,7 @@ class SiteController extends Controller
     public function actionLogin()
     {
         $model = new LoginForm;
-
+		$renderArray = array('model'=>$model);
         // if it is ajax validation request
         //if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
         //{
@@ -204,10 +204,14 @@ class SiteController extends Controller
             if ($model->validate() && $model->login())
                 $this->redirect(Yii::app()->user->returnUrl);
         }
+        if (isset($_GET['linkToFB'])) {
+        	$renderArray['linkToFB']=1;
+        	unset($_GET['linkToFB']);
+        }
         // display the login form
         $this->layout = 'arqLayout1';
         $this->setPageTitle('Login');
-        $this->render('login', array('model' => $model));
+        $this->render('login', $renderArray);
     }
 
     public function beforeAction($action = null)
@@ -1410,6 +1414,8 @@ private function getMyJournalsByID($note_id){
         }
         $username = Yii::app()->request->getPost('username', '');
         $password = Yii::app()->request->getPost('password', '');
+        $linkToFB = Yii::app()->request->getPost('linkToFB','');
+        
         $auth = new LoginForm();
         $auth->attributes = array(
             'username' => $username,
@@ -1430,6 +1436,15 @@ private function getMyJournalsByID($note_id){
                     Yii::app()->end();
 
                 }
+            } else {
+            	if ($linkToFB) {
+            		header('Content-type: application/json');
+            		echo CJSON::encode(array(
+            				'success' => 1,
+            				'redirect' => '/FBLogin/BandingStatus/',
+            		));
+            		Yii::app()->end();            		
+            	}
             }
 
             header('Content-type: application/json');

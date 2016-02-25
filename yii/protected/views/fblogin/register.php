@@ -362,8 +362,8 @@
 
 
 <div class="login-bottom-links">
-
-	<a href="/login.html" class="link">
+	<a href="/login?linkToFB=1" class="link">Already Registered? Sign in</a>
+	<a href="/login" class="link">
 		<i class="entypo-lock"></i>
 		Return to Login Page
 	</a>

@@ -64,11 +64,11 @@
 					</button>
 				</div>
 				
-				<!-- Implemented in v1.1.4 -->				<!-- <div class="form-group">
-					<em>- or -</em>
-				</div> -->
-				
-				<div class="form-group">
+				<?php if (isset($linkToFB)) {
+					echo "<input type='hidden' name='linkToFB' value=1 />";
+				}?>
+				<div class="<?php if (isset($linkToFB)) echo "hidden";?>">
+				<div class="form-group ">
 					<a href="FBLogin/connect/">
 						<button type="button" class="btn btn-default btn-lg btn-block btn-icon icon-left facebook-button">
 							Login with Facebook
@@ -96,6 +96,7 @@
 						<i class="entypo-gplus"></i>
 					</button>
 
+				</div>
 				</div>
 			</form>
 			

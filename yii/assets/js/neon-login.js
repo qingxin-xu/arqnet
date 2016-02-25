@@ -75,7 +75,8 @@ function _handleError(response)
 					action = 'doLogin',
 					redirect = 'test.php',
 					username = $('input[name=username]') && $('input[name=username]').length && $('input[name=username]').length==1?$('input[name=username]').val()||null:null,
-					password = $('input[name=password]') && $('input[name=password]').length && $('input[name=password]').length==1?$('input[name=password]').val()||null:null;
+					password = $('input[name=password]') && $('input[name=password]').length && $('input[name=password]').length==1?$('input[name=password]').val()||null:null,
+					linkToFB = $('input[name=linkToFB')  && $('input[name=linkToFB').length && $('input[name=linkToFB').length==1?$('input[name=linkToFB').val()||null:null;
 				
 				if (!username || !password) return;	
 				
@@ -87,7 +88,7 @@ function _handleError(response)
 					url:service,
 					type:'POST',
 					dataType:'json',
-					data:{username:username,password:password,action:action},
+					data:{username:username,password:password,action:action,linkToFB:linkToFB},
 					success:function(d) {
 						
 						//Animation

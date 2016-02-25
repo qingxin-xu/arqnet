@@ -23,7 +23,8 @@
 	<link rel="stylesheet" type="text/css" href="styles/addonsG.css">
 
 	<script src="/assets/js/jquery-1.11.0.min.js"></script>
-
+	<script src="/assets/js/utils.js"></script>
+	<script type='text/javascript'>var powerbar=-1;</script>
 	<!--[if lt IE 9]><script src="/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->

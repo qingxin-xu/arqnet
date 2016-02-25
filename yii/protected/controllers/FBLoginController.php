@@ -70,28 +70,20 @@ class FBLoginController extends Controller
 	 * */
 	public function actionConnect()
 	{
-		MyStuff::Log("ACTION CONNECT");
 		$binding = Yii::app()->session['binding_status'];
 		if (@$_GET['error_reason']) {
 			die("<script type='text/javascript'>top.location.href = 'http://www.facebook.com';</script>");
 		}
 
 		$facebook = new Facebook($this->config);
-		$login_url = $facebook->getLoginUrl(array('scope' => 'user_videos,user_photos,read_stream,user_birthday'));
+		$login_url = $facebook->getLoginUrl(array('scope' => 'user_location,user_videos,user_photos,read_stream,user_birthday'));
 		$user_id = $facebook->getUser();
-
+		
 		if ($user_id) {
 			try {
 				$me = $facebook->api('/me');
 				$since = strtotime(date('Y-m-d')) - 30*24*3600;
-				/*
-                MyStuff::Log("FB ME ");MyStuff::Log($me);
-               	MyStuff::Log("SINCE= ".date('Y-m-d',1364849754).' '.$since);
-                MyStuff::Log("BINDING ".$binding);
-                MyStuff::Log("POSTS? ".$me['id']);
-              	MyStuff::Log($facebook->api('/'.$me['id'].'/posts?since='.$since));
-                MyStuff::Log("AFTER POSts");
-                */
+
 				//如果单纯绑定，则只需要判断是否已绑定，与登录注册无关
 				if ($binding == 1 && $me) {
 
@@ -134,7 +126,7 @@ class FBLoginController extends Controller
 						}
 						
 						
-						
+						/*
 						$param = array('method' => 'fql.query',
 								'query' => $fql
 								);
@@ -154,6 +146,7 @@ class FBLoginController extends Controller
 						$statuse = array_values($statuse);
 						
 						Yii::app()->session['your_statuse'] = $statuse;
+						*/
 						
 						//print_r(Yii::app()->session['your_statuse']);exit;
 						$this->redirect("/calendar?progress=1");
