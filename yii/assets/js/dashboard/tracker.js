@@ -357,76 +357,7 @@ var Tracker = {
 				this.trackerPlot.shutdown();
 				this.trackerPlot.destroy();
 			}
-			/*
-			var plotData = [];
-			if (!selection) return;
-			// Globally defined
-			if (!trackerData) return;
-			if (!_avg) return;
-			
-			var nPlots = 0,
-				range,
-				index = 0,
-				capped = selection['cappable_events'],
-				uncapped = selection['non_cappable_events'];
-			for (var i in selection) {
-				for (var j in selection[i])
-				nPlots++;
-			}
-			
-			range = this.plotMax/nPlots;
-		
-			for (var i in capped) {
-				var values = [],data=[],originalValues = [];
-				for (var j in _avg) {
-					var _date = _avg[j]['date'];
-					values.push(trackerData['cappable_events'][i][_date]);
-				}
-				//values = this.normalizeValues(values, eventUnits||null, index*range);
-				
-				for (var v = 0;v<values.length;v++) 
-				{
-					if (values[v] == 0) {
-						data.push([v,null]);
-						originalValues.push(values[v]);
-				    } else {
-				    	data.push([v,values[v]+index*range+(range/2),index*range]);
-				    	originalValues.push(values[v]);//*+index*range+(range/2)*);
-				    }
-				}
-				
-				plotData.push({
-					data:data,
-					color:capped[i],
-					tipLabel:i,
-					capped:true,
-					originalData:originalValues,
-					lines:{
-						fill:1,
-						fillColor:capped[i]
-					}
-						
-				});
-				index++;
-			}
-			
-			for (var i in uncapped) {
-				var values = [],data=[],originalValues = [];
-				for (var j in _avg) {
-					var _date = _avg[j]['date'];
-					values.push(trackerData['non_cappable_events'][i][_date]);
-					originalValues.push(trackerData['non_cappable_events'][i][_date]);
-				}
-				
-				values = this.normalizeValues(values, eventUnits||null, index*range,range);
-				for (var v = 0;v<values.length;v++) 
-				{
-					data.push([v,values[v]]);
-				}
-				plotData.push({data:data,color:uncapped[i],tipLabel:i,originalData:originalValues});
-				index++;
-			}
-			*/
+
 			this.trackerPlot = $.plot(this.placeholder, this.getPlotData(selection), {
           		series: {
           			lines: {
