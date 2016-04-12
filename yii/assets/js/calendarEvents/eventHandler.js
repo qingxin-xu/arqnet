@@ -69,6 +69,7 @@ var eventHandler = {
 	},
 	
 	deleteService:'deleteCalendarEvent',
+	categoryLookupService:'categoryLookup',
 	
 	removeEvent:function(event,dialog) { 
 		if (!event) {
@@ -205,6 +206,40 @@ var eventHandler = {
 										element.qtip('hide');
 										$('#deleteEventConfirmation').data('event',event).dialog('open');				
 									});
+									tipContent.find('input.tooltip_tracker_edit').click(function() {
+										element.qtip('hide');
+										var desc = event.description || [];
+	
+										$.ajax({
+											url:self.categoryLookupService,
+											type:'POST',
+											dataType:'json',
+											data:{edi:desc[0]['id']},
+											success:function(r) {
+												
+												if ('subcategory' in r && r['subcategory']) {
+													var subCategory = self.getSubcategory(r['subcategory']['name']);
+													if (subCategory) {
+														var labels = subCategory['labels'];
+														var myFields = [];
+				 										self.getTrackerValues(desc,labels);
+				 										
+				 										formFactory.update(subCategory,event);														
+													} else {
+														alert("Unable to update item at this time");
+													}
+												} else {
+													//use myErrorMsg dialog
+													alert("Unable to update item at this time");
+												}
+											},
+											error:function(err) {
+												console.log('err',err);
+												// use myErrorMsg dialog
+												alert("Unable to update item at this time");
+											}
+										});
+									});
 								}
 								
 							}
@@ -249,5 +284,39 @@ var eventHandler = {
 		}
 	},
 
-	template:[].join("")
+	template:[].join(""),
+	
+	getSubcategory:function(subcategoryName) {
+		if (!subcategoryName || !categories) return null;
+		for (var c in categories) {
+			for (var sc in categories[c]) {
+				if (sc == subcategoryName) { return categories[c][sc];}
+			}
+		}
+		return null;
+	},
+	
+	getTrackerValues:function(eventValues,subCategory) {
+		var values = {};
+		for (var sc in subCategory) {
+			for (var label in eventValues) {
+				var regex = new RegExp("^"+sc,'g');
+				if (eventValues[label]['value'].match(regex)) {
+					var value = eventValues[label]['value'];
+					console.log(eventValues[label]['id']);
+					value = value.replace(regex,'');
+					if ('unit' in subCategory[sc]) {
+						for (var u = 0;u<subCategory[sc]['unit'].length;u++) {
+							regex = new RegExp(subCategory[sc]['unit'][u]['name']+"\s*$");
+							value = value.replace(regex,'');
+							value = value.replace(/^\s+/,'');
+							value = value.replace(/\s+$/,'');
+						}
+					}
+					subCategory[sc]['value'] = value;
+					subCategory[sc]['event_value_id'] = eventValues[label]['id'];
+				}
+			}
+		}
+	}
 };

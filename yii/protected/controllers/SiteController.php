@@ -380,6 +380,27 @@ class SiteController extends Controller
         );
     }
 
+    public function actionCategoryLookup() {
+    	if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+    		throw new CHttpException('403', 'Forbidden access.');
+    	}
+    	$eventDefn = null;
+    	header('Content-type: application/json');
+    	$user_id = Yii::app()->user->id;
+    	$event_value_id = Yii::app()->request->getPost('edi',-1);
+    	if ($event_value_id>0) {
+    		$eventValue = EventValue::model()->findbyPk($event_value_id);
+    		if ($eventValue) {
+    			$eventDefn = EventDefinition::model()->with('eventSubcategory')->find("t.event_definition_id=:_id", array(':_id' => $eventValue->event_definition_id));
+    		}
+    	}
+    	echo CJSON::encode(array(
+    			'success' => 1,
+				'subcategory'=>$eventDefn?$eventDefn->eventSubcategory:null
+    	));
+    	Yii::app()->end();
+    }
+    
     /**
      * Change date range for slider on dashboard
      * @throws CHttpException
@@ -2747,6 +2768,57 @@ private function getMyJournalsByID($note_id){
     }
 
     /*
+     * Update a calendar event
+     */
+    public function actionUpdateCalendarEvent() {
+    	if (!YII_DEBUG && !Yii::app()->request->isAjaxRequest) {
+    		throw new CHttpException('403', 'Forbidden access.');
+    	}
+    	header('Content-type: application/json');
+    	$user_id = Yii::app()->user->Id;
+    	if (!$user_id) {
+    		echo CJSON::encode(array(
+    				'success' => -999,
+    				'msg' => 'Unknown User'
+    		));
+    		Yii::app()->end();
+    	}
+
+    	/*
+    	 * This will tell us if we are ending and event that was started, such
+    	* as vacation starting, job starting, etc.
+    	*/
+    	$capping_event = Yii::app()->request->getPost('capping_event', '');
+
+    	/*
+    	 * Form values for the events are defined here
+    	 */
+    	$defns = Yii::app()->request->getPost('definitions', array());
+    	
+    	/*
+    	 * The event values being updated
+    	 */
+    	$event_values = Yii::app()->request->getPost('event_values',array());
+    	
+    	foreach ($event_values as $event_value) {
+    		$event_value_id = $event_value{'name'};
+    		$event_value_defn = $event_value{'value'};
+    		foreach ($defns as $defn) {
+    			if ($defn{'definition_id'} == $event_value_defn) {
+    				$event_value = $defn{'value'};
+    				$eventValue = EventValue::model()->findByPk($event_value_id);
+    				$eventValue->value = $event_value;
+    				$eventValue->update();
+    			}
+    		}
+    	}
+    	echo CJSON::encode(array(
+    			'success' => 1
+    	));
+    	Yii::app()->end();
+    }
+    
+    /*
 	 * Create a calendar event
 	 */
     public function actionCreateCalendarEvent()
@@ -2849,12 +2921,6 @@ private function getMyJournalsByID($note_id){
             'date_created' => $cal->date_created
         ));
         Yii::app()->end();
-    }
-
-    /* For DnD new start/end date and times */
-    public function actionUpdateCalendarEvent()
-    {
-
     }
 
     /*

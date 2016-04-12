@@ -5,7 +5,7 @@
 var formFactory = {
 		
 	service:'/createCalendarEvent',
-	
+	updateService:'/updateCalendarEvent',
 	dialogClass:'DndDlg',
 	formClass:'DndForm',
 	
@@ -32,14 +32,28 @@ var formFactory = {
 	/*
 	 * Push event to server
 	 */
-	submit:function(dialog,form,nonFormValues,eventObj,tooltipFields)
+	submit:function(dialog,form,nonFormValues,eventObj,tooltipFields,serviceType)
 	{
+		
 		if (!eventObj) return;
 		var self = this;
 		if (!dialog) return;
+		var myService = self.service;
 		
 		var formValues = form?form.serializeArray():null;
 		var values = this.createEventValues(formValues,nonFormValues,tooltipFields);
+		var event_values = [];
+		// Add update info if it exists
+		if (serviceType == 'update') {
+			myService = self.updateService;
+			for (var i = 0;i<formValues.length;i++) {
+				var entry = formValues[i];
+				
+				if (entry['name'].match(/event_value_id_/)) {
+					event_values.push({name:entry['name'].replace(/event_value_id_/,''),value:entry['value']});
+				}
+			}
+		}
 		dialog.dialog('close');
 		if (form) form.remove();
 		dialog.remove();
@@ -54,8 +68,11 @@ var formFactory = {
 			definitions:values
 		};
 
+		if (serviceType == 'update') {
+			myData['event_values'] = event_values;
+		}
 		$.ajax({
-			url:self.service,
+			url:myService?myService:self.service,
 			type:'POST',
 			dataType:'json',
 			data:myData,
@@ -97,9 +114,13 @@ var formFactory = {
 		});
 	},
 	
+	updateSubmit:function() {
+		
+	},
+	
 	/*
 	 * Creates the tooltip for the created event, as well as the definitions array
-	 * to pass back to the create calendar service
+	 * to pass back to the create/update calendar service
 	 */
 	createEventValues:function(values,nonFormValues,tooltipFields) 
 	{
@@ -162,6 +183,10 @@ var formFactory = {
 		return formValues;
 	},
 	
+	update:function(/** {FieldEvents} **/subcategory,eventObj) {
+		this.createAndShowForm(subcategory, eventObj);
+	},
+	
 	/* 
 	 * Generate the form for this event
 	 * If this is a capping event, we must look for
@@ -213,7 +238,8 @@ var formFactory = {
 			messages = {},
 			tooltipFields = [],
 			nonFormValues = [],
-			formStr = '';
+			formStr = '',
+			doUpdate = false;
 		
 		for (var i in fields['labels'])
 		{
@@ -230,6 +256,15 @@ var formFactory = {
 			if (myField.rule) rules[myField.name] = myField.rule;
 			if (myField.message) messages[myField.name] = myField.message;
 		}			
+		
+		//For input only
+		for (var i in fields['labels']) {
+			var field = fields['labels'][i];
+			if ('value' in field && 'event_value_id' in field) {
+				formStr+="<input type='hidden' name='event_value_id_"+field['event_value_id']+"' value='"+field['name']+"'/>";
+				doUpdate = true;
+			}
+		}
 
 		//hidden field to tell service that this is a capping event
 		if (fields['capping_event']>0) {
@@ -266,7 +301,11 @@ var formFactory = {
 				rules:rules,
 				messages:messages,
 				submitHandler:function(evt) {
-					self.submit(dialog,form,nonFormValues,eventObj,tooltipFields);
+					if (doUpdate) {
+						self.submit(dialog,form,nonFormValues,eventObj,tooltipFields,'update');
+					} else {
+						self.submit(dialog,form,nonFormValues,eventObj,tooltipFields,'create');
+					}
 				}
 			});
 			
@@ -275,6 +314,7 @@ var formFactory = {
 			return dialog;
 		} else
 		{
+			//dialog.dialog('open');
 			this.submit(dialog,form,nonFormValues,eventObj,tooltipFields);
 			return dialog;
 		}
@@ -338,7 +378,8 @@ var formFactory = {
 	createInput:function(field)
 	{
 		if (!field) return '';
-		var input = '<input name="'+field['name']+'" placeholder="" />';
+		var fieldValue = field.value?field.value:"";
+		var input = '<input name="'+field['name']+'" placeholder="" value="'+fieldValue+'"/>';
 		return input;
 	},
 	
@@ -541,9 +582,10 @@ var formFactory = {
 		if (leaveRaw) {
 			return html;
 		} else {
-			if (event && event.subcategory && $.inArray(event.subcategory,eventHandler.otherEvents)<0) 
+			if (event && event.subcategory && $.inArray(event.subcategory,eventHandler.otherEvents)<0) {
 				buttonHTML = '<div class="tooltip_btn_wrapper"><input id="deleteBtn_'+inputID+'" class="tooltip_tracker_delete" type="button" value="Delete"/></div>';
-
+				buttonHTML += '<div class="tooltip_btn_wrapper"><input id="updateBtn_'+inputID+'" class="tooltip_tracker_edit" type="button" value="Edit"/></div>';
+			}
 			html='<div class="tooltip_wrapper">'+html+buttonHTML+'</div>';
 			var myContent = $(html);
 			return myContent;
