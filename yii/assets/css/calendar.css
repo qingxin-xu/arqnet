@@ -398,7 +398,7 @@ div.tooltip_btn_wrapper {
 	margin:7px 0;
 }
 
-input.tooltip_tracker_delete,a.tooltip_tracker_viewMore {
+input.tooltip_tracker_delete,.tooltip_tracker_edit,a.tooltip_tracker_viewMore {
 	float:right;
 }
 

@@ -251,7 +251,7 @@ color:#FFFFFF;
 
 div.mce-container button,
 button.skip,button.flag,button.deleteButton,input.qa_analysis,
-form input[value=Cancel],button.image_upload,button.next,button.previous,button.edit,button.myJournals_new,input.tooltip_tracker_delete,.tooltip_tracker_viewMore {
+form input[value=Cancel],button.image_upload,button.next,button.previous,button.edit,button.myJournals_new,input.tooltip_tracker_delete,.tooltip_tracker_edit,.tooltip_tracker_viewMore {
 	background: -webkit-linear-gradient(top, rgb(3,3,3) 0%,rgb(23,23,23) 20%,rgb(36,36,36) 40%,rgb(18,18,18) 55%);
 	background: -o-linear-gradient(top, rgb(3,3,3) 0%,rgb(23,23,23) 20%,rgb(36,36,36) 40%,rgb(18,18,18) 55%);
 	background: -moz-linear-gradient(top, rgb(3,3,3) 0%,rgb(23,23,23) 20%,rgb(36,36,36) 40%,rgb(18,18,18) 55%);
